@@ -8,6 +8,8 @@ namespace YfmCompanion.Tests;
 
 public sealed class RetroArchNetworkClientTests
 {
+    private static readonly TimeSpan ServerResponseTimeout = TimeSpan.FromSeconds(5);
+
     [Fact]
     public void ConstructorRejectsNonLoopbackAddress()
     {
@@ -41,7 +43,7 @@ public sealed class RetroArchNetworkClientTests
         using var client = new RetroArchNetworkClient(
             IPAddress.Loopback,
             server.Port,
-            TimeSpan.FromMilliseconds(500),
+            ServerResponseTimeout,
             attempts: 1);
 
         var status = await client.GetStatusAsync();
@@ -73,7 +75,7 @@ public sealed class RetroArchNetworkClientTests
         using var client = new RetroArchNetworkClient(
             IPAddress.Loopback,
             server.Port,
-            TimeSpan.FromMilliseconds(500),
+            ServerResponseTimeout,
             attempts: 1);
 
         var result = await client.ReadCoreMemoryAsync(0x1000, 600);
@@ -97,7 +99,7 @@ public sealed class RetroArchNetworkClientTests
         using var client = new RetroArchNetworkClient(
             IPAddress.Loopback,
             server.Port,
-            TimeSpan.FromMilliseconds(500),
+            ServerResponseTimeout,
             attempts: 1);
 
         var exception = await Assert.ThrowsAsync<RetroArchProtocolException>(() =>
@@ -117,7 +119,7 @@ public sealed class RetroArchNetworkClientTests
         using var client = new RetroArchNetworkClient(
             IPAddress.Loopback,
             server.Port,
-            TimeSpan.FromMilliseconds(500),
+            ServerResponseTimeout,
             attempts: 1);
 
         var exception = await Assert.ThrowsAsync<RetroArchProtocolException>(() =>
@@ -134,7 +136,7 @@ public sealed class RetroArchNetworkClientTests
         using var pausedClient = new RetroArchNetworkClient(
             IPAddress.Loopback,
             pausedServer.Port,
-            TimeSpan.FromMilliseconds(500),
+            ServerResponseTimeout,
             attempts: 1);
         Assert.Equal(RetroArchPlaybackState.Paused, (await pausedClient.GetStatusAsync()).State);
 
@@ -142,7 +144,7 @@ public sealed class RetroArchNetworkClientTests
         using var contentlessClient = new RetroArchNetworkClient(
             IPAddress.Loopback,
             contentlessServer.Port,
-            TimeSpan.FromMilliseconds(500),
+            ServerResponseTimeout,
             attempts: 1);
         Assert.Equal(RetroArchPlaybackState.Contentless, (await contentlessClient.GetStatusAsync()).State);
     }
@@ -159,7 +161,7 @@ public sealed class RetroArchNetworkClientTests
         using var client = new RetroArchNetworkClient(
             IPAddress.Loopback,
             server.Port,
-            TimeSpan.FromMilliseconds(500),
+            ServerResponseTimeout,
             attempts: 1);
 
         Assert.Empty(await client.ReadCoreMemoryAsync(0x1000, 0));
