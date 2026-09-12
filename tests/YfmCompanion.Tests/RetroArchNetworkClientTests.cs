@@ -209,6 +209,9 @@ public sealed class RetroArchNetworkClientTests
             catch (ObjectDisposedException)
             {
             }
+            catch (SocketException) when (_cancellation.IsCancellationRequested)
+            {
+            }
 
             _cancellation.Dispose();
         }
