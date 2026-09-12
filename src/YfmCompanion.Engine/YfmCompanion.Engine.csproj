@@ -1,0 +1,5 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <ProjectReference Include="..\YfmCompanion.Data\YfmCompanion.Data.csproj" />
+  </ItemGroup>
+</Project>

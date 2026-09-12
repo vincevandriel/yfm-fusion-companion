@@ -1,0 +1,62 @@
+name: Build and test
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 9.0.x
+          cache: true
+          cache-dependency-path: '**/packages.lock.json'
+      - name: Restore
+        run: dotnet restore YfmFusionCompanion.sln --locked-mode
+      - name: Test
+        run: dotnet test YfmFusionCompanion.sln --configuration Release --no-restore
+      - name: Publish Windows x64
+        run: dotnet publish src/YfmCompanion.Desktop/YfmCompanion.Desktop.csproj --configuration Release --runtime win-x64 --self-contained true --output publish
+      - name: Assemble portable package
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Path package | Out-Null
+          Copy-Item publish/* package -Recurse
+          Copy-Item install_dependencies.ps1, install_dependencies.cmd, README.md, RELEASE_NOTES.md, LICENSE, THIRD_PARTY_NOTICES.md package
+          New-Item -ItemType Directory -Path package/Documentation | Out-Null
+          Copy-Item output/pdf/YFM-Fusion-Companion-User-Guide.pdf package/Documentation
+          Compress-Archive -Path package/* -DestinationPath yfm_companion_windows_x64_${{ github.ref_name }}.zip
+          $zipHash = (Get-FileHash -Algorithm SHA256 yfm_companion_windows_x64_${{ github.ref_name }}.zip).Hash
+          $pdfHash = (Get-FileHash -Algorithm SHA256 output/pdf/YFM-Fusion-Companion-User-Guide.pdf).Hash
+          @(
+            "$zipHash  yfm_companion_windows_x64_${{ github.ref_name }}.zip"
+            "$pdfHash  YFM-Fusion-Companion-User-Guide.pdf"
+          ) | Set-Content -Encoding ascii yfm_companion_windows_x64_${{ github.ref_name }}_SHA256.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: yfm_companion_windows_x64
+          path: |
+            yfm_companion_windows_x64_${{ github.ref_name }}.zip
+            yfm_companion_windows_x64_${{ github.ref_name }}_SHA256.txt
+            output/pdf/YFM-Fusion-Companion-User-Guide.pdf
+      - name: Publish tagged GitHub release
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          name: YFM Fusion Companion ${{ github.ref_name }}
+          body_path: RELEASE_NOTES.md
+          fail_on_unmatched_files: true
+          files: |
+            yfm_companion_windows_x64_${{ github.ref_name }}.zip
+            yfm_companion_windows_x64_${{ github.ref_name }}_SHA256.txt
+            output/pdf/YFM-Fusion-Companion-User-Guide.pdf

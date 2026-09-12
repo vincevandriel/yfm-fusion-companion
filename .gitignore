@@ -1,0 +1,6 @@
+**/bin/
+**/obj/
+*.building
+TestResults/
+PUBLIC_RELEASE_CHECKPOINT.md
+tmp/

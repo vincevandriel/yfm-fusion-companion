@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.13.0" />
+    <PackageReference Include="xunit" Version="2.9.3" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="3.1.5">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\YfmCompanion.Data\YfmCompanion.Data.csproj" />
+    <ProjectReference Include="..\..\src\YfmCompanion.Engine\YfmCompanion.Engine.csproj" />
+    <ProjectReference Include="..\..\src\YfmCompanion.RetroArch\YfmCompanion.RetroArch.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\..\src\YfmCompanion.Desktop\CompactLivePresentation.cs" Link="CompactLivePresentation.cs" />
+    <Compile Include="..\..\src\YfmCompanion.Desktop\DesktopSettings.cs" Link="DesktopSettings.cs" />
+    <Compile Include="..\..\src\YfmCompanion.Desktop\LocalDiagnosticLog.cs" Link="LocalDiagnosticLog.cs" />
+  </ItemGroup>
+</Project>

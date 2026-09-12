@@ -1,0 +1,31 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net9.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <ApplicationIcon />
+    <AssemblyName>YFM Fusion Companion</AssemblyName>
+    <RootNamespace>YfmCompanion.Desktop</RootNamespace>
+    <!-- This is a personal English-only application. Do not publish the
+         framework and package satellite assemblies for unrelated cultures. -->
+    <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+    <PublishSingleFile>true</PublishSingleFile>
+    <SelfContained>true</SelfContained>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
+    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+    <DebugType>None</DebugType>
+    <DebugSymbols>false</DebugSymbols>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\YfmCompanion.Data\YfmCompanion.Data.csproj" />
+    <ProjectReference Include="..\YfmCompanion.Engine\YfmCompanion.Engine.csproj" />
+    <ProjectReference Include="..\YfmCompanion.RetroArch\YfmCompanion.RetroArch.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="..\..\artifacts\yfm.db" Link="Data\yfm.db">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+    </Content>
+  </ItemGroup>
+</Project>

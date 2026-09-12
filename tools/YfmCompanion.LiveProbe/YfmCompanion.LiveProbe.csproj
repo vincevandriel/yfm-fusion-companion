@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\YfmCompanion.Data\YfmCompanion.Data.csproj" />
+    <ProjectReference Include="..\..\src\YfmCompanion.Engine\YfmCompanion.Engine.csproj" />
+    <ProjectReference Include="..\..\src\YfmCompanion.RetroArch\YfmCompanion.RetroArch.csproj" />
+  </ItemGroup>
+</Project>
