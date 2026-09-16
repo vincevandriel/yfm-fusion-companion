@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "generated_at_utc": "2026-09-16T17:25:05Z",
+  "scope": "Phase 1 research inputs only. This manifest does not turn a community claim into a game-mechanics fact.",
+  "sources": [
+    {
+      "id": "supplied_sql_catalog",
+      "role": "companion card catalog and resolved pair baseline",
+      "provenance": "user-supplied local SQL source, previously deterministically converted to artifacts/yfm.db",
+      "confidence": "disc_verified_for_fusion_pairs",
+      "license": "user-provided; do not redistribute the source SQL without authorization"
+    },
+    {
+      "id": "ntsc_u_disc_fusion_audit",
+      "role": "concrete pair-fusion priority and equip fallback order",
+      "evidence_path": "private definitive-audit evidence; hash retained, source file is not distributed",
+      "sha256": "21fbfe7a20eaa901d56ca226b978ba5d812e0faad30615aad9a0074cd31000e4",
+      "confidence": "disc_verified",
+      "license": "derived audit facts only; do not include ROM or executable material in release"
+    },
+    {
+      "id": "ygofm_gamedata",
+      "role": "duelist names, opening hand sizes, Deck pools, card records, drops, and RNG/deck-generation reference",
+      "url": "https://github.com/sg4e/YGOFM-gamedata.git",
+      "revision": "bd91b5b0568059ec38555a3994c30a5068dc3dda",
+      "files": [
+        {
+          "path": "sqlite/json/duelistinfo.json",
+          "sha256": "52a8a10ba56f02c7c26b0c7c3290f985b86029201eedd69d7e526091ef6b92f2"
+        },
+        {
+          "path": "sqlite/json/droppool.json",
+          "sha256": "729ad65fb09b3e7a10af816e94a770b34be3bbe442eecc5fa3bccd7904ad8629"
+        },
+        {
+          "path": "sqlite/json/cardinfo.json",
+          "sha256": "4f003cf192c2c10d7900a99146977df7088ec4c661c3ec07f4305fd4f582c7e0"
+        }
+      ],
+      "confidence": "source_code_reimplementation",
+      "license": "MIT; attribution retained in THIRD_PARTY_NOTICES before shipping derived data"
+    },
+    {
+      "id": "speedrun_guides",
+      "role": "practical deck archetypes and farming heuristics",
+      "urls": [
+        "https://www.speedrun.com/yugiohfm/guides/o9dax",
+        "https://www.speedrun.com/yugiohfm/guides/x53ec"
+      ],
+      "confidence": "community_consensus",
+      "license": "reference only; no guide text copied into machine-readable data"
+    },
+    {
+      "id": "gamefaqs_archival_guides",
+      "role": "guardian-star and field-card cross-checks",
+      "urls": [
+        "https://gamefaqs.gamespot.com/ps/561010-yu-gi-oh-forbidden-memories/faqs/18573",
+        "https://gamefaqs.gamespot.com/ps/561010-yu-gi-oh-forbidden-memories/faqs/27035",
+        "https://gamefaqs.gamespot.com/ps/561010-yu-gi-oh-forbidden-memories/faqs/78677"
+      ],
+      "confidence": "community_consensus",
+      "license": "reference only; no guide text copied into machine-readable data"
+    }
+  ]
+}

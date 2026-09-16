@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "generated_at_utc": "2026-09-16T17:25:05Z",
+  "confidence": "community_consensus_pending_phase_2_game_verification",
+  "battle_modifier": {
+    "amount": 500,
+    "applies_to": [
+      "attack",
+      "defense"
+    ],
+    "note": "The UI must show ? rather than infer a result if either selected guardian star is unknown."
+  },
+  "cycles": [
+    {
+      "id": "solar",
+      "order": [
+        "Sun",
+        "Moon",
+        "Venus",
+        "Mercury"
+      ],
+      "beats_next": true
+    },
+    {
+      "id": "planetary",
+      "order": [
+        "Mars",
+        "Jupiter",
+        "Saturn",
+        "Uranus",
+        "Pluto",
+        "Neptune"
+      ],
+      "beats_next": true
+    }
+  ],
+  "symbols": {
+    "Mars": "♂",
+    "Jupiter": "♃",
+    "Saturn": "♄",
+    "Uranus": "⚲",
+    "Pluto": "♇",
+    "Neptune": "♆",
+    "Mercury": "☿",
+    "Sun": "☉",
+    "Moon": "☾",
+    "Venus": "♀"
+  }
+}
