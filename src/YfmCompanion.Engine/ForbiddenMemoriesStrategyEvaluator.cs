@@ -64,14 +64,23 @@ public sealed class ForbiddenMemoriesStrategyEvaluator(FusionCatalog catalog)
         {
             var aligned = field.BoostedTypes.Count(preferredTypes.Contains);
             var opposed = field.WeakenedTypes.Count(preferredTypes.Contains);
+            var enemyBoosted = field.BoostedTypes.Count(opponentTypes.Contains);
+            var enemyWeakened = field.WeakenedTypes.Count(opponentTypes.Contains);
             var explicitlySelected = options.PreferredFieldCardId == card.Id;
-            var score = (aligned * 1_500) - (opposed * 2_000) + (explicitlySelected ? 5_000 : 250);
+            var score = (aligned * 1_500) - (opposed * 2_000) +
+                        (enemyWeakened * 1_500) - (enemyBoosted * 750) +
+                        (explicitlySelected ? 5_000 : 250);
             return new CardStrategyAssessment(
                 card,
-                explicitlySelected || aligned > 0 ? CardViabilityTier.Strong : CardViabilityTier.Situational,
+                explicitlySelected || aligned > 0 || enemyWeakened > 0
+                    ? CardViabilityTier.Strong
+                    : CardViabilityTier.Situational,
                 "Field spell",
                 $"Boosts {string.Join(", ", field.BoostedTypes)} by 500; " +
-                (field.WeakenedTypes.Count == 0 ? "has no listed penalty." : $"weakens {string.Join(", ", field.WeakenedTypes)} by 500."),
+                (field.WeakenedTypes.Count == 0 ? "has no listed penalty." : $"weakens {string.Join(", ", field.WeakenedTypes)} by 500.") +
+                (enemyBoosted + enemyWeakened == 0
+                    ? string.Empty
+                    : $" Against the selected opponent scope it boosts {enemyBoosted} represented monster types and weakens {enemyWeakened}."),
                 score);
         }
 

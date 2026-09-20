@@ -29,12 +29,19 @@ public sealed class DeckAnalyzer(FusionCatalog catalog)
         var handSize = Math.Min(5, deck.Length);
         var totalHands = Choose(deck.Length, handSize);
         var accumulator = new AnalysisAccumulator(catalog, totalHands);
+        var groups = deck
+            .GroupBy(cardId => cardId)
+            .OrderBy(group => group.Key)
+            .Select(group => new CardMultiplicity(group.Key, group.Count()))
+            .ToArray();
         var hand = new int[handSize];
-        EnumerateHands(
-            deck,
+        EnumerateHandCompositions(
+            groups,
             hand,
-            sourceStart: 0,
+            groupIndex: 0,
             handIndex: 0,
+            remainingCards: handSize,
+            multiplicity: 1,
             includeGlitches,
             accumulator,
             cancellationToken,
@@ -60,20 +67,22 @@ public sealed class DeckAnalyzer(FusionCatalog catalog)
         return result;
     }
 
-    private static void EnumerateHands(
-        IReadOnlyList<int> deck,
+    private static void EnumerateHandCompositions(
+        IReadOnlyList<CardMultiplicity> groups,
         int[] hand,
-        int sourceStart,
+        int groupIndex,
         int handIndex,
+        int remainingCards,
+        long multiplicity,
         bool includeGlitches,
         AnalysisAccumulator accumulator,
         CancellationToken cancellationToken,
         IProgress<DeckAnalysisProgress>? progress)
     {
-        if (handIndex == hand.Length)
+        if (remainingCards == 0)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            accumulator.EvaluateHand(hand, includeGlitches);
+            accumulator.EvaluateHand(hand, includeGlitches, multiplicity);
             if ((accumulator.CompletedHands & 0xFFF) == 0)
             {
                 progress?.Report(new DeckAnalysisProgress(accumulator.CompletedHands, accumulator.TotalHands));
@@ -82,15 +91,34 @@ public sealed class DeckAnalyzer(FusionCatalog catalog)
             return;
         }
 
-        var remaining = hand.Length - handIndex;
-        for (var sourceIndex = sourceStart; sourceIndex <= deck.Count - remaining; sourceIndex++)
+        if (groupIndex >= groups.Count)
         {
-            hand[handIndex] = deck[sourceIndex];
-            EnumerateHands(
-                deck,
+            return;
+        }
+
+        var availableInLaterGroups = 0;
+        for (var index = groupIndex + 1; index < groups.Count; index++)
+        {
+            availableInLaterGroups += groups[index].Count;
+        }
+
+        var group = groups[groupIndex];
+        var minimumTake = Math.Max(0, remainingCards - availableInLaterGroups);
+        var maximumTake = Math.Min(group.Count, remainingCards);
+        for (var take = minimumTake; take <= maximumTake; take++)
+        {
+            for (var index = 0; index < take; index++)
+            {
+                hand[handIndex + index] = group.CardId;
+            }
+
+            EnumerateHandCompositions(
+                groups,
                 hand,
-                sourceIndex + 1,
-                handIndex + 1,
+                groupIndex + 1,
+                handIndex + take,
+                remainingCards - take,
+                checked(multiplicity * Choose(group.Count, take)),
                 includeGlitches,
                 accumulator,
                 cancellationToken,
@@ -116,7 +144,7 @@ public sealed class DeckAnalyzer(FusionCatalog catalog)
         public long CompletedHands { get; private set; }
         public long TotalHands => totalHands;
 
-        public void EvaluateHand(int[] hand, bool includeGlitches)
+        public void EvaluateHand(int[] hand, bool includeGlitches, long multiplicity)
         {
             _stamp++;
             _seenOutcomes.Clear();
@@ -140,7 +168,7 @@ public sealed class DeckAnalyzer(FusionCatalog catalog)
             var bestAttack = 0;
             foreach (var outcomeKey in _seenOutcomes)
             {
-                _handsByOutcome[outcomeKey]++;
+                _handsByOutcome[outcomeKey] += multiplicity;
                 var resultId = OutcomeCardId(outcomeKey);
                 var attackBonus = BonusForOutcome(outcomeKey);
                 bestAttack = Math.Max(bestAttack, catalog.GetCard(resultId).Attack + attackBonus);
@@ -148,15 +176,15 @@ public sealed class DeckAnalyzer(FusionCatalog catalog)
 
             if (_seenOutcomes.Count > 0)
             {
-                _handsWithAny++;
+                _handsWithAny += multiplicity;
             }
 
-            if (bestAttack >= 2_000) _hands2000++;
-            if (bestAttack >= 2_500) _hands2500++;
-            if (bestAttack >= 2_800) _hands2800++;
-            if (bestAttack >= 3_000) _hands3000++;
-            _sumBestAttack += bestAttack;
-            CompletedHands++;
+            if (bestAttack >= 2_000) _hands2000 += multiplicity;
+            if (bestAttack >= 2_500) _hands2500 += multiplicity;
+            if (bestAttack >= 2_800) _hands2800 += multiplicity;
+            if (bestAttack >= 3_000) _hands3000 += multiplicity;
+            _sumBestAttack += bestAttack * multiplicity;
+            CompletedHands += multiplicity;
         }
 
         public DeckAnalysisReport CreateReport(int deckSize, int handSize)
@@ -358,4 +386,6 @@ public sealed class DeckAnalyzer(FusionCatalog catalog)
             _ => 0
         };
     }
+
+    private sealed record CardMultiplicity(int CardId, int Count);
 }

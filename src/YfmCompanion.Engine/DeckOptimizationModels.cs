@@ -33,7 +33,26 @@ public sealed record DeckOptimizationOptions(
     DeckStrategyProfile Profile = DeckStrategyProfile.Balanced,
     IReadOnlyList<string>? PreferredMonsterTypes = null,
     int? PreferredFieldCardId = null,
-    IReadOnlyList<string>? OpponentMonsterTypes = null);
+    IReadOnlyList<string>? OpponentMonsterTypes = null,
+    OpponentSafetyContext? SafetyContext = null,
+    OpponentSafetyContext? SecondarySafetyContext = null);
+
+public sealed record DeckSafetyTarget(
+    int OpponentId,
+    string OpponentName,
+    int ThreatCardId,
+    string ThreatCardName,
+    int Attack,
+    IReadOnlyList<string> PossibleGuardianStars,
+    double Importance,
+    bool IsFusionThreat);
+
+public sealed record OpponentSafetyContext(
+    string Label,
+    IReadOnlyList<int> OpponentIds,
+    IReadOnlyList<string> OpponentMonsterTypes,
+    IReadOnlyList<DeckSafetyTarget> Threats,
+    string Methodology);
 
 public sealed record CardStrategyAssessment(
     Card Card,
@@ -71,6 +90,12 @@ public sealed record DeckComparison(
     double AtLeast2800ProbabilityChange,
     double ExpectedBestAttackChange);
 
+public sealed record DeckSafetyAssessment(
+    string Label,
+    double HeuristicScore,
+    int ThreatCount,
+    string Methodology);
+
 public sealed record DeckOptimizationReport(
     IReadOnlyList<OptimizedDeckEntry> Deck,
     DeckAnalysisReport ExactAnalysis,
@@ -79,7 +104,9 @@ public sealed record DeckOptimizationReport(
     IReadOnlyList<CardStrategyAssessment> ExcludedOrLowValueCards,
     DeckComparison? Comparison,
     DeckStrategyProfile Profile,
-    int RandomSeed)
+    int RandomSeed,
+    DeckSafetyAssessment? SafetyAssessment,
+    DeckSafetyAssessment? SecondarySafetyAssessment)
 {
     public int TotalCards => Deck.Sum(entry => entry.Copies);
 }

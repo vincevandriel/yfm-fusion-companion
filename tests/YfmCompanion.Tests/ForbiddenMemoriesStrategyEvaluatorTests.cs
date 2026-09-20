@@ -58,4 +58,21 @@ public sealed class ForbiddenMemoriesStrategyEvaluatorTests(DatabaseFixture fixt
         Assert.Equal(CardViabilityTier.Situational, warriorElimination.Tier);
         Assert.True(dragonJar.StrategicScore > warriorElimination.StrategicScore);
     }
+
+    [Fact]
+    public void FieldScoringPenalizesBoostingEnemyTypesAndRewardsWeakeningThem()
+    {
+        var evaluator = new ForbiddenMemoriesStrategyEvaluator(fixture.Catalog);
+
+        var mountainAgainstDragon = evaluator.Assess(
+            fixture.Catalog.GetCard(332),
+            new DeckOptimizationOptions(OpponentMonsterTypes: ["Dragon"]));
+        var umiAgainstPyro = evaluator.Assess(
+            fixture.Catalog.GetCard(334),
+            new DeckOptimizationOptions(OpponentMonsterTypes: ["Pyro"]));
+
+        Assert.True(mountainAgainstDragon.StrategicScore < 0);
+        Assert.True(umiAgainstPyro.StrategicScore > 0);
+        Assert.Contains("selected opponent", mountainAgainstDragon.Rationale, StringComparison.OrdinalIgnoreCase);
+    }
 }
