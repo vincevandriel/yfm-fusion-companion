@@ -14,6 +14,9 @@ public static class Ps1MemoryCardReader
     public const int SecondSaveCopyOffset = 0x880;
     public const int ChestOffset = 0x50;
     public const int FlagsOffset = 0x418;
+    public const int FreeDuelUnlocksOffset = 0x4F4;
+    public const int StarChipsOffset = 0x5E0;
+    public const int DuelistCount = 39;
     public const string ForbiddenMemoriesSaveName = "BASLUS-01411-YUGIOH";
 
     private const int DirectoryEntrySize = 0x80;
@@ -112,6 +115,8 @@ public static class Ps1MemoryCardReader
 
                 var chest = firstCopy.Slice(ChestOffset, CardCount).ToArray();
                 var library = ReadLibrary(firstCopy);
+                var starChips = BinaryPrimitives.ReadUInt32LittleEndian(firstCopy.Slice(StarChipsOffset, sizeof(uint)));
+                var unlockedDuelists = ReadUnlockedDuelists(firstCopy);
                 var warnings = BuildLegalityWarnings(deck, chest);
                 var sourceFormat = bankCount == 1
                     ? "Raw PlayStation memory card (128 KiB)"
@@ -126,6 +131,8 @@ public static class Ps1MemoryCardReader
                     deck,
                     chest,
                     library,
+                    starChips,
+                    unlockedDuelists,
                     warnings));
             }
         }
@@ -195,6 +202,22 @@ public static class Ps1MemoryCardReader
         return library;
     }
 
+    private static HashSet<int> ReadUnlockedDuelists(ReadOnlySpan<byte> saveCopy)
+    {
+        var unlocked = new HashSet<int>();
+        for (var duelistId = 1; duelistId <= DuelistCount; duelistId++)
+        {
+            var byteOffset = duelistId >> 3;
+            var mask = (byte)(0x80 >> (duelistId & 7));
+            if ((saveCopy[FreeDuelUnlocksOffset + byteOffset] & mask) != 0)
+            {
+                unlocked.Add(duelistId);
+            }
+        }
+
+        return unlocked;
+    }
+
     private static List<string> BuildLegalityWarnings(int[] deck, byte[] chest)
     {
         var warnings = new List<string>();
@@ -239,5 +262,7 @@ public static class Ps1MemoryCardReader
         snapshot.DeckCardIds,
         snapshot.ChestQuantities,
         snapshot.LibraryCardIds,
+        snapshot.StarChips,
+        snapshot.UnlockedDuelistIds,
         [.. snapshot.Warnings, warning]);
 }

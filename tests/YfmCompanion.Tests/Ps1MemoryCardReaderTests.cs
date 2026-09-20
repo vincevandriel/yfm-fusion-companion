@@ -21,6 +21,8 @@ public sealed class Ps1MemoryCardReaderTests
         Assert.Contains(1, snapshot.LibraryCardIds);
         Assert.Contains(40, snapshot.LibraryCardIds);
         Assert.DoesNotContain(41, snapshot.LibraryCardIds);
+        Assert.Equal(12345U, snapshot.StarChips);
+        Assert.Equal([1, 8, 32, 39], snapshot.UnlockedDuelistIds.Order());
         Assert.Empty(snapshot.Warnings);
     }
 
@@ -202,6 +204,13 @@ public sealed class Ps1MemoryCardReaderTests
         }
 
         saveCopy[Ps1MemoryCardReader.ChestOffset + 40] = 2;
+        BinaryPrimitives.WriteUInt32LittleEndian(
+            saveCopy.AsSpan(Ps1MemoryCardReader.StarChipsOffset, sizeof(uint)),
+            12345U);
+        foreach (var duelistId in new[] { 1, 8, 32, 39 })
+        {
+            SetDuelistUnlocked(saveCopy, duelistId);
+        }
         SetLibraryFlag(saveCopy, 1);
         SetLibraryFlag(saveCopy, 40);
         saveCopy.CopyTo(bytes, blockOffset + Ps1MemoryCardReader.FirstSaveCopyOffset);
@@ -213,6 +222,12 @@ public sealed class Ps1MemoryCardReaderTests
     {
         var flagId = 0x120 + cardId;
         saveCopy[Ps1MemoryCardReader.FlagsOffset + (flagId >> 3)] |= (byte)(0x80 >> (flagId & 7));
+    }
+
+    private static void SetDuelistUnlocked(Span<byte> saveCopy, int duelistId)
+    {
+        saveCopy[Ps1MemoryCardReader.FreeDuelUnlocksOffset + (duelistId >> 3)] |=
+            (byte)(0x80 >> (duelistId & 7));
     }
 
     private static string CreateTemporaryDirectory()

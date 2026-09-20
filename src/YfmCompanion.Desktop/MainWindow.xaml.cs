@@ -892,7 +892,9 @@ public partial class MainWindow : Window
         var warnings = snapshot.Warnings.Count == 0
             ? string.Empty
             : $" Warnings: {string.Join(" ", snapshot.Warnings)}";
-        SaveValidationText.Text = $"Directory checksum valid • file identity {snapshot.DirectoryFileName} • both 0x680-byte save copies match • 40 valid card IDs. {ageText} RetroArch may not flush a new save until the game closes, and the in-game Library must be opened before saving for its flags to refresh.{warnings}";
+        SaveValidationText.Text = string.Create(
+            CultureInfo.InvariantCulture,
+            $"Directory checksum valid • file identity {snapshot.DirectoryFileName} • both 0x680-byte save copies match • 40 valid card IDs • {snapshot.StarChips:N0} Star Chips • {snapshot.UnlockedDuelistIds.Count:N0}/{Ps1MemoryCardReader.DuelistCount:N0} Free Duel opponents unlocked. {ageText} RetroArch may not flush a new save until the game closes, and the in-game Library must be opened before saving for its flags to refresh.{warnings}");
         SaveSnapshotStatus.Text = $"Loaded {Path.GetFileName(snapshot.FilePath)} as a saved snapshot. No game or save data was modified.";
         ApplyOwnedButton.IsEnabled = true;
         ApplyDeckButton.IsEnabled = true;

@@ -12,6 +12,8 @@ public sealed class SaveSnapshot
         IReadOnlyList<int> deckCardIds,
         IReadOnlyList<byte> chestQuantities,
         IReadOnlySet<int> libraryCardIds,
+        uint starChips,
+        IReadOnlySet<int> unlockedDuelistIds,
         IReadOnlyList<string> warnings)
     {
         if (deckCardIds.Count != Ps1MemoryCardReader.DeckSize)
@@ -33,6 +35,8 @@ public sealed class SaveSnapshot
         DeckCardIds = [.. deckCardIds];
         ChestQuantities = [.. chestQuantities];
         LibraryCardIds = new HashSet<int>(libraryCardIds);
+        StarChips = starChips;
+        UnlockedDuelistIds = new HashSet<int>(unlockedDuelistIds);
         Warnings = [.. warnings];
     }
 
@@ -53,6 +57,10 @@ public sealed class SaveSnapshot
     public IReadOnlyList<byte> ChestQuantities { get; }
 
     public IReadOnlySet<int> LibraryCardIds { get; }
+
+    public uint StarChips { get; }
+
+    public IReadOnlySet<int> UnlockedDuelistIds { get; }
 
     public IReadOnlyList<string> Warnings { get; }
 
