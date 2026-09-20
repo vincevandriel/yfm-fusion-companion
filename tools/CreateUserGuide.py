@@ -330,7 +330,7 @@ def build() -> None:
         "Run, cancel, clear, and glitch controls.", "Exact probability and expected-ATK metrics.",
         "Per-result hand chance and representative route.",
     ], [(0.18, 0.25), (0.28, 0.49), (0.17, 0.49), (0.62, 0.58), (0.52, 0.76)])
-    screenshot_page(pdf, 6, "Live Duel", "Validated state refreshes automatically every five seconds", "live-duel.png", [
+    screenshot_page(pdf, 6, "Live Duel", "Validated state refreshes automatically every second", "live-duel.png", [
         "Connection and read-only status.", "Life Points, terrain, and update health.",
         "Current ordered five-card hand.", "Player and opponent active field positions.",
         "Best legal live routes.", "Open the selected-card inspector.",

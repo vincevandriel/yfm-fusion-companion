@@ -23,7 +23,7 @@ public partial class MainWindow : Window
     private readonly List<CardPicker> _spellPickers = [];
     private readonly List<CardPicker> _deckPickers = [];
     private readonly List<OwnedCardRow> _ownedCardRows = [];
-    private readonly DispatcherTimer _liveTimer = new() { Interval = TimeSpan.FromSeconds(5) };
+    private readonly DispatcherTimer _liveTimer = new() { Interval = TimeSpan.FromSeconds(1) };
     private readonly CancellationTokenSource _windowCancellation = new();
     private readonly LocalDiagnosticLog _diagnostics = new();
     private IReadOnlyList<OwnedCardRow> _visibleOwnedCardRows = [];

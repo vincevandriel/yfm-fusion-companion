@@ -15,7 +15,7 @@ Windows 10 or 11 x64 is required. RetroArch and SwanStation are optional unless 
 
 The **LIVE DUEL** tab uses RetroArch's supported UDP Network Control Interface on `127.0.0.1:55355`. The companion's client is deliberately limited to status and memory-read requests. It does not expose input, cheat, save-state, write-memory, or arbitrary-command methods, and it does not scan or patch the RetroArch process.
 
-To enable the RetroArch side manually, open **Settings → Network → Network Commands** and switch it on. The companion checks automatically every five seconds and never rewrites `retroarch.cfg`. A green **UP TO DATE** indicator means the polling loop is receiving valid state; a red **ERROR** indicator means the latest update was unsuccessful.
+To enable the RetroArch side manually, open **Settings → Network → Network Commands** and switch it on. The companion checks automatically every second and never rewrites `retroarch.cfg`. A green **UP TO DATE** indicator means the polling loop is receiving valid state; a red **ERROR** indicator means the latest update was unsuccessful.
 
 RetroArch itself may bind Network Commands beyond loopback. Keep Windows Firewall blocking unsolicited inbound UDP 55355 from other computers. The companion detects and warns when the listener is visible on a non-loopback address.
 
@@ -86,7 +86,7 @@ Enter up to 40 cards or choose **LOAD CURRENT DECK FROM SAVE** after validating 
 
 ### LIVE DUEL tab
 
-Live Duel updates automatically every five seconds. There is no refresh button. For the validated connection, open RetroArch **Settings > Network**, enable **Network Commands**, set **Network Command Port** to `55355`, leave **Network RetroPad** and **stdin Commands** off, restart RetroArch, and start the NTSC-U game with SwanStation.
+Live Duel updates automatically every second. There is no refresh button. For the validated connection, open RetroArch **Settings > Network**, enable **Network Commands**, set **Network Command Port** to `55355`, leave **Network RetroPad** and **stdin Commands** off, restart RetroArch, and start the NTSC-U game with SwanStation.
 
 - **CONNECTION:** reports whether RetroArch, the game, and duel state passed structural validation.
 - **PLAYER LP / OPPONENT LP / TERRAIN:** current validated duel values.

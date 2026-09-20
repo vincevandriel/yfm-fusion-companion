@@ -85,9 +85,9 @@ internal static class Program
             ?? throw new InvalidOperationException("Live update timer was not found.");
         var timer = timerField.GetValue(window) as DispatcherTimer
             ?? throw new InvalidOperationException("Live update timer was not a dispatcher timer.");
-        if (timer.Interval != TimeSpan.FromSeconds(5))
+        if (timer.Interval != TimeSpan.FromSeconds(1))
         {
-            throw new InvalidOperationException($"Expected a five-second live update interval; found {timer.Interval}.");
+            throw new InvalidOperationException($"Expected a one-second live update interval; found {timer.Interval}.");
         }
 
         if (window.FindName("LiveConnectButton") is not null || window.FindName("LiveAutoCheckBox") is not null)

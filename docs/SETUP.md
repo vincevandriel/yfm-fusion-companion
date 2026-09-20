@@ -17,7 +17,7 @@ The program is a self-contained Windows x64 application. It does not require a s
 5. Leave **Network RetroPad** and **stdin Commands** off; the companion does not use them.
 6. Restart RetroArch once so the saved setting and listener are definitely active.
 7. Start Yu-Gi-Oh! Forbidden Memories with the SwanStation core.
-8. Open **LIVE DUEL** in the companion. It checks automatically every five seconds; no refresh button is necessary. Green **UP TO DATE** means updates are continuing, while red **ERROR** means the latest read failed.
+8. Open **LIVE DUEL** in the companion. It checks automatically every second; no refresh button is necessary. Green **UP TO DATE** means updates are continuing, while red **ERROR** means the latest read failed.
 
 RetroArch may listen beyond this computer even though the companion connects only to `127.0.0.1`. Keep Windows Firewall blocking unsolicited inbound UDP port 55355 from other computers.
 
