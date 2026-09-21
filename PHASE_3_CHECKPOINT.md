@@ -1,5 +1,7 @@
 # Phase 3 Checkpoint — Campaign Optimizer Desktop Integration
 
+> **Superseded completion assessment (Phase 4, 2026-09-21):** the work below completed an optimizer-UI subset, not the full agreed Phase 3 gate. Live guardian advice, complete workflow validation, updated guides and a tested release candidate remain unfinished. See `docs/audit/PHASE4_FINAL_AUDIT.md` and `PHASE_4_CHECKPOINT.md` before continuing. The prior visual sign-off also missed clipped table content.
+
 **Status:** Complete and verified on 21 September 2026.  Work is intentionally paused before Phase 4.
 
 ## What Phase 3 added

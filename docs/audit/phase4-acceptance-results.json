@@ -1,0 +1,143 @@
+{
+  "SchemaVersion": 1,
+  "BaselineCommit": "974cce4",
+  "SourceSha256": {
+    "src/YfmCompanion.Data/AssemblyInfo.cs": "91bd8f6dc4b897faf703a6251d74f976c2ecce8beff379208c7e3a3f6f4ea391",
+    "src/YfmCompanion.Data/FusionCatalog.cs": "b504c0dbd7c73ad09e589451767cca08cd9f5d7884eaca2868cbfa840b73f968",
+    "src/YfmCompanion.Data/Models.cs": "8a9e3091c006749138f7f54026af141493e63bac67c1db09c28c7a940903020c",
+    "src/YfmCompanion.Data/PostgresDumpImporter.cs": "3acb2f7a251818c9cc97c82ebaf44ceafc4473e13c7cd7de646c67757777a645",
+    "src/YfmCompanion.Data/PostgresDumpParser.cs": "0241dce66c6c25540a4861e3a5c26d4a2b1215722f4ab3916cbf695b1e27360b",
+    "src/YfmCompanion.Data/SqliteSchema.cs": "57ce5f52b20c425b17ec9227efc1751c798dd98d2795c5d0293b87f79557886c",
+    "src/YfmCompanion.Data/YfmCompanion.Data.csproj": "dc83802d60472ba00e404c62f95bf33839d15b39eba2474efd7426fdbde2ef9f",
+    "src/YfmCompanion.Desktop/App.xaml": "f64e3f4515c15222b300d7348e524a619ea771b11a0ccf5e2e97d7e538acc5f3",
+    "src/YfmCompanion.Desktop/App.xaml.cs": "98663e4160f3ce221ad0a61f0c234266906086a4932d47d6a220f55b2b55c33d",
+    "src/YfmCompanion.Desktop/CompactLivePresentation.cs": "566d8cf781e1046005d4805d07db5aba5c8821fc302a23f4f9fe4d9b93d70109",
+    "src/YfmCompanion.Desktop/Controls/CardPicker.xaml": "29772e6a6cf0bcabb4c64143db8668d26243938b72fabbd74c40392896ed6159",
+    "src/YfmCompanion.Desktop/Controls/CardPicker.xaml.cs": "21205041d97e35964f0b01d61c9c6288deb5a1f681637799430d50e3016854e5",
+    "src/YfmCompanion.Desktop/DesktopSettings.cs": "0d5cc6ca7a2c17b9f623734372ccd879ae774a00f2851b6b9e5d7399a6eecbad",
+    "src/YfmCompanion.Desktop/LocalDiagnosticLog.cs": "5088769e5a2d2cfe35483e3c7e33a90868ac3f8d27cb4837552164c806f41d44",
+    "src/YfmCompanion.Desktop/MainWindow.xaml": "42c3802a5606e5968bb826e6e8682818197bcc63f1a6f939e0233b4e032e4699",
+    "src/YfmCompanion.Desktop/MainWindow.xaml.cs": "15532474b07e99b3093f79d7a22ccaf1a50709b3d09bc7e146590c83533d9d46",
+    "src/YfmCompanion.Desktop/YfmCompanion.Desktop.csproj": "6cab2d649e8d7b5d9333358c411ea92c4c81ad86c9df96c15c03cbfead35ec63",
+    "src/YfmCompanion.Engine/CampaignDeckOptimizer.cs": "8077c3a3a876cf8ac06b90122725af04d952d1c4ce0b2fa722de0309ed2ee721",
+    "src/YfmCompanion.Engine/CampaignResearchData.cs": "823ae6c588a34a1a30b48a6e2956cb98158da06646c44df8cf5a30b6d85b72dd",
+    "src/YfmCompanion.Engine/CardSearchService.cs": "e6fa04f80bb792087e15ec120aba09e3122af9554ae394da0c413dc262343b65",
+    "src/YfmCompanion.Engine/DeckAnalysisModels.cs": "95e6e4dae0f22004cd868fd110d60660b8c01ca362c0a7e599c4cd253707b4f3",
+    "src/YfmCompanion.Engine/DeckAnalyzer.cs": "318f43d733ad919857208adaadba7541a10f4af67379d28b8be0168f32d306a6",
+    "src/YfmCompanion.Engine/DeckOptimizationModels.cs": "9acea049a8f286d93773e2b9992f5785cdbbc66c6d6563ca881b3503fa0f2250",
+    "src/YfmCompanion.Engine/ForbiddenMemoriesStrategyEvaluator.cs": "0bb4f0354d97a84fe0058ab9cd6554d5f2dfe6656770c2ecdd650eb842706e0f",
+    "src/YfmCompanion.Engine/GuardianStarRules.cs": "be8edca1faba227e7b4c470b5ce3e3fc63664d1d03c14f6fd9b47a35c0ba8e8b",
+    "src/YfmCompanion.Engine/OpponentSafetyScoring.cs": "613596386e370aa02a7c310ef8ccfa5b0e62430f6b23c46c0a2dfaebe7308310",
+    "src/YfmCompanion.Engine/OpponentThreatEvaluator.cs": "3143aea334f23def3bac3a5a3688980b565d3fd58b08515bb0fdb0dbae88add5",
+    "src/YfmCompanion.Engine/OwnedDeckOptimizer.cs": "9d23f98712b0dcf93e9eef03e915ab93ff8a0327a9a5e9f96323cbbf1e4844c2",
+    "src/YfmCompanion.Engine/StarChipDeckPlanner.cs": "7c5fa3e935eea622ab6866ac2a283dfcb5c1af705492d074286c19797aa70e81",
+    "src/YfmCompanion.Engine/TacticalFusionPlanner.cs": "a1127a32e943d947698d457c34757334e6e426200cd6d0b5d3060687411cc3fd",
+    "src/YfmCompanion.Engine/TacticalModels.cs": "47b57e44091f859526c26752b8a16b0403a08f1696d00a129fed2f7a9eb80439",
+    "src/YfmCompanion.Engine/YfmCompanion.Engine.csproj": "36f035dcc9e15e09b743f6ad621f23c0703b559d8f943c1e7cd5dd22281a1149",
+    "src/YfmCompanion.RetroArch/ForbiddenMemoriesLiveReader.cs": "9a61d8e8a5e2a4f82a5e15ae4f1b179a41916df3aa560346e3a2616ce0fac083",
+    "src/YfmCompanion.RetroArch/Ps1MemoryCardReader.cs": "c15b59e6ae4cee8b79ab8f48b8e8964d76aa17f927aa5c65734cfcbead049373",
+    "src/YfmCompanion.RetroArch/RetroArchConfigInspector.cs": "ebcdf59ef3a0b4f87be11d1e6e10c91094b1f1cd2f7ff1e247f1fe852eb0fecf",
+    "src/YfmCompanion.RetroArch/RetroArchNetworkClient.cs": "a651c5784e446b0a062cb7e0b2f4a2aba517afd33e1c27201344830711702c7f",
+    "src/YfmCompanion.RetroArch/RetroArchNetworkModels.cs": "65b2a1c3cefbe684b1b1e146bcf9fa467fee07427a40ff29358cccec23c5aad0",
+    "src/YfmCompanion.RetroArch/RetroArchSaveLocator.cs": "619961a4fa9d974162a7e6b4bd46c9bd14897cd7cc4e9dd19836f36d4c60a663",
+    "src/YfmCompanion.RetroArch/SaveModels.cs": "fb1c29835239d52ec8093f2552bde8ab638b59022c799308437ccfc09a4ef3a1",
+    "src/YfmCompanion.RetroArch/YfmCompanion.RetroArch.csproj": "fa6375684d4de4f1bcd0aafb6276543df3b66460d98c49190cd7c2fcd815821c"
+  },
+  "GeneratedAtUtc": "2026-09-21T19:12:45.8986643+00:00",
+  "ReleaseGate": "BLOCKED",
+  "Passed": 3,
+  "Failed": 10,
+  "Checks": [
+    {
+      "Id": "P4-01",
+      "Requirement": "Do not spend chips on a strategically identical substitute",
+      "Passed": false,
+      "Evidence": "Spent 1; all monsters have identical stats, stars, types and no fusions/equips. Baseline/result expected fusion ATK: 0/0.",
+      "ElapsedMilliseconds": 169
+    },
+    {
+      "Id": "P4-02",
+      "Requirement": "Find an affordable legal deck before claiming none exists",
+      "Passed": false,
+      "Evidence": "Planner rejected the collection: The owned collection plus affordable password purchases cannot supply 40 legal deck copies within the available Star Chips. Witness: buy 101 \u002B 102 for 50 \u002B 50 = 100, yielding 40 legal cards.",
+      "ElapsedMilliseconds": 32
+    },
+    {
+      "Id": "P4-03",
+      "Requirement": "Include sequential opponent fusion threats",
+      "Passed": false,
+      "Evidence": "Pool contains 1,2,3. Legal chain 1\u002B2=4; 4\u002B3=5. Reported result IDs: 4.",
+      "ElapsedMilliseconds": 4
+    },
+    {
+      "Id": "P4-04",
+      "Requirement": "Reject guardian data that reverses a verified cycle",
+      "Passed": false,
+      "Evidence": "Malformed research data was accepted.",
+      "ElapsedMilliseconds": 75
+    },
+    {
+      "Id": "P4-05",
+      "Requirement": "Reject swapped normal-campaign and gauntlet IDs",
+      "Passed": false,
+      "Evidence": "Malformed research data was accepted.",
+      "ElapsedMilliseconds": 33
+    },
+    {
+      "Id": "P4-06",
+      "Requirement": "Reject invalid opponent pool totals",
+      "Passed": false,
+      "Evidence": "Malformed research data was accepted.",
+      "ElapsedMilliseconds": 33
+    },
+    {
+      "Id": "P4-07",
+      "Requirement": "Reject an invalid password string before recommending purchase",
+      "Passed": false,
+      "Evidence": "Purchase passwords: abcdefgh.",
+      "ElapsedMilliseconds": 51
+    },
+    {
+      "Id": "P4-08",
+      "Requirement": "Do not turn malformed auxiliary save data into a spendable balance",
+      "Passed": false,
+      "Evidence": "Accepted balance: 4294967295; warnings: .",
+      "ElapsedMilliseconds": 3
+    },
+    {
+      "Id": "P4-09",
+      "Requirement": "Preserve a valid chest when the saved deck is empty",
+      "Passed": false,
+      "Evidence": "Parsed 0 snapshots from structurally valid matching save copies with 42 chest cards and zero deck IDs.",
+      "ElapsedMilliseconds": 0
+    },
+    {
+      "Id": "P4-10",
+      "Requirement": "Count a guaranteed removal answer in campaign safety",
+      "Passed": false,
+      "Evidence": "Exactly 40 owned cards in both cases, no fusions. Safety without/with Raigeki: 0/0.",
+      "ElapsedMilliseconds": 82
+    },
+    {
+      "Id": "P4-C01",
+      "Requirement": "Read-only parsing leaves the source unchanged",
+      "Passed": true,
+      "Evidence": "Input bytes compared by SHA-256 before and after parsing.",
+      "ElapsedMilliseconds": 2
+    },
+    {
+      "Id": "P4-C02",
+      "Requirement": "Exact duplicate-hand weighting matches independent enumeration",
+      "Passed": true,
+      "Evidence": "Independent 49/56; engine 0.875 over 56 hands.",
+      "ElapsedMilliseconds": 3
+    },
+    {
+      "Id": "P4-C03",
+      "Requirement": "Cancellation interrupts exact analysis",
+      "Passed": true,
+      "Evidence": "OperationCanceledException observed.",
+      "ElapsedMilliseconds": 2
+    }
+  ]
+}
