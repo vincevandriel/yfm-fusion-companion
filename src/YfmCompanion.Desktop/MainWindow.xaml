@@ -322,6 +322,7 @@
                                     <RowDefinition Height="Auto" />
                                     <RowDefinition Height="Auto" />
                                     <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
                                 </Grid.RowDefinitions>
                                 <WrapPanel Grid.ColumnSpan="5">
                                     <Button x:Name="RefreshSaveButton" Content="REFRESH SAVED SNAPSHOT" Click="RefreshSaveSnapshot_Click" />
@@ -406,6 +407,7 @@
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto" />
                                     <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
                                 </Grid.RowDefinitions>
                                 <StackPanel Margin="0,0,12,8">
                                     <TextBlock Text="PROFILE" Foreground="{StaticResource MutedBrush}" FontSize="11" />
@@ -423,8 +425,21 @@
                                     <TextBlock Text="OPPONENT TYPES • comma separated" Foreground="{StaticResource MutedBrush}" FontSize="11" />
                                     <TextBox x:Name="OpponentTypesTextBox" ToolTip="Raises relevant type-removal cards; example: Dragon, Warrior" />
                                 </StackPanel>
-                                <TextBlock x:Name="OptimizerProfileDescription" Grid.Row="1" Grid.ColumnSpan="3" TextWrapping="Wrap" Foreground="{StaticResource MutedBrush}" VerticalAlignment="Center" />
-                                <CheckBox x:Name="OptimizerIncludeGlitchesCheckBox" Grid.Row="1" Grid.Column="3" Content="Include documented glitch fusions" IsChecked="True" HorizontalAlignment="Right" />
+                                <StackPanel Grid.Row="1" Margin="0,0,12,8">
+                                    <TextBlock Text="CAMPAIGN GOAL" Foreground="{StaticResource MutedBrush}" FontSize="11" />
+                                    <ComboBox x:Name="CampaignScopeCombo" DisplayMemberPath="Label" SelectedValuePath="Scope" SelectionChanged="CampaignScope_SelectionChanged" />
+                                </StackPanel>
+                                <StackPanel Grid.Row="1" Grid.Column="1" Margin="0,0,12,8">
+                                    <TextBlock Text="TARGET DUELIST" Foreground="{StaticResource MutedBrush}" FontSize="11" />
+                                    <ComboBox x:Name="CampaignOpponentCombo" DisplayMemberPath="Label" SelectedValuePath="DuelistId" Visibility="Collapsed" />
+                                    <TextBlock x:Name="CampaignOpponentHint" Text="Choose “One specific opponent” to select a duelist." Foreground="{StaticResource MutedBrush}" VerticalAlignment="Center" Margin="0,6,0,0" />
+                                </StackPanel>
+                                <StackPanel Grid.Row="1" Grid.Column="2" Grid.ColumnSpan="2" Margin="0,0,0,8">
+                                    <CheckBox x:Name="UseSavedStarChipsCheckBox" Content="USE SAVED STAR CHIPS" Checked="CampaignStarChipSetting_Changed" Unchecked="CampaignStarChipSetting_Changed" IsEnabled="False" />
+                                    <TextBlock x:Name="CampaignInputHint" Text="Load a saved snapshot to use its Star Chip budget; the optimizer otherwise uses only the owned quantities below." TextWrapping="Wrap" Foreground="{StaticResource MutedBrush}" FontSize="11" Margin="0,3,0,0" />
+                                </StackPanel>
+                                <TextBlock x:Name="OptimizerProfileDescription" Grid.Row="2" Grid.ColumnSpan="3" TextWrapping="Wrap" Foreground="{StaticResource MutedBrush}" VerticalAlignment="Center" />
+                                <CheckBox x:Name="OptimizerIncludeGlitchesCheckBox" Grid.Row="2" Grid.Column="3" Content="Include documented glitch fusions" IsChecked="True" HorizontalAlignment="Right" />
                             </Grid>
                         </GroupBox>
                         <Grid Grid.Row="1" Margin="0,14,0,12">
@@ -468,6 +483,7 @@
                             <Grid Grid.Column="1">
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
                                     <RowDefinition Height="*" />
                                 </Grid.RowDefinitions>
                                 <Grid Margin="0,0,0,10">
@@ -482,8 +498,15 @@
                                     <Border Grid.Column="2" Background="{StaticResource PanelBrush}" Padding="9" Margin="0,0,7,0"><StackPanel><TextBlock Text="EXPECTED BEST" Foreground="{StaticResource MutedBrush}" FontSize="10" /><TextBlock x:Name="OptimizerExpectedMetric" Text="—" FontSize="17" FontWeight="Bold" /></StackPanel></Border>
                                     <Border Grid.Column="3" Background="{StaticResource PanelBrush}" Padding="9"><StackPanel><TextBlock Text="DEAD HAND" Foreground="{StaticResource MutedBrush}" FontSize="10" /><TextBlock x:Name="OptimizerDeadMetric" Text="—" FontSize="17" FontWeight="Bold" /></StackPanel></Border>
                                 </Grid>
-                                <TabControl Grid.Row="1">
-                                    <TabItem Header="OPTIMIZED DECK">
+                                <Border x:Name="CampaignPlanPanel" Grid.Row="1" Visibility="Collapsed" Background="{StaticResource PanelBrush}" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" Padding="10" Margin="0,0,0,10">
+                                    <StackPanel>
+                                        <TextBlock x:Name="CampaignScopeSummary" FontWeight="SemiBold" TextWrapping="Wrap" />
+                                        <TextBlock x:Name="CampaignSafetySummary" Foreground="{StaticResource MutedBrush}" TextWrapping="Wrap" Margin="0,3,0,0" />
+                                        <TextBlock x:Name="CampaignPurchaseSummary" Foreground="{StaticResource MutedBrush}" TextWrapping="Wrap" Margin="0,3,0,0" />
+                                    </StackPanel>
+                                </Border>
+                                <TabControl Grid.Row="2">
+                                    <TabItem Header="DECK">
                                         <DataGrid x:Name="OptimizedDeckGrid" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True" AlternationCount="2" Margin="0,8,0,0">
                                             <DataGrid.Columns>
                                                 <DataGridTextColumn Header="COPIES" Binding="{Binding Copies}" Width="60" />
@@ -494,7 +517,7 @@
                                             </DataGrid.Columns>
                                         </DataGrid>
                                     </TabItem>
-                                    <TabItem Header="KEY OUTCOMES">
+                                    <TabItem Header="OUTCOMES">
                                         <DataGrid x:Name="OptimizationTargetsGrid" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True" AlternationCount="2" Margin="0,8,0,0">
                                             <DataGrid.Columns>
                                                 <DataGridTextColumn Header="RESULT" Binding="{Binding Result.Name}" Width="1.4*" />
@@ -504,7 +527,7 @@
                                             </DataGrid.Columns>
                                         </DataGrid>
                                     </TabItem>
-                                    <TabItem Header="OWNERSHIP LIMITS">
+                                    <TabItem Header="LIMITS">
                                         <DataGrid x:Name="LimitedCardsGrid" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True" AlternationCount="2" Margin="0,8,0,0">
                                             <DataGrid.Columns>
                                                 <DataGridTextColumn Header="CARD" Binding="{Binding Card.Name}" Width="1.5*" />
@@ -514,13 +537,34 @@
                                             </DataGrid.Columns>
                                         </DataGrid>
                                     </TabItem>
-                                    <TabItem Header="LOW-VALUE OWNED CARDS">
+                                    <TabItem Header="LOW VALUE">
                                         <DataGrid x:Name="ExcludedCardsGrid" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True" AlternationCount="2" Margin="0,8,0,0">
                                             <DataGrid.Columns>
                                                 <DataGridTextColumn Header="CARD" Binding="{Binding Card.Name}" Width="1.2*" />
                                                 <DataGridTextColumn Header="TIER" Binding="{Binding Tier}" Width="90" />
                                                 <DataGridTextColumn Header="ROLE" Binding="{Binding Role}" Width="1.2*" />
                                                 <DataGridTextColumn Header="WHY LEFT OUT" Binding="{Binding Rationale}" Width="3*" />
+                                            </DataGrid.Columns>
+                                        </DataGrid>
+                                    </TabItem>
+                                    <TabItem Header="STAR CHIPS">
+                                        <DataGrid x:Name="PurchasePlanGrid" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True" AlternationCount="2" Margin="0,8,0,0">
+                                            <DataGrid.Columns>
+                                                <DataGridTextColumn Header="CARD" Binding="{Binding Card.Name}" Width="1.4*" />
+                                                <DataGridTextColumn Header="COPIES" Binding="{Binding Copies}" Width="65" />
+                                                <DataGridTextColumn Header="COST" Binding="{Binding TotalCost}" Width="75" />
+                                                <DataGridTextColumn Header="WHY THIS PURCHASE" Binding="{Binding Rationale}" Width="3*" />
+                                            </DataGrid.Columns>
+                                        </DataGrid>
+                                    </TabItem>
+                                    <TabItem Header="THREATS">
+                                        <DataGrid x:Name="CampaignThreatsGrid" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True" AlternationCount="2" Margin="0,8,0,0">
+                                            <DataGrid.Columns>
+                                                <DataGridTextColumn Header="OPPONENT" Binding="{Binding Opponent}" Width="1.2*" />
+                                                <DataGridTextColumn Header="THREAT" Binding="{Binding Threat}" Width="1.4*" />
+                                                <DataGridTextColumn Header="ATK" Binding="{Binding Attack}" Width="65" />
+                                                <DataGridTextColumn Header="STARS" Binding="{Binding GuardianStars}" Width="95" />
+                                                <DataGridTextColumn Header="SOURCE" Binding="{Binding Source}" Width="1.1*" />
                                             </DataGrid.Columns>
                                         </DataGrid>
                                     </TabItem>

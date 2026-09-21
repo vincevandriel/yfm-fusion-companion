@@ -6,7 +6,9 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
+using YfmCompanion.Data;
 using YfmCompanion.Desktop;
+using YfmCompanion.Engine;
 
 namespace YfmCompanion.UiRender;
 
@@ -41,7 +43,8 @@ internal static class Program
             RenderWorkspaceTab(window, "LiveDuelTab", "live-duel.png", outputDirectory),
             RenderOpenInspector(window, outputDirectory),
             RenderWorkspaceTab(window, "SaveSyncTab", "save-snapshot.png", outputDirectory),
-            RenderWorkspaceTab(window, "OwnedOptimizerTab", "owned-card-optimizer.png", outputDirectory)
+            RenderWorkspaceTab(window, "OwnedOptimizerTab", "owned-card-optimizer.png", outputDirectory),
+            RenderCampaignPlan(window, outputDirectory)
         };
 
         compactMethod.Invoke(window, [true, false]);
@@ -104,6 +107,7 @@ internal static class Program
         ValidateTabPalette(window);
         ValidateLiveHealthTransitions(window);
         ValidateInspectorInteraction(window);
+        ValidateCampaignOptimizerControls(window);
     }
 
     private static void RequireButtonContent(MainWindow window, string name, string expected)
@@ -198,6 +202,48 @@ internal static class Program
         RequireText(window, "LiveUpdateHealthText", "UP TO DATE");
         method.Invoke(window, [false]);
         RequireText(window, "LiveUpdateHealthText", "ERROR");
+    }
+
+    private static void ValidateCampaignOptimizerControls(MainWindow window)
+    {
+        var scope = window.FindName("CampaignScopeCombo") as ComboBox
+            ?? throw new InvalidOperationException("Campaign-goal selector was not found.");
+        var opponent = window.FindName("CampaignOpponentCombo") as ComboBox
+            ?? throw new InvalidOperationException("Campaign-opponent selector was not found.");
+        var opponentHint = window.FindName("CampaignOpponentHint") as TextBlock
+            ?? throw new InvalidOperationException("Campaign-opponent hint was not found.");
+        var starChips = window.FindName("UseSavedStarChipsCheckBox") as CheckBox
+            ?? throw new InvalidOperationException("Saved-Star-Chip setting was not found.");
+        var planPanel = window.FindName("CampaignPlanPanel") as Border
+            ?? throw new InvalidOperationException("Campaign-result panel was not found.");
+        if (scope.Items.Count != 4 || opponent.Items.Count != 39 || scope.SelectedIndex != 0)
+        {
+            throw new InvalidOperationException("Campaign optimizer controls did not initialize their expected scope or opponent choices.");
+        }
+
+        if (opponent.Visibility != Visibility.Collapsed || opponentHint.Visibility != Visibility.Visible)
+        {
+            throw new InvalidOperationException("The target-duelist selector should remain hidden until opponent-specific mode is selected.");
+        }
+
+        scope.SelectedIndex = 1;
+        window.UpdateLayout();
+        if (opponent.Visibility != Visibility.Visible || !opponent.IsEnabled || opponentHint.Visibility != Visibility.Collapsed)
+        {
+            throw new InvalidOperationException("Opponent-specific campaign mode did not expose an enabled duelist selector.");
+        }
+
+        scope.SelectedIndex = 0;
+        window.UpdateLayout();
+        if (opponent.Visibility != Visibility.Collapsed || planPanel.Visibility != Visibility.Collapsed)
+        {
+            throw new InvalidOperationException("Campaign controls did not restore the compact general-purpose configuration.");
+        }
+
+        if (starChips.IsChecked == true && !starChips.IsEnabled)
+        {
+            throw new InvalidOperationException("Saved Star Chips cannot be selected when no saved budget is available.");
+        }
     }
 
     private static void ValidateCompactWorkspace(MainWindow window)
@@ -296,6 +342,47 @@ internal static class Program
         var closeMethod = typeof(MainWindow).GetMethod("CloseInspector", BindingFlags.Instance | BindingFlags.NonPublic)
             ?? throw new InvalidOperationException("Inspector close method was not found.");
         closeMethod.Invoke(window, [true]);
+        return result;
+    }
+
+    private static RenderAudit RenderCampaignPlan(MainWindow window, string outputDirectory)
+    {
+        var catalog = typeof(MainWindow).GetField("_catalog", BindingFlags.Instance | BindingFlags.NonPublic)?.GetValue(window) as FusionCatalog
+            ?? throw new InvalidOperationException("Campaign-plan render could not access the loaded card catalog.");
+        var research = typeof(MainWindow).GetField("_campaignResearchData", BindingFlags.Instance | BindingFlags.NonPublic)?.GetValue(window) as CampaignResearchData
+            ?? throw new InvalidOperationException("Campaign-plan render could not access the validated research data.");
+        var plan = new CampaignDeckOptimizer(catalog, research).Optimize(
+            Enumerable.Range(1, 14).Select(cardId => new OwnedCardQuantity(cardId, 3)),
+            starChips: 0,
+            useStarChips: false,
+            CampaignOpponentScope.GeneralSafety,
+            options: new DeckOptimizationOptions(
+                SampleHands: 2,
+                ExactFinalists: 1,
+                IncludeGlitches: false,
+                Profile: DeckStrategyProfile.ControlAndSafety));
+        var showReport = typeof(MainWindow).GetMethod("ShowOptimizationReport", BindingFlags.Instance | BindingFlags.NonPublic)
+            ?? throw new InvalidOperationException("Campaign-plan report presenter was not found.");
+        var showPlan = typeof(MainWindow).GetMethod("ShowCampaignPlan", BindingFlags.Instance | BindingFlags.NonPublic)
+            ?? throw new InvalidOperationException("Campaign-plan presenter was not found.");
+        showReport.Invoke(window, [plan.DeckPlan.ResultingDeck]);
+        showPlan.Invoke(window, [plan]);
+
+        var panel = window.FindName("CampaignPlanPanel") as Border
+            ?? throw new InvalidOperationException("Campaign-result panel was not found.");
+        var threats = window.FindName("CampaignThreatsGrid") as DataGrid
+            ?? throw new InvalidOperationException("Campaign-threat grid was not found.");
+        var purchases = window.FindName("PurchasePlanGrid") as DataGrid
+            ?? throw new InvalidOperationException("Purchase-plan grid was not found.");
+        if (panel.Visibility != Visibility.Visible || threats.Items.Count == 0 || purchases.ItemsSource is null)
+        {
+            throw new InvalidOperationException("Campaign-plan presentation did not expose its required summary, threat, and purchase surfaces.");
+        }
+
+        var result = Render(window, 1420, 900, Path.Combine(outputDirectory, "campaign-plan.png"));
+        var reset = typeof(MainWindow).GetMethod("ResetOptimizerResults", BindingFlags.Instance | BindingFlags.NonPublic)
+            ?? throw new InvalidOperationException("Optimizer reset method was not found.");
+        reset.Invoke(window, null);
         return result;
     }
 

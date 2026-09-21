@@ -32,6 +32,8 @@ public partial class MainWindow : Window
     private DeckAnalyzer? _deckAnalyzer;
     private OwnedDeckOptimizer? _ownedDeckOptimizer;
     private ForbiddenMemoriesStrategyEvaluator? _strategyEvaluator;
+    private CampaignResearchData? _campaignResearchData;
+    private CampaignDeckOptimizer? _campaignDeckOptimizer;
     private CancellationTokenSource? _deckAnalysisCancellation;
     private CancellationTokenSource? _optimizationCancellation;
     private SaveSnapshot? _saveSnapshot;
@@ -82,6 +84,7 @@ public partial class MainWindow : Window
             AddPickers(SpellPickerPanel, _spellPickers, "Spell / Trap", search);
             AddDeckPickers(search);
             InitializeOptimizer(_catalog);
+            InitializeCampaignOptimizer(_catalog);
             DatabaseStatus.Text = string.Create(
                 CultureInfo.InvariantCulture,
                 $"Offline database ready • {_catalog.Cards.Count:N0} cards • {_catalog.FusionPairs.Count:N0} resolved fusion pairs");
@@ -482,6 +485,100 @@ public partial class MainWindow : Window
         OwnedCardsGrid.ItemsSource = _visibleOwnedCardRows;
     }
 
+    private void InitializeCampaignOptimizer(FusionCatalog catalog)
+    {
+        try
+        {
+            _campaignResearchData = CampaignResearchData.LoadBundled(AppContext.BaseDirectory);
+            _campaignDeckOptimizer = new CampaignDeckOptimizer(catalog, _campaignResearchData);
+            CampaignScopeCombo.ItemsSource = new[]
+            {
+                new CampaignScopeChoice(OptimizerGoal.GeneralCampaign, "General campaign • recommended", "Builds a general-purpose deck for the 33 normal campaign opponents. Near-equal choices favor final-gauntlet viability."),
+                new CampaignScopeChoice(OptimizerGoal.SpecificOpponent, "One specific opponent", "Builds around the concrete card pool and reachable threats of the selected duelist."),
+                new CampaignScopeChoice(OptimizerGoal.FinalGauntlet, "Final boss gauntlet", "Builds a special configuration for the six end-game gauntlet opponents."),
+                new CampaignScopeChoice(OptimizerGoal.ManualCustom, "Manual custom profile", "Uses the profile, type, field, and opponent-type inputs without campaign research targeting.")
+            };
+            RefreshCampaignOpponentChoices();
+            CampaignScopeCombo.SelectedIndex = 0;
+            UpdateCampaignControls();
+            _diagnostics.Add("Campaign optimizer", "Research loaded", "Validated bundled opponent and policy data is available to the desktop optimizer.");
+        }
+        catch (Exception exception)
+        {
+            _campaignResearchData = null;
+            _campaignDeckOptimizer = null;
+            CampaignScopeCombo.IsEnabled = false;
+            CampaignOpponentCombo.IsEnabled = false;
+            UseSavedStarChipsCheckBox.IsEnabled = false;
+            CampaignInputHint.Text = "Campaign research data could not be loaded. Manual custom optimization remains available.";
+            _diagnostics.Add("Campaign optimizer", "Research unavailable", exception.Message);
+        }
+    }
+
+    private void RefreshCampaignOpponentChoices()
+    {
+        if (_campaignResearchData is null)
+        {
+            return;
+        }
+
+        var selectedId = CampaignOpponentCombo.SelectedValue is int duelistId ? duelistId : (int?)null;
+        CampaignOpponentCombo.ItemsSource = _campaignResearchData.Opponents.Values
+            .OrderBy(opponent => opponent.DuelistId)
+            .Select(opponent => new OpponentChoice(
+                opponent.DuelistId,
+                _saveSnapshot is null
+                    ? $"{opponent.DuelistId:00} • {opponent.Name}"
+                    : _saveSnapshot.UnlockedDuelistIds.Contains(opponent.DuelistId)
+                        ? $"{opponent.DuelistId:00} • {opponent.Name} • unlocked"
+                        : $"{opponent.DuelistId:00} • {opponent.Name} • not unlocked in this save"))
+            .ToArray();
+        CampaignOpponentCombo.SelectedValue = selectedId ?? 1;
+    }
+
+    private void CampaignScope_SelectionChanged(object sender, SelectionChangedEventArgs e) =>
+        UpdateCampaignControls();
+
+    private void CampaignStarChipSetting_Changed(object sender, RoutedEventArgs e) =>
+        UpdateCampaignControls();
+
+    private void UpdateCampaignControls()
+    {
+        if (CampaignScopeCombo is null || CampaignInputHint is null)
+        {
+            return;
+        }
+
+        var goal = CampaignScopeCombo.SelectedValue is OptimizerGoal selectedGoal
+            ? selectedGoal
+            : OptimizerGoal.GeneralCampaign;
+        var isCampaignGoal = goal != OptimizerGoal.ManualCustom && _campaignDeckOptimizer is not null;
+        var hasSavedBudget = _saveSnapshot is not null;
+        var choosingSpecificOpponent = goal == OptimizerGoal.SpecificOpponent && isCampaignGoal;
+        CampaignOpponentCombo.Visibility = choosingSpecificOpponent ? Visibility.Visible : Visibility.Collapsed;
+        CampaignOpponentCombo.IsEnabled = choosingSpecificOpponent;
+        CampaignOpponentHint.Visibility = choosingSpecificOpponent ? Visibility.Collapsed : Visibility.Visible;
+        UseSavedStarChipsCheckBox.IsEnabled = isCampaignGoal && hasSavedBudget;
+        if (!UseSavedStarChipsCheckBox.IsEnabled)
+        {
+            UseSavedStarChipsCheckBox.IsChecked = false;
+        }
+
+        if (isCampaignGoal)
+        {
+            OptimizerProfileCombo.SelectedValue = DeckStrategyProfile.ControlAndSafety;
+        }
+
+        CampaignInputHint.Text = goal switch
+        {
+            OptimizerGoal.SpecificOpponent => "Choose the duelist you want to beat. Threat ordering is useful matchup guidance, not a promised win rate.",
+            OptimizerGoal.FinalGauntlet => "This is a separate late-game deck configuration, not the general campaign recommendation.",
+            OptimizerGoal.ManualCustom => "Manual custom mode uses the existing profile, type, field, and opponent-type inputs. Saved Star Chips are used only by a campaign plan.",
+            _ when hasSavedBudget => string.Create(CultureInfo.InvariantCulture, $"General campaign plan ready. Saved snapshot budget: {_saveSnapshot!.StarChips:N0} Star Chips. Checking the box creates a virtual purchase plan only."),
+            _ => "Load a saved snapshot to use its Star Chip budget; the optimizer otherwise uses only the owned quantities below."
+        };
+    }
+
     private void AddDeckPickers(CardSearchService search)
     {
         for (var slot = 1; slot <= 40; slot++)
@@ -877,6 +974,8 @@ public partial class MainWindow : Window
 
         _saveSnapshot = snapshot;
         _lastSavePath = snapshot.FilePath;
+        RefreshCampaignOpponentChoices();
+        UpdateCampaignControls();
         SetStateBadge("SAVED SNAPSHOT", "#365A86", "Validated read-only saved snapshot selected.");
         _diagnostics.Add("Saved snapshot", "Loaded", "Remembered validated local save path.");
         SaveSourceText.Text = $"Saved snapshot (not live) • {snapshot.SourceFormat} • bank {snapshot.MemoryCardBank}, block {snapshot.BlockNumber}";
@@ -962,20 +1061,34 @@ public partial class MainWindow : Window
             return;
         }
 
-        SetStateBadge("MANUAL", "#394B59", "Manual owned-card optimization selected.");
         OwnedCardsGrid.CommitEdit(DataGridEditingUnit.Cell, true);
         OwnedCardsGrid.CommitEdit(DataGridEditingUnit.Row, true);
         var owned = _ownedCardRows
             .Where(row => row.Quantity > 0)
             .Select(row => new OwnedCardQuantity(row.Card.Id, row.Quantity))
             .ToArray();
-        if (owned.Sum(item => Math.Min(item.Quantity, OwnedDeckOptimizer.LegalCopyLimitForCard(item.CardId))) < 40)
+        var goal = CampaignScopeCombo.SelectedValue is OptimizerGoal selectedGoal
+            ? selectedGoal
+            : OptimizerGoal.ManualCustom;
+        var isCampaignGoal = goal != OptimizerGoal.ManualCustom;
+        if (isCampaignGoal && _campaignDeckOptimizer is null)
+        {
+            OptimizationStatus.Text = "Campaign research data is unavailable, so this goal cannot be calculated. Choose Manual custom profile or restart with the bundled research data present.";
+            return;
+        }
+
+        var useSavedStarChips = isCampaignGoal && UseSavedStarChipsCheckBox.IsChecked == true;
+        var starChips = useSavedStarChips ? _saveSnapshot?.StarChips ?? 0U : 0U;
+        var legalOwnedCapacity = owned.Sum(item => Math.Min(item.Quantity, OwnedDeckOptimizer.LegalCopyLimitForCard(item.CardId)));
+        if (legalOwnedCapacity < 40 && !useSavedStarChips)
         {
             OptimizationStatus.Text = "At least 40 usable owned copies are required after the three-copy limit and one-copy Exodia-piece limit.";
             return;
         }
 
-        var profile = OptimizerProfileCombo.SelectedValue is DeckStrategyProfile selectedProfile
+        var profile = isCampaignGoal
+            ? DeckStrategyProfile.ControlAndSafety
+            : OptimizerProfileCombo.SelectedValue is DeckStrategyProfile selectedProfile
             ? selectedProfile
             : DeckStrategyProfile.Balanced;
         var preferredFieldId = PreferredFieldCombo.SelectedValue is int fieldId ? fieldId : (int?)null;
@@ -990,7 +1103,21 @@ public partial class MainWindow : Window
             .Select(picker => picker.SelectedCard!.Id)
             .ToArray();
         var comparisonDeck = currentDeck.Length == 40 ? currentDeck : null;
+        var specificOpponentId = CampaignOpponentCombo.SelectedValue is int selectedOpponentId
+            ? selectedOpponentId
+            : (int?)null;
+        if (goal == OptimizerGoal.SpecificOpponent && specificOpponentId is null)
+        {
+            OptimizationStatus.Text = "Choose a target duelist before building an opponent-specific deck.";
+            return;
+        }
+
+        SetStateBadge(
+            isCampaignGoal ? "CAMPAIGN PLAN" : "MANUAL",
+            isCampaignGoal ? "#365A86" : "#394B59",
+            isCampaignGoal ? "Campaign-owned-card optimization selected." : "Manual owned-card optimization selected.");
         var optimizer = _ownedDeckOptimizer;
+        var campaignOptimizer = _campaignDeckOptimizer;
         _optimizationCancellation = new CancellationTokenSource();
         var cancellationToken = _optimizationCancellation.Token;
         OptimizeDeckButton.IsEnabled = false;
@@ -1005,10 +1132,30 @@ public partial class MainWindow : Window
 
         try
         {
-            var report = await Task.Run(
-                () => optimizer.Optimize(owned, options, comparisonDeck, progress, cancellationToken),
-                cancellationToken);
-            ShowOptimizationReport(report);
+            if (isCampaignGoal)
+            {
+                var campaignPlan = await Task.Run(
+                    () => campaignOptimizer!.Optimize(
+                        owned,
+                        starChips,
+                        useSavedStarChips,
+                        ToCampaignOpponentScope(goal),
+                        specificOpponentId,
+                        options,
+                        comparisonDeck,
+                        progress,
+                        cancellationToken),
+                    cancellationToken);
+                ShowOptimizationReport(campaignPlan.DeckPlan.ResultingDeck);
+                ShowCampaignPlan(campaignPlan);
+            }
+            else
+            {
+                var report = await Task.Run(
+                    () => optimizer!.Optimize(owned, options, comparisonDeck, progress, cancellationToken),
+                    cancellationToken);
+                ShowOptimizationReport(report);
+            }
         }
         catch (OperationCanceledException)
         {
@@ -1110,6 +1257,42 @@ public partial class MainWindow : Window
             $"Complete • exact analysis of {report.ExactAnalysis.TotalHands:N0} hands • {report.TotalCards} cards • seed {report.RandomSeed}{comparison}");
     }
 
+    private void ShowCampaignPlan(CampaignDeckPlan campaignPlan)
+    {
+        var report = campaignPlan.DeckPlan.ResultingDeck;
+        CampaignPlanPanel.Visibility = Visibility.Visible;
+        CampaignScopeSummary.Text = $"{campaignPlan.Context.Safety.Label} • Best found; not a proof of global optimality.";
+        var safety = report.SafetyAssessment is null
+            ? "No campaign safety assessment was available."
+            : string.Create(
+                CultureInfo.InvariantCulture,
+                $"Counter coverage score: {report.SafetyAssessment.HeuristicScore:N0} across {report.SafetyAssessment.ThreatCount:N0} concrete threats. This is a heuristic, not a duel-win probability.");
+        var finalGauntlet = report.SecondarySafetyAssessment is null
+            ? string.Empty
+            : string.Create(
+                CultureInfo.InvariantCulture,
+                $" Final-gauntlet tie-break score: {report.SecondarySafetyAssessment.HeuristicScore:N0}.");
+        CampaignSafetySummary.Text = safety + finalGauntlet;
+        CampaignPurchaseSummary.Text = campaignPlan.DeckPlan.StarChipsEnabled
+            ? string.Create(
+                CultureInfo.InvariantCulture,
+                $"Virtual purchase plan: spend {campaignPlan.DeckPlan.SpentStarChips:N0} of {campaignPlan.DeckPlan.StartingStarChips:N0} saved Star Chips; {campaignPlan.DeckPlan.RemainingStarChips:N0} remain. Nothing was written to the save.")
+            : "No Star Chips used. This deck was built only from the owned quantities entered or loaded above.";
+        PurchasePlanGrid.ItemsSource = campaignPlan.DeckPlan.Purchases;
+        CampaignThreatsGrid.ItemsSource = campaignPlan.Context.Safety.Threats
+            .OrderByDescending(threat => threat.Attack)
+            .ThenByDescending(threat => threat.Importance)
+            .ThenBy(threat => threat.OpponentName, StringComparer.OrdinalIgnoreCase)
+            .Select(threat => new CampaignThreatRow(
+                threat.OpponentName,
+                threat.ThreatCardName,
+                threat.Attack,
+                FormatGuardianStars(threat.PossibleGuardianStars),
+                threat.IsFusionThreat ? "Reachable fusion" : "Strongest base monster"))
+            .ToArray();
+        OptimizationStatus.Text += " • campaign plan complete; threat ordering and counter scores are guidance, not a guaranteed win rate.";
+    }
+
     private void ResetOptimizerResults()
     {
         Optimizer2800Metric.Text = "—";
@@ -1120,7 +1303,27 @@ public partial class MainWindow : Window
         OptimizationTargetsGrid.ItemsSource = null;
         LimitedCardsGrid.ItemsSource = null;
         ExcludedCardsGrid.ItemsSource = null;
+        PurchasePlanGrid.ItemsSource = null;
+        CampaignThreatsGrid.ItemsSource = null;
+        CampaignPlanPanel.Visibility = Visibility.Collapsed;
+        CampaignScopeSummary.Text = string.Empty;
+        CampaignSafetySummary.Text = string.Empty;
+        CampaignPurchaseSummary.Text = string.Empty;
     }
+
+    private static CampaignOpponentScope ToCampaignOpponentScope(OptimizerGoal goal) => goal switch
+    {
+        OptimizerGoal.GeneralCampaign => CampaignOpponentScope.GeneralSafety,
+        OptimizerGoal.SpecificOpponent => CampaignOpponentScope.SpecificOpponent,
+        OptimizerGoal.FinalGauntlet => CampaignOpponentScope.FinalGauntlet,
+        _ => throw new ArgumentOutOfRangeException(nameof(goal), "Manual custom mode has no campaign opponent scope.")
+    };
+
+    private static string FormatGuardianStars(IReadOnlyList<string> stars) =>
+        stars.Count == 0
+            ? "?"
+            : string.Join(" / ", stars.Select(star =>
+                GuardianStarRules.TryGetSymbol(star, out var symbol) ? symbol : "?"));
 
     private static string[] ParseTypes(string text) =>
         [.. text.Split([',', ';', '/'], StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
@@ -1439,11 +1642,30 @@ public partial class MainWindow : Window
 
     private sealed record FieldChoice(int? CardId, string Label);
 
+    private enum OptimizerGoal
+    {
+        GeneralCampaign,
+        SpecificOpponent,
+        FinalGauntlet,
+        ManualCustom
+    }
+
+    private sealed record CampaignScopeChoice(OptimizerGoal Scope, string Label, string Description);
+
+    private sealed record OpponentChoice(int DuelistId, string Label);
+
     private sealed record OptimizationTargetRow(
         Card Result,
         int EffectiveAttack,
         string FormattedProbability,
         string Route);
+
+    private sealed record CampaignThreatRow(
+        string Opponent,
+        string Threat,
+        int Attack,
+        string GuardianStars,
+        string Source);
 
     private sealed record SaveDeckRow(int Slot, Card Card);
 
