@@ -39,6 +39,21 @@ public sealed class OpponentSafetyScoringTests
         Assert.Equal(0, OpponentSafetyScoring.ConservativeModifier(knownCandidate, ["Moon", "Not a star"]));
     }
 
+    [Fact]
+    public void SelectedFieldIsAppliedToBothCandidateAndThreatTypes()
+    {
+        var candidate = new Card(1, "Warrior", null, null, null, 4, "Warrior", null, 2_000, 1_000, null, null, true, true, true);
+        var target = new DeckSafetyTarget(1, "Opponent", 100, "Dragon", 2_500, [], 1, false, "Dragon");
+
+        var withoutField = OpponentSafetyScoring.CounterValueForTarget(candidate, target);
+        var withSogen = OpponentSafetyScoring.CounterValueForTarget(candidate, target, 333);
+        var withMountain = OpponentSafetyScoring.CounterValueForTarget(candidate, target, 332);
+
+        Assert.Equal(0, withoutField);
+        Assert.True(withSogen > withoutField);
+        Assert.Equal(0, withMountain);
+    }
+
     private static OpponentSafetyContext Context(IReadOnlyList<DeckSafetyTarget> targets) =>
         new("Test", [1], ["Dragon"], targets, "Test methodology");
 

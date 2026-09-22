@@ -6,7 +6,7 @@ public static class OpponentSafetyScoring
 {
     public static double CounterValue(Card candidate, OpponentSafetyContext? context)
     {
-        if (context is null || context.Threats.Count == 0 || candidate.Attack <= 0)
+        if (context is null || context.Threats.Count == 0)
         {
             return 0;
         }
@@ -21,18 +21,48 @@ public static class OpponentSafetyScoring
         foreach (var target in context.Threats)
         {
             var importance = Math.Max(0, target.Importance);
-            var conservativeModifier = ConservativeModifier(candidate, target.PossibleGuardianStars);
-            var effectiveAttack = candidate.Attack + conservativeModifier;
-            var margin = effectiveAttack - target.Attack;
-            var value = margin >= 0
-                ? 650 + Math.Min(1_350, margin * 0.45)
-                : margin >= -500
-                    ? Math.Max(0, 250 + (margin * 0.5))
-                    : 0;
+            var value = CounterValueForTarget(candidate, target, context.ActiveFieldCardId);
             weightedValue += value * importance;
         }
 
         return weightedValue / totalImportance;
+    }
+
+    public static double CounterValueForTarget(
+        Card candidate,
+        DeckSafetyTarget target,
+        int? activeFieldCardId = null)
+    {
+        if (candidate.Id == 337) // Raigeki: a direct answer to every active monster.
+        {
+            return 2_000;
+        }
+
+        if (candidate.Id is 686 or 661)
+        {
+            return 1_500;
+        }
+
+        if (candidate.Attack <= 0)
+        {
+            return 0;
+        }
+
+        var conservativeModifier = ConservativeModifier(candidate, target.PossibleGuardianStars);
+        var candidateFieldModifier = activeFieldCardId is int fieldCardId
+            ? ForbiddenMemoriesStrategyEvaluator.GetFieldModifier(fieldCardId, candidate.PrimaryType)
+            : 0;
+        var threatFieldModifier = activeFieldCardId is int activeField && !string.IsNullOrWhiteSpace(target.ThreatPrimaryType)
+            ? ForbiddenMemoriesStrategyEvaluator.GetFieldModifier(activeField, target.ThreatPrimaryType)
+            : 0;
+        var effectiveAttack = candidate.Attack + conservativeModifier + candidateFieldModifier;
+        var effectiveThreatAttack = target.Attack + threatFieldModifier;
+        var margin = effectiveAttack - effectiveThreatAttack;
+        return margin >= 0
+            ? 650 + Math.Min(1_350, margin * 0.45)
+            : margin >= -500
+                ? Math.Max(0, 250 + (margin * 0.5))
+                : 0;
     }
 
     public static int ConservativeModifier(Card candidate, IReadOnlyList<string> opponentGuardianStars)

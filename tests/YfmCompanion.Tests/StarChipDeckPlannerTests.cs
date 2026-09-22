@@ -82,6 +82,29 @@ public sealed class StarChipDeckPlannerTests
             Assert.True(deckCounts.GetValueOrDefault(purchase.Card.Id) >= purchase.Copies));
     }
 
+    [Fact]
+    public void InvalidAndAlreadyRedeemedPasswordsAreNeverRecommended()
+    {
+        var baseCatalog = CreateCatalog(cardCount: 16);
+        var cards = baseCatalog.Cards.Select(card => card.Id switch
+        {
+            14 => card with { Password = "abcdefgh" },
+            _ => card
+        }).ToArray();
+        var catalog = TestCatalogFactory.Create(cards, []);
+        var owned = Enumerable.Range(1, 13).Select(id => new OwnedCardQuantity(id, 3));
+        var options = FastOptions() with
+        {
+            AlreadyRedeemedCardNames = new HashSet<string>(["Card 15"], StringComparer.OrdinalIgnoreCase)
+        };
+
+        var plan = new StarChipDeckPlanner(catalog).Plan(owned, 100, useStarChips: true, options);
+
+        var purchase = Assert.Single(plan.Purchases);
+        Assert.Equal(16, purchase.Card.Id);
+        Assert.All(purchase.Card.Password!, character => Assert.True(char.IsAsciiDigit(character)));
+    }
+
     private static DeckOptimizationOptions FastOptions() =>
         new(SampleHands: 1, ExactFinalists: 1, IncludeGlitches: false);
 

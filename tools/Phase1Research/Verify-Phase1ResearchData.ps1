@@ -45,23 +45,43 @@ foreach ($opponent in $opponents.opponents) {
     if (@($opponent.deck_pool).Count -eq 0) {
         throw "Opponent $($opponent.duelist_id) has no Deck pool."
     }
+    $poolWeight = 0
     foreach ($entry in $opponent.deck_pool) {
         if ([int]$entry.card_id -lt 1 -or [int]$entry.card_id -gt 722 -or [int]$entry.weight -le 0) {
             throw "Opponent $($opponent.duelist_id) contains an invalid Deck pool entry."
         }
+        $poolWeight += [int]$entry.weight
+    }
+    if ($poolWeight -ne 2048) {
+        throw "Opponent $($opponent.duelist_id) Deck pool must total exactly 2048; found $poolWeight."
     }
 }
-if (@($policy.general_safety_duelist_ids).Count -ne 33 -or @($policy.final_gauntlet_duelist_ids).Count -ne 6) {
-    throw 'Optimizer scope does not partition general safety and final gauntlet as specified.'
-}
-if (-not (($policy.general_safety_duelist_ids -contains 39) -and -not ($policy.final_gauntlet_duelist_ids -contains 39))) {
-    throw 'Duel Master K must be included in the general-safety scope.'
+$expectedGeneral = @(1..32) + @(39)
+$expectedFinal = @(33..38)
+$actualGeneral = @($policy.general_safety_duelist_ids | ForEach-Object { [int]$_ } | Sort-Object -Unique)
+$actualFinal = @($policy.final_gauntlet_duelist_ids | ForEach-Object { [int]$_ } | Sort-Object -Unique)
+if (@(Compare-Object $actualGeneral $expectedGeneral).Count -ne 0 -or @(Compare-Object $actualFinal $expectedFinal).Count -ne 0) {
+    throw 'Optimizer scope must use the exact agreed general-safety and final-gauntlet duelist groups.'
 }
 if (@($guardianStars.cycles).Count -ne 2 -or [int]$guardianStars.battle_modifier.amount -ne 500) {
     throw 'Guardian-star reference is incomplete.'
 }
 if (@($guardianStars.symbols.PSObject.Properties).Count -ne 10) {
     throw 'Guardian-star symbol map is incomplete.'
+}
+$expectedCycles = @(
+    @('Sun', 'Moon', 'Venus', 'Mercury'),
+    @('Mars', 'Jupiter', 'Saturn', 'Uranus', 'Pluto', 'Neptune')
+)
+for ($index = 0; $index -lt $expectedCycles.Count; $index++) {
+    $actualCycle = @($guardianStars.cycles[$index].order | ForEach-Object { [string]$_ })
+    if (($actualCycle -join '|') -ne ($expectedCycles[$index] -join '|')) {
+        throw "Guardian-star cycle $index is not in the required directional order."
+    }
+}
+$allCycleStars = @($guardianStars.cycles | ForEach-Object { $_.order } | ForEach-Object { [string]$_ })
+if (@($allCycleStars | Sort-Object -Unique).Count -ne 10 -or @($allCycleStars).Count -ne 10) {
+    throw 'Guardian-star cycles must contain each of the ten known stars exactly once.'
 }
 if ([int]$summary.card_count -ne 722 -or [int]$summary.opponent_count -ne 39 -or [int]$summary.deck_pool_entry_count -le 0) {
     throw 'Generation summary counts are invalid.'

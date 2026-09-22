@@ -16,6 +16,7 @@ public static class Ps1MemoryCardReader
     public const int FlagsOffset = 0x418;
     public const int FreeDuelUnlocksOffset = 0x4F4;
     public const int StarChipsOffset = 0x5E0;
+    public const uint MaximumValidatedStarChips = 999_999;
     public const int DuelistCount = 39;
     public const string ForbiddenMemoriesSaveName = "BASLUS-01411-YUGIOH";
 
@@ -108,16 +109,25 @@ public static class Ps1MemoryCardReader
                 }
 
                 var deck = ReadDeck(firstCopy);
-                if (deck.Any(cardId => cardId is < 1 or > CardCount))
+                if (deck.Any(cardId => cardId is < 0 or > CardCount))
                 {
                     continue;
                 }
 
                 var chest = firstCopy.Slice(ChestOffset, CardCount).ToArray();
                 var library = ReadLibrary(firstCopy);
-                var starChips = BinaryPrimitives.ReadUInt32LittleEndian(firstCopy.Slice(StarChipsOffset, sizeof(uint)));
+                var encodedStarChips = BinaryPrimitives.ReadUInt32LittleEndian(firstCopy.Slice(StarChipsOffset, sizeof(uint)));
+                uint? starChips = encodedStarChips <= MaximumValidatedStarChips ? encodedStarChips : null;
                 var unlockedDuelists = ReadUnlockedDuelists(firstCopy);
                 var warnings = BuildLegalityWarnings(deck, chest);
+                if (!deck.All(cardId => cardId is >= 1 and <= CardCount))
+                {
+                    warnings.Add("The saved deck has empty slots. The chest and other snapshot data remain available, but this deck cannot be loaded into Deck Analyzer until it contains 40 cards.");
+                }
+                if (starChips is null)
+                {
+                    warnings.Add($"Star Chip value {encodedStarChips:N0} is outside the validated 0–{MaximumValidatedStarChips:N0} range and was withheld.");
+                }
                 var sourceFormat = bankCount == 1
                     ? "Raw PlayStation memory card (128 KiB)"
                     : "Raw dual-bank PlayStation memory card (256 KiB)";
@@ -262,7 +272,7 @@ public static class Ps1MemoryCardReader
         snapshot.DeckCardIds,
         snapshot.ChestQuantities,
         snapshot.LibraryCardIds,
-        snapshot.StarChips,
+            snapshot.StarChips,
         snapshot.UnlockedDuelistIds,
         [.. snapshot.Warnings, warning]);
 }

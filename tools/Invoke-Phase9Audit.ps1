@@ -369,10 +369,14 @@ try {
             "--configuration", "Release", "--no-build", "--",
             $canonicalDatabasePath, $integrationDirectory
         )
-        if ((Test-Path -LiteralPath $SavePath -PathType Leaf) -or (Test-Path -LiteralPath $RetroArchConfigPath -PathType Leaf)) {
-            $runnerArguments += $(if (Test-Path -LiteralPath $SavePath -PathType Leaf) { $SavePath } else { "" })
+        $hasSavePath = -not [string]::IsNullOrWhiteSpace($SavePath) -and
+            (Test-Path -LiteralPath $SavePath -PathType Leaf)
+        $hasRetroArchConfig = -not [string]::IsNullOrWhiteSpace($RetroArchConfigPath) -and
+            (Test-Path -LiteralPath $RetroArchConfigPath -PathType Leaf)
+        if ($hasSavePath -or $hasRetroArchConfig) {
+            $runnerArguments += $(if ($hasSavePath) { $SavePath } else { "" })
         }
-        if (Test-Path -LiteralPath $RetroArchConfigPath -PathType Leaf) {
+        if ($hasRetroArchConfig) {
             $runnerArguments += $RetroArchConfigPath
         }
         Invoke-NativeCommand -FilePath "dotnet" -Arguments $runnerArguments -LogName "08-integration.log"
@@ -401,7 +405,7 @@ try {
         $uiReportPath = Join-Path $uiDirectory "ui-render-audit.json"
         Assert-ExistingFile -Path $uiReportPath -Description "UI render audit report"
         $renderReport = @(Get-Content -LiteralPath $uiReportPath -Raw | ConvertFrom-Json)
-        $requiredRenders = @("normal.png", "deck-analyzer.png", "live-duel.png", "live-duel-inspector.png", "save-snapshot.png", "owned-card-optimizer.png", "compact.png")
+        $requiredRenders = @("normal.png", "deck-analyzer.png", "live-duel.png", "live-duel-inspector.png", "save-snapshot.png", "owned-card-optimizer.png", "campaign-plan.png", "compact.png")
         $renderedFiles = @($renderReport | ForEach-Object { $_.File })
         $missingRenders = @($requiredRenders | Where-Object { $_ -notin $renderedFiles })
         $invalidRenders = @($renderReport | Where-Object {
@@ -414,7 +418,7 @@ try {
             $invalidDetail = if ($invalidRenders.Count -eq 0) { "none" } else { @($invalidRenders | ForEach-Object { $_.File }) -join ", " }
             throw "UI render verification failed: expected $($requiredRenders.Count), found $($renderedFiles.Count), missing [$missingDetail], invalid [$invalidDetail]."
         }
-        "All five full-workspace tabs, both closed and open Live Duel inspector states, and the compact live view initialized and rendered with visible content and the enforced blue/white control palette."
+        "All five full-workspace tabs, both closed and open Live Duel inspector states, the populated campaign purchase plan, and the compact live view initialized and rendered with visible content and the enforced blue/white control palette."
     }
 
     Invoke-AuditStep -Phase "9D" -Name "Publish and smoke-start the self-contained Windows application" -Action {
@@ -431,9 +435,19 @@ try {
         if ((Get-FileHash -LiteralPath $publishedDatabase -Algorithm SHA256).Hash -ne (Get-FileHash -LiteralPath $canonicalDatabasePath -Algorithm SHA256).Hash) {
             throw "The published runtime database differs from the audited canonical database."
         }
-        $unexpectedCultureDirectories = @(Get-ChildItem -LiteralPath $publishDirectory -Directory | Where-Object { $_.Name -ne "Data" })
+        $allowedPublishDirectories = @("Data", "ResearchData")
+        $unexpectedCultureDirectories = @(Get-ChildItem -LiteralPath $publishDirectory -Directory | Where-Object { $_.Name -notin $allowedPublishDirectories })
         if ($unexpectedCultureDirectories.Count -ne 0) {
             throw "The English-only publish unexpectedly contains satellite/culture directories."
+        }
+        foreach ($researchFileName in @("guardian_star_rules.json", "opponent_reference.json", "optimizer_policy.json", "source_manifest.json")) {
+            $sourceResearchFile = Join-Path $projectRoot "docs\research\data\$researchFileName"
+            $publishedResearchFile = Join-Path $publishDirectory "ResearchData\$researchFileName"
+            Assert-ExistingFile -Path $publishedResearchFile -Description "Published campaign research file $researchFileName"
+            if ((Get-FileHash -LiteralPath $sourceResearchFile -Algorithm SHA256).Hash -ne
+                (Get-FileHash -LiteralPath $publishedResearchFile -Algorithm SHA256).Hash) {
+                throw "Published campaign research file differs from the audited source: $researchFileName"
+            }
         }
 
         $smokeLocalData = Join-Path $runDirectory "smoke-local-app-data"
@@ -457,7 +471,7 @@ try {
                 }
             }
         }
-        "The exact published executable stayed healthy through a four-second isolated startup smoke test; publish contains only the application and its Data folder."
+        "The exact published executable stayed healthy through a four-second isolated startup smoke test; publish contains only the application, its Data folder, and the four validated ResearchData files."
     }
 
     Invoke-AuditStep -Phase "9D" -Name "Assemble the canonical minimal final directory" -Action {
@@ -472,9 +486,16 @@ try {
         foreach ($publishedItem in Get-ChildItem -LiteralPath $publishDirectory -Force) {
             Copy-Item -LiteralPath $publishedItem.FullName -Destination $runOutput -Recurse
         }
+        foreach ($launcherFileName in @("install_dependencies.cmd", "install_dependencies.ps1")) {
+            Copy-Item -LiteralPath (Join-Path $projectRoot $launcherFileName) -Destination $runOutput
+        }
         Copy-Item -LiteralPath (Join-Path $projectRoot "README.md") -Destination $documentationOutput
         Copy-Item -LiteralPath (Join-Path $projectRoot "docs\SETUP.md") -Destination $documentationOutput
         Copy-Item -LiteralPath (Join-Path $projectRoot "docs\LIMITATIONS.md") -Destination $documentationOutput
+        Copy-Item -LiteralPath (Join-Path $projectRoot "RELEASE_NOTES.md") -Destination $documentationOutput
+        Copy-Item -LiteralPath (Join-Path $projectRoot "LICENSE") -Destination $documentationOutput
+        Copy-Item -LiteralPath (Join-Path $projectRoot "THIRD_PARTY_NOTICES.md") -Destination $documentationOutput
+        Copy-Item -LiteralPath (Join-Path $projectRoot "output\pdf\YFM-Fusion-Companion-User-Guide.pdf") -Destination $documentationOutput
         $strategyResearch = Join-Path $workspaceRoot "outputs\YFM-Forbidden-Memories-Deck-Strategy-Research.md"
         if (Test-Path -LiteralPath $strategyResearch -PathType Leaf) {
             Copy-Item -LiteralPath $strategyResearch -Destination $documentationOutput
@@ -518,8 +539,9 @@ try {
 This is the canonical final YFM Fusion Companion release.
 
 - Start the program with `Run\YFM Fusion Companion.exe`.
-- Keep the `Run\Data` folder beside the executable.
-- `Run\Documentation` contains setup, limitations, and strategy guidance.
+- Keep the `Run\Data` and `Run\ResearchData` folders beside the executable.
+- Run `Run\install_dependencies.cmd` first to verify the Windows package, executable, and database.
+- `Run\Documentation` contains the illustrated PDF guide, Markdown instructions, setup, limitations, release notes, licences, and strategy guidance.
 - `Source` contains one reproducible source archive, including the supplied SQL and audited SQLite database.
 - `Audit` contains machine-readable and human-readable Phase 9 evidence.
 

@@ -12,7 +12,7 @@ public sealed class SaveSnapshot
         IReadOnlyList<int> deckCardIds,
         IReadOnlyList<byte> chestQuantities,
         IReadOnlySet<int> libraryCardIds,
-        uint starChips,
+        uint? starChips,
         IReadOnlySet<int> unlockedDuelistIds,
         IReadOnlyList<string> warnings)
     {
@@ -58,7 +58,9 @@ public sealed class SaveSnapshot
 
     public IReadOnlySet<int> LibraryCardIds { get; }
 
-    public uint StarChips { get; }
+    public uint? StarChips { get; }
+
+    public bool HasCompleteDeck => DeckCardIds.All(cardId => cardId is >= 1 and <= Ps1MemoryCardReader.CardCount);
 
     public IReadOnlySet<int> UnlockedDuelistIds { get; }
 

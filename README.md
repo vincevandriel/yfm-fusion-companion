@@ -4,7 +4,7 @@ A native, English-only Windows companion for Yu-Gi-Oh! Forbidden Memories. It wo
 
 ## Download and install dependencies first
 
-1. Open this repository's **Releases** page and download `yfm_companion_windows_x64_v1.0.0.zip`. GitHub's automatic "Source code" archives are for developers and do not contain the ready-to-run program.
+1. Open this repository's **Releases** page and download the latest `yfm_companion_windows_x64_*.zip`. GitHub's automatic "Source code" archives are for developers and do not contain the ready-to-run program.
 2. Extract the complete ZIP to a normal folder. Do not run files from inside the ZIP preview.
 3. Double-click `install_dependencies.cmd`. It verifies 64-bit Windows and confirms that the executable and `Data\yfm.db` remained together. The portable release is self-contained, so it normally installs nothing and reports that no separate .NET runtime is required.
 4. Double-click `YFM Fusion Companion.exe`.
@@ -93,6 +93,7 @@ Live Duel updates automatically every second. There is no refresh button. For th
 - **UPDATE STATUS:** green **UP TO DATE** while reads continue and red **ERROR** after the latest read fails.
 - **HAND, YOUR MONSTERS, YOUR SPELLS / TRAPS, OPPONENT FIELD:** active live positions. Unknown face-down information is not guessed.
 - **LIVE ADVICE:** strongest legal routes from the current validated hand and board.
+- **STAR 1 / STAR 2 / VS FIELD:** each available guardian-star chain is shown beside a live recommendation. `F#?` means the opponent card's active guardian star or battle position is not verified by the read-only live mapping, so the companion deliberately does not guess a win, tie, or loss. Where those values are verified, `✓`, `=`, and `×` mean a favourable battle, tie, and unfavourable battle for that field slot.
 - **CONSTRUCTED DECK / OWNED COLLECTION:** save-derived deck and ownership information when available.
 - **INSPECT CARDS:** opens the optional right-side inspector for the selected live card. It shows type, ATK, DEF, and expandable advanced catalog data including categories, fusion partners, recipes, and compatible equips.
 
@@ -102,7 +103,7 @@ The client sends only status and read-memory commands to `127.0.0.1`. Keep Windo
 
 This tab opens memory-card files read-only. **REFRESH SAVED SNAPSHOT** searches configured SwanStation locations and reads the newest supported save again. **CHOOSE SAVE FILE...** accepts raw 128 KiB or 256 KiB `.srm`/`.mcr` images. Source, File, Saved, and Validation explain exactly what was read.
 
-- **CONSTRUCTED DECK:** the 40 saved deck positions.
+- **CONSTRUCTED DECK:** the 40 saved deck positions, when every position contains a valid card. A valid save with an empty or incomplete deck still imports its chest/collection; its Deck Analyzer load button stays disabled rather than treating empty slots as card IDs.
 - **COLLECTION:** chest quantity, copies in the deck, total owned, and Library-seen flag.
 - **LOAD THIS DECK INTO ANALYZER:** copies the saved deck into Deck Analyzer.
 - **LOAD OWNED CARDS INTO OPTIMIZER:** copies chest-plus-deck totals into Owned-card Optimizer.
@@ -112,6 +113,10 @@ The load buttons transfer information only inside the companion; they never load
 ### OWNED-CARD OPTIMIZER tab
 
 Enter owned quantities manually or load them from Save Snapshot. The search filters by any name letters or card number. **SET VISIBLE TO 3** changes only currently filtered rows; **CLEAR OWNED** resets quantities. At least 40 usable copies are required, and output never exceeds ownership, the normal three-copy limit, or the one-copy Exodia-piece limits.
+
+For the campaign choices, select **General campaign**, **One specific opponent**, or **Final gauntlet**. The general plan favours the number of opponent threat sets with at least one modeled answer, then protects its weakest modeled matchup and its opening-hand answer coverage before power tie-breaks. This is matchup guidance, not a guaranteed win-rate or a claim about unverified CPU guardian-star choices. The threat model includes direct and material-limited chained fusion threats; unknown battle position, terrain behavior, or CPU star selection remains labeled as uncertain rather than inferred.
+
+When a validated save exposes Star Chips, **USE SAVED STAR CHIPS** enables a *virtual* shopping plan. It first reserves enough affordable, distinct legal cards to make a 40-card deck possible, then compares optional upgrades against the owned-only deck and retains the zero-spend plan unless spending is strictly better under the same safety objective. Password cards must have a numeric eight-digit password. The game save does not record whether a card password was previously redeemed, so enter any already redeemed names in **ALREADY REDEEMED PASSWORD CARD NAMES**; those names are excluded. The application never spends chips, redeems passwords, or changes the save.
 
 Profiles mean:
 
@@ -126,7 +131,7 @@ Profiles mean:
 
 ### COMPACT LIVE mode
 
-**COMPACT LIVE** creates a 320-pixel-wide sidecar at the right work-area edge. It shows only Best Legal Routes plus **PIN** and **FULL**, has no enforced minimum size, and restores prior full-window bounds when closed. Result and effective ATK are followed by compact selection notation: `1+2+3` means hand slots; `F(1)` through `F(5)` are monster positions; `F(6)` through `F(10)` are spell/trap positions. For example, `F(3)+2+5` starts with monster position 3 and continues with hand slots 2 and 5.
+**COMPACT LIVE** creates a 320-pixel-wide sidecar at the right work-area edge. It shows only Best Legal Routes plus **PIN** and **FULL**, has no enforced minimum size, and restores prior full-window bounds when closed. Result and effective ATK are followed by compact selection notation: `1+2+3` means hand slots; `F(1)` through `F(5)` are monster positions; `F(6)` through `F(10)` are spell/trap positions. For example, `F(3)+2+5` starts with monster position 3 and continues with hand slots 2 and 5. The two small lines below each route show the card's two guardian-star chains and field-slot outcomes; they never add material-card names or widen the compact panel, and use `F#?` whenever live battle information is unknown.
 
 ### Shared header controls and status meanings
 
@@ -149,7 +154,7 @@ $env:YFM_SQL_PATH = "$PWD\database-source\YuGiOh_Forbidden_Memories_PostgreSQL.s
 dotnet test YfmFusionCompanion.sln --configuration Release
 ```
 
-The final suite contains 126 automated tests. To reproduce the complete final audit—including strict formatting and analyzer checks, dependency vulnerability scanning, deterministic database rebuilding, tests with coverage evidence, feature and integration scenarios, full/compact UI rendering, self-contained publication, startup smoke testing, minimal package assembly, SHA-256 manifests, and an independent archive comparison—run:
+The current regression suite contains 165 automated tests. To reproduce the complete final audit—including strict formatting and analyzer checks, dependency vulnerability scanning, deterministic database rebuilding, tests with coverage evidence, feature and integration scenarios, full/compact UI rendering, self-contained publication, startup smoke testing, minimal package assembly, SHA-256 manifests, and an independent archive comparison—run:
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File tools\Invoke-Phase9Audit.ps1
@@ -211,6 +216,6 @@ The game leaves duel structures populated after returning to story mode, so the 
 
 The labeled PDF booklet is [`output/pdf/YFM-Fusion-Companion-User-Guide.pdf`](output/pdf/YFM-Fusion-Companion-User-Guide.pdf). The Markdown README deliberately remains text-only.
 
-Version 1.0.0 is the first public Windows x64 release. Its audited catalog contains 722 cards and 25,146 resolved fusion pairs; 126 automated tests and 18 environment integration checks passed in the validated release environment.
+The audited catalog contains 722 cards and 25,146 resolved fusion pairs. The current source suite contains 165 automated regression tests plus 13 independent Phase 4 acceptance probes; each tagged release must regenerate the guide and pass those checks before its package is published.
 
 Original companion code is released under the [MIT License](LICENSE). Game names, card names, rules, and other third-party properties remain with their owners and are not relicensed. No ROM, BIOS, emulator, save, or copyrighted card artwork is included. See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md). This fan project is not affiliated with or endorsed by Konami, Sony, RetroArch, Libretro, or SwanStation.

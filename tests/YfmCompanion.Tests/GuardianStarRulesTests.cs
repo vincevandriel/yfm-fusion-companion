@@ -55,4 +55,37 @@ public sealed class GuardianStarRulesTests
         Assert.Equal("☿ > ☉ > ☾", GuardianStarRules.GetChain(" sun ").CompactNotation);
         Assert.Throws<ArgumentException>(() => GuardianStarRules.GetChain("Earth"));
     }
+
+    [Fact]
+    public void LiveAdviceUsesAttackAgainstEitherEnemyBattlePosition()
+    {
+        var card = TestCatalogFactory.Card(1, "Player", 2_200, 400) with
+        {
+            GuardianStar1 = "Sun",
+            GuardianStar2 = "Mars"
+        };
+        var advice = GuardianStarPresentation.Create(card, 2_200, [
+            new GuardianFieldTarget(1, 2_500, 3_000, GuardianBattlePosition.Attack, "Moon"),
+            new GuardianFieldTarget(2, 2_500, 2_600, GuardianBattlePosition.Defense, "Moon")
+        ]);
+
+        Assert.Equal("☿ > ☉ > ☾", advice.FirstChoice);
+        Assert.Equal("F1✓ F2✓", advice.FirstChoiceOutcomes);
+    }
+
+    [Fact]
+    public void LiveAdvicePreservesUnknownTargetState()
+    {
+        var card = TestCatalogFactory.Card(1, "Player", 2_200) with
+        {
+            GuardianStar1 = "Sun",
+            GuardianStar2 = "Mars"
+        };
+        var advice = GuardianStarPresentation.Create(card, 2_200, [
+            new GuardianFieldTarget(3, 1_000, 1_000, GuardianBattlePosition.Unknown, null)
+        ]);
+
+        Assert.Equal("F3?", advice.FirstChoiceOutcomes);
+        Assert.Equal("F3?", advice.SecondChoiceOutcomes);
+    }
 }

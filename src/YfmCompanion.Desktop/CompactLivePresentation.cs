@@ -3,15 +3,28 @@ using YfmCompanion.Engine;
 
 namespace YfmCompanion.Desktop;
 
-internal sealed record CompactLiveRouteRow(string Result, int Attack, string Route);
+internal sealed record CompactLiveRouteRow(
+    string Result,
+    int Attack,
+    string Route,
+    string GuardianStar1,
+    string GuardianStar2,
+    string GuardianOutcomes1,
+    string GuardianOutcomes2);
 
 internal static class CompactLivePresentation
 {
-    public static CompactLiveRouteRow CreateRow(TacticalRecommendation recommendation) =>
+    public static CompactLiveRouteRow CreateRow(
+        TacticalRecommendation recommendation,
+        GuardianLiveAdvice? guardianAdvice = null) =>
         new(
             recommendation.FinalCard.Name,
             recommendation.EffectiveAttack,
-            FormatRoute(recommendation));
+            FormatRoute(recommendation),
+            guardianAdvice?.FirstChoice ?? "?",
+            guardianAdvice?.SecondChoice ?? "?",
+            guardianAdvice?.FirstChoiceOutcomes ?? "—",
+            guardianAdvice?.SecondChoiceOutcomes ?? "—");
 
     public static string FormatRoute(TacticalRecommendation recommendation)
     {

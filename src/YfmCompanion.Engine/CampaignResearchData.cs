@@ -35,6 +35,8 @@ public sealed record CampaignResearchData(
     CampaignOptimizerPolicy Policy)
 {
     public const string BundledDirectoryName = "ResearchData";
+    private static readonly int[] RequiredGeneralSafetyDuelistIds = [.. Enumerable.Range(1, 32), 39];
+    private static readonly int[] RequiredFinalGauntletDuelistIds = [33, 34, 35, 36, 37, 38];
 
     public static CampaignResearchData LoadBundled(string baseDirectory) =>
         Load(Path.Combine(Path.GetFullPath(baseDirectory), BundledDirectoryName));
@@ -86,12 +88,10 @@ public sealed record CampaignResearchData(
 
         var generalIds = policy.GeneralSafetyDuelistIds.ToHashSet();
         var gauntletIds = policy.FinalGauntletDuelistIds.ToHashSet();
-        if (generalIds.Overlaps(gauntletIds) ||
-            !expectedIds.SetEquals(generalIds.Concat(gauntletIds)) ||
-            generalIds.Count != 33 ||
-            gauntletIds.Count != 6)
+        if (!generalIds.SetEquals(RequiredGeneralSafetyDuelistIds) ||
+            !gauntletIds.SetEquals(RequiredFinalGauntletDuelistIds))
         {
-            throw new InvalidDataException("Optimizer policy must split all 39 duelists into 33 general-safety and 6 final-gauntlet opponents.");
+            throw new InvalidDataException("Optimizer policy must use the exact agreed 33-opponent general-safety group and six-opponent final gauntlet group.");
         }
 
         var opponents = new Dictionary<int, OpponentReference>();
@@ -107,7 +107,8 @@ public sealed record CampaignResearchData(
 
             if (item.DeckPool.Count == 0 ||
                 item.DeckPool.Any(entry => entry.CardId is < 1 or > 722 || entry.Weight <= 0) ||
-                item.DeckPool.Select(entry => entry.CardId).Distinct().Count() != item.DeckPool.Count)
+                item.DeckPool.Select(entry => entry.CardId).Distinct().Count() != item.DeckPool.Count ||
+                item.DeckPool.Sum(entry => (long)entry.Weight) != 2_048)
             {
                 throw new InvalidDataException($"Duelist {item.DuelistId} has an invalid weighted Deck pool.");
             }
@@ -131,7 +132,7 @@ public sealed record CampaignResearchData(
                     item.AiFlags.AggressiveFieldSpellBehavior,
                     item.AiFlags.Confidence,
                     item.AiFlags.ImplementationNote),
-                item.DeckPool.Select(entry => new OpponentDeckPoolEntry(entry.CardId, entry.Weight)).ToArray()));
+                [.. item.DeckPool.Select(entry => new OpponentDeckPoolEntry(entry.CardId, entry.Weight))]));
         }
 
         var source = manifest.Sources.SingleOrDefault(item => item.Id == opponent.Source)
@@ -194,11 +195,27 @@ public sealed record CampaignResearchData(
             throw new InvalidDataException("Guardian-star research data does not match the verified runtime rules.");
         }
 
-        foreach (var cycle in guardian.Cycles)
+        var expectedCycles = new[]
         {
+            new[] { "Sun", "Moon", "Venus", "Mercury" },
+            ["Mars", "Jupiter", "Saturn", "Uranus", "Pluto", "Neptune"]
+        };
+        if (guardian.Cycles.Count != expectedCycles.Length)
+        {
+            throw new InvalidDataException("Guardian-star research data must contain both verified cycles.");
+        }
+
+        for (var cycleIndex = 0; cycleIndex < guardian.Cycles.Count; cycleIndex++)
+        {
+            var cycle = guardian.Cycles[cycleIndex];
             if (!cycle.BeatsNext || cycle.Order.Count < 2)
             {
                 throw new InvalidDataException("Guardian-star research data contains an invalid cycle.");
+            }
+
+            if (!cycle.Order.SequenceEqual(expectedCycles[cycleIndex], StringComparer.OrdinalIgnoreCase))
+            {
+                throw new InvalidDataException("Guardian-star research data does not preserve the verified directional cycle order.");
             }
 
             foreach (var star in cycle.Order)
@@ -210,6 +227,13 @@ public sealed record CampaignResearchData(
                     throw new InvalidDataException($"Guardian-star symbol for '{star}' does not match the runtime rules.");
                 }
             }
+        }
+
+        if (guardian.Symbols.Count != expectedCycles.Sum(cycle => cycle.Length) ||
+            !guardian.Symbols.Keys.ToHashSet(StringComparer.OrdinalIgnoreCase)
+                .SetEquals(expectedCycles.SelectMany(cycle => cycle)))
+        {
+            throw new InvalidDataException("Guardian-star research data must contain each verified star exactly once.");
         }
     }
 

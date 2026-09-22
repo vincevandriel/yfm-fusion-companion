@@ -62,6 +62,27 @@ public sealed class OpponentThreatEvaluatorTests
         Assert.Throws<KeyNotFoundException>(() => evaluator.Evaluate([new(99, 1)]));
     }
 
+    [Fact]
+    public void FindsOrderedChainsUsingUpToAllFiveHandMaterials()
+    {
+        var cards = Enumerable.Range(1, 9)
+            .Select(id => Monster(id, $"Card {id}", id * 100, "Sun"))
+            .ToArray();
+        var catalog = TestCatalogFactory.Create(cards, [
+            TestCatalogFactory.Pair(1, 2, 6),
+            TestCatalogFactory.Pair(3, 6, 7),
+            TestCatalogFactory.Pair(4, 7, 8),
+            TestCatalogFactory.Pair(5, 8, 9)
+        ]);
+
+        var report = new OpponentThreatEvaluator(catalog).Evaluate([
+            new(1, 10), new(2, 10), new(3, 10), new(4, 10), new(5, 10)
+        ]);
+
+        Assert.Contains(report.FusionThreats, threat => threat.Result.Id == 9);
+        Assert.Contains("five-material", report.Methodology, StringComparison.OrdinalIgnoreCase);
+    }
+
     private static Card Monster(int id, string name, int attack, string guardianStar) =>
         new(id, name, null, guardianStar, null, 4, "Test", null, attack, attack, null, 100, true, true, true);
 }

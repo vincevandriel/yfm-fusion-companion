@@ -19,9 +19,9 @@ internal static class Program
     [STAThread]
     private static int Main(string[] args)
     {
-        if (args.Length != 1)
+        if (args.Length is < 1 or > 2 || (args.Length == 2 && args[1] != "--startup-only"))
         {
-            Console.Error.WriteLine("Usage: YfmCompanion.UiRender <output-directory>");
+            Console.Error.WriteLine("Usage: YfmCompanion.UiRender <output-directory> [--startup-only]");
             return 2;
         }
 
@@ -31,7 +31,21 @@ internal static class Program
         application.InitializeComponent();
 
         var window = new MainWindow();
-        window.RaiseEvent(new RoutedEventArgs(FrameworkElement.LoadedEvent));
+        var initializeMethod = typeof(MainWindow).GetMethod("InitializeOfflineWorkspace", BindingFlags.Instance | BindingFlags.NonPublic)
+            ?? throw new InvalidOperationException("Offline workspace initializer was not found.");
+        initializeMethod.Invoke(window, null);
+        if (args.Length == 2)
+        {
+            var status = window.FindName("DatabaseStatus") as TextBlock
+                ?? throw new InvalidOperationException("Database status control was not found.");
+            if (!status.Text.StartsWith("Offline database ready", StringComparison.Ordinal))
+            {
+                throw new InvalidOperationException($"Offline database did not report ready status: {status.Text}");
+            }
+
+            window.Close();
+            return 0;
+        }
         var compactMethod = typeof(MainWindow).GetMethod("ApplyCompactMode", BindingFlags.Instance | BindingFlags.NonPublic)
             ?? throw new InvalidOperationException("Compact-mode method was not found.");
         compactMethod.Invoke(window, [false, false]);
@@ -277,6 +291,13 @@ internal static class Program
         {
             throw new InvalidOperationException("Compact Live must show only RESULT, ATK, and ROUTE columns.");
         }
+
+        var templateColumn = adviceGrid.Columns[2] as DataGridTemplateColumn
+            ?? throw new InvalidOperationException("Compact guardian information must remain inside the route column.");
+        if (templateColumn.CellTemplate is null)
+        {
+            throw new InvalidOperationException("Compact guardian route template is missing.");
+        }
     }
 
     private static void SeedCompactRoutes(MainWindow window)
@@ -285,9 +306,9 @@ internal static class Program
             ?? throw new InvalidOperationException("Compact route grid was not found.");
         adviceGrid.ItemsSource = new[]
         {
-            new { Result = "Twin-headed Thunder Dragon", Attack = 2800, Route = "1+2+3" },
-            new { Result = "Pumpking the King of Ghosts", Attack = 1800, Route = "F(3)+2+5" },
-            new { Result = "Armored Zombie", Attack = 1500, Route = "F(8)+4" }
+            new { Result = "Twin-headed Thunder Dragon", Attack = 2800, Route = "1+2+3", GuardianStar1 = "☉ > ☾ > ♀", GuardianOutcomes1 = "F1✓ F2?", GuardianStar2 = "♂ > ♃ > ♄", GuardianOutcomes2 = "F1= F2?" },
+            new { Result = "Pumpking the King of Ghosts", Attack = 1800, Route = "F(3)+2+5", GuardianStar1 = "☾ > ♀ > ☿", GuardianOutcomes1 = "F3?", GuardianStar2 = "♂ > ♃ > ♄", GuardianOutcomes2 = "F3?" },
+            new { Result = "Armored Zombie", Attack = 1500, Route = "F(8)+4", GuardianStar1 = "☉ > ☾ > ♀", GuardianOutcomes1 = "—", GuardianStar2 = "☾ > ♀ > ☿", GuardianOutcomes2 = "—" }
         };
     }
 
@@ -351,10 +372,12 @@ internal static class Program
             ?? throw new InvalidOperationException("Campaign-plan render could not access the loaded card catalog.");
         var research = typeof(MainWindow).GetField("_campaignResearchData", BindingFlags.Instance | BindingFlags.NonPublic)?.GetValue(window) as CampaignResearchData
             ?? throw new InvalidOperationException("Campaign-plan render could not access the validated research data.");
+        var owned = Enumerable.Range(1, 13).Select(cardId => new OwnedCardQuantity(cardId, 3)).ToArray();
+        SeedOwnedInventory(window, owned);
         var plan = new CampaignDeckOptimizer(catalog, research).Optimize(
-            Enumerable.Range(1, 14).Select(cardId => new OwnedCardQuantity(cardId, 3)),
-            starChips: 0,
-            useStarChips: false,
+            owned,
+            starChips: 70,
+            useStarChips: true,
             CampaignOpponentScope.GeneralSafety,
             options: new DeckOptimizationOptions(
                 SampleHands: 2,
@@ -374,16 +397,44 @@ internal static class Program
             ?? throw new InvalidOperationException("Campaign-threat grid was not found.");
         var purchases = window.FindName("PurchasePlanGrid") as DataGrid
             ?? throw new InvalidOperationException("Purchase-plan grid was not found.");
-        if (panel.Visibility != Visibility.Visible || threats.Items.Count == 0 || purchases.ItemsSource is null)
+        if (panel.Visibility != Visibility.Visible || threats.Items.Count == 0 || purchases.Items.Count == 0)
         {
             throw new InvalidOperationException("Campaign-plan presentation did not expose its required summary, threat, and purchase surfaces.");
         }
+
+        var optimizerTabs = FindLogicalDescendants<TabControl>(window)
+            .Single(control => control.Items.Cast<object>()
+                .OfType<TabItem>()
+                .Any(item => Equals(item.Header, "STAR CHIPS")));
+        optimizerTabs.SelectedItem = optimizerTabs.Items.Cast<TabItem>().Single(item => Equals(item.Header, "STAR CHIPS"));
+        var workspaceTabs = window.FindName("WorkspaceTabs") as TabControl
+            ?? throw new InvalidOperationException("Workspace tabs were not found.");
+        workspaceTabs.SelectedItem = window.FindName("OwnedOptimizerTab") as TabItem;
 
         var result = Render(window, 1420, 900, Path.Combine(outputDirectory, "campaign-plan.png"));
         var reset = typeof(MainWindow).GetMethod("ResetOptimizerResults", BindingFlags.Instance | BindingFlags.NonPublic)
             ?? throw new InvalidOperationException("Optimizer reset method was not found.");
         reset.Invoke(window, null);
         return result;
+    }
+
+    private static void SeedOwnedInventory(MainWindow window, IEnumerable<OwnedCardQuantity> owned)
+    {
+        var quantities = owned.ToDictionary(entry => entry.CardId, entry => entry.Quantity);
+        var grid = window.FindName("OwnedCardsGrid") as DataGrid
+            ?? throw new InvalidOperationException("Owned-card grid was not found.");
+        foreach (var row in grid.Items)
+        {
+            var cardProperty = row.GetType().GetProperty("Card")
+                ?? throw new InvalidOperationException("Owned-card row card property was not found.");
+            var card = cardProperty.GetValue(row) as Card
+                ?? throw new InvalidOperationException("Owned-card row did not provide a card.");
+            var quantityProperty = row.GetType().GetProperty("Quantity")
+                ?? throw new InvalidOperationException("Owned-card row quantity property was not found.");
+            quantityProperty.SetValue(row, quantities.GetValueOrDefault(card.Id));
+        }
+
+        grid.Items.Refresh();
     }
 
     private static IEnumerable<T> FindLogicalDescendants<T>(DependencyObject parent)

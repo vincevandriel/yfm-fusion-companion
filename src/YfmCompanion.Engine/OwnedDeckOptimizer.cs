@@ -263,12 +263,16 @@ public sealed class OwnedDeckOptimizer(FusionCatalog catalog)
                 score += ExactScore(report);
             }
 
-            ranked.Add(new SampledCandidate(deck, score / sampleIndexes.Length));
+            ranked.Add(new SampledCandidate(
+                deck,
+                score / sampleIndexes.Length,
+                CandidateSafetyPreScore(deck, options.SafetyContext)));
         }
 
         progress?.Report(new DeckOptimizationProgress("Sampled candidate analysis", candidates.Length, candidates.Length));
         return [.. ranked
-            .OrderByDescending(item => item.Score)
+            .OrderByDescending(item => options.Profile == DeckStrategyProfile.ControlAndSafety ? item.SafetyScore : 0)
+            .ThenByDescending(item => item.Score)
             .ThenBy(item => DeckKey(item.Deck), StringComparer.Ordinal)];
     }
 
@@ -511,8 +515,18 @@ public sealed class OwnedDeckOptimizer(FusionCatalog catalog)
         (report.ExpectedBestFusionAttack * 1_000) +
         report.AnyFusionProbability;
 
+    private double CandidateSafetyPreScore(IReadOnlyList<int> deck, OpponentSafetyContext? context)
+    {
+        if (context is null || context.Threats.Count == 0)
+        {
+            return 0;
+        }
+
+        return deck.Average(cardId => OpponentSafetyScoring.CounterValue(_catalog.GetCard(cardId), context));
+    }
+
     private DeckSafetyAssessment? BuildSafetyAssessment(
-        IReadOnlyList<int> deck,
+        int[] deck,
         DeckAnalysisReport report,
         OpponentSafetyContext? context)
     {
@@ -521,20 +535,67 @@ public sealed class OwnedDeckOptimizer(FusionCatalog catalog)
             return null;
         }
 
-        var standaloneDensity = deck
-            .Select(cardId => OpponentSafetyScoring.CounterValue(_catalog.GetCard(cardId), context))
-            .Average();
-        var reachableFusionValue = Math.Min(
-            2_000,
-            report.FusionResults.Sum(result =>
-                result.Probability * OpponentSafetyScoring.CounterValue(
-                    result.Result with { Attack = result.EffectiveAttack },
-                    context)));
+        var deckCards = deck.Select(_catalog.GetCard).ToArray();
+        var opponentScores = new List<double>();
+        var safeOpponents = 0;
+        var openingCoverages = new List<double>();
+        foreach (var opponent in context.Threats.GroupBy(target => target.OpponentId))
+        {
+            var targetScores = new List<double>();
+            var answerCardIds = new HashSet<int>();
+            foreach (var target in opponent)
+            {
+                var standalone = deckCards.Max(card => OpponentSafetyScoring.CounterValueForTarget(card, target, context.ActiveFieldCardId));
+                foreach (var card in deckCards.Where(card => OpponentSafetyScoring.CounterValueForTarget(card, target, context.ActiveFieldCardId) > 0))
+                {
+                    answerCardIds.Add(card.Id);
+                }
+
+                var fusionValue = report.FusionResults
+                    .Where(result => OpponentSafetyScoring.CounterValueForTarget(
+                        result.Result with { Attack = result.EffectiveAttack }, target, context.ActiveFieldCardId) > 0)
+                    .Sum(result => result.Probability * 650);
+                targetScores.Add(standalone + fusionValue);
+            }
+
+            var opponentScore = targetScores.Average();
+            opponentScores.Add(opponentScore);
+            if (targetScores.All(score => score > 0))
+            {
+                safeOpponents++;
+            }
+
+            var answerCopies = deck.Count(cardId => answerCardIds.Contains(cardId));
+            openingCoverages.Add(OpeningHandCoverage(answerCopies, deck.Length));
+        }
+
+        var heuristicScore = opponentScores.Average();
+        var worstOpponentScore = opponentScores.Min();
+        var openingCoverage = openingCoverages.Average();
         return new DeckSafetyAssessment(
             context.Label,
-            standaloneDensity + reachableFusionValue,
+            heuristicScore,
             context.Threats.Count,
-            "Heuristic counter-coverage score from standalone-card density and reachable fusion/equip outcomes. It is not a win probability.");
+            "Heuristic counter-coverage score from concrete per-opponent answers, broad removal, and reachable fusion outcomes. Exact opening fusion data and answer availability are combined conservatively; this is not a win probability.",
+            safeOpponents,
+            context.OpponentIds.Count,
+            worstOpponentScore,
+            openingCoverage);
+    }
+
+    private static double OpeningHandCoverage(int answerCopies, int deckSize)
+    {
+        if (answerCopies <= 0 || deckSize < 5)
+        {
+            return 0;
+        }
+
+        if (deckSize - answerCopies < 5)
+        {
+            return 1;
+        }
+
+        return 1 - ((double)DeckAnalyzer.Choose(deckSize - answerCopies, 5) / DeckAnalyzer.Choose(deckSize, 5));
     }
 
     private static bool IsBetterExactCandidate(
@@ -546,6 +607,24 @@ public sealed class OwnedDeckOptimizer(FusionCatalog catalog)
             candidate.Safety is not null &&
             incumbent.Safety is not null)
         {
+            var safeOpponentDifference = candidate.Safety.SafeOpponentCount - incumbent.Safety.SafeOpponentCount;
+            if (safeOpponentDifference != 0)
+            {
+                return safeOpponentDifference > 0;
+            }
+
+            var worstOpponentDifference = candidate.Safety.WorstOpponentScore - incumbent.Safety.WorstOpponentScore;
+            if (Math.Abs(worstOpponentDifference) > 0.0001)
+            {
+                return worstOpponentDifference > 0;
+            }
+
+            var coverageDifference = candidate.Safety.EstimatedOpeningAnswerCoverage - incumbent.Safety.EstimatedOpeningAnswerCoverage;
+            if (Math.Abs(coverageDifference) > 0.0001)
+            {
+                return coverageDifference > 0;
+            }
+
             var safetyDifference = candidate.Safety.HeuristicScore - incumbent.Safety.HeuristicScore;
             if (Math.Abs(safetyDifference) > 0.0001)
             {
@@ -613,7 +692,7 @@ public sealed class OwnedDeckOptimizer(FusionCatalog catalog)
         int Flexibility,
         IReadOnlyDictionary<int, int> ResultCounts);
 
-    private sealed record SampledCandidate(int[] Deck, double Score);
+    private sealed record SampledCandidate(int[] Deck, double Score, double SafetyScore);
 
     private sealed record ExactCandidate(
         int[] Deck,

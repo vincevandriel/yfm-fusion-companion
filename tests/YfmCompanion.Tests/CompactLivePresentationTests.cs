@@ -16,6 +16,24 @@ public sealed class CompactLivePresentationTests
         Assert.Equal("Twin-headed Thunder Dragon", row.Result);
         Assert.Equal(3_300, row.Attack);
         Assert.Equal("1+3+5", row.Route);
+        Assert.Equal("?", row.GuardianStar1);
+        Assert.Equal("—", row.GuardianOutcomes1);
+    }
+
+    [Fact]
+    public void CreateRowKeepsGuardianLinesInsideTheExistingRoutePresentation()
+    {
+        var result = TestCatalogFactory.Card(10, "Result", 1_500);
+        var recommendation = Recommendation(result, [2, 4]);
+        var guardian = new GuardianLiveAdvice("☿ > ☉ > ☾", "♆ > ♂ > ♃", "F1✓ F2?", "F1× F2?");
+
+        var row = CompactLivePresentation.CreateRow(recommendation, guardian);
+
+        Assert.Equal("2+4", row.Route);
+        Assert.Equal("☿ > ☉ > ☾", row.GuardianStar1);
+        Assert.Equal("♆ > ♂ > ♃", row.GuardianStar2);
+        Assert.Equal("F1✓ F2?", row.GuardianOutcomes1);
+        Assert.Equal("F1× F2?", row.GuardianOutcomes2);
     }
 
     [Theory]

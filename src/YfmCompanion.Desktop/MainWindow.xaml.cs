@@ -50,6 +50,7 @@ public partial class MainWindow : Window
     private bool _compactMode;
     private bool _inspectorOpen;
     private bool _synchronizingTopmost;
+    private bool _startupStarted;
 
     public MainWindow()
     {
@@ -62,34 +63,31 @@ public partial class MainWindow : Window
 
     private async void MainWindow_Loaded(object sender, RoutedEventArgs e)
     {
-        RestoreDesktopSettings();
-        var databasePath = Path.Combine(AppContext.BaseDirectory, "Data", "yfm.db");
-        if (!File.Exists(databasePath))
+        if (_startupStarted)
         {
-            MessageBox.Show($"The bundled card database was not found:\n{databasePath}", "YFM Fusion Companion", MessageBoxButton.OK, MessageBoxImage.Error);
+            return;
+        }
+
+        _startupStarted = true;
+        RestoreDesktopSettings();
+        try
+        {
+            InitializeOfflineWorkspace();
+        }
+        catch (Exception exception)
+        {
+            _diagnostics.Add("Application", "Offline database failed", exception.Message);
+            MessageBox.Show(
+                $"The bundled card database could not be loaded.\n\n{exception.Message}",
+                "YFM Fusion Companion",
+                MessageBoxButton.OK,
+                MessageBoxImage.Error);
             Close();
             return;
         }
 
         try
         {
-            _catalog = FusionCatalog.Load(databasePath);
-            _planner = new TacticalFusionPlanner(_catalog);
-            _deckAnalyzer = new DeckAnalyzer(_catalog);
-            _ownedDeckOptimizer = new OwnedDeckOptimizer(_catalog);
-            _strategyEvaluator = new ForbiddenMemoriesStrategyEvaluator(_catalog);
-            var search = new CardSearchService(_catalog.Cards);
-            AddPickers(HandPickerPanel, _handPickers, "Hand", search);
-            AddPickers(MonsterPickerPanel, _monsterPickers, "Monster", search);
-            AddPickers(SpellPickerPanel, _spellPickers, "Spell / Trap", search);
-            AddDeckPickers(search);
-            InitializeOptimizer(_catalog);
-            InitializeCampaignOptimizer(_catalog);
-            DatabaseStatus.Text = string.Create(
-                CultureInfo.InvariantCulture,
-                $"Offline database ready • {_catalog.Cards.Count:N0} cards • {_catalog.FusionPairs.Count:N0} resolved fusion pairs");
-            _diagnostics.Add("Application", "Database ready", "Bundled offline card database validated.");
-            _handPickers[0].FocusInput();
             if (!await TryLoadRememberedSaveAsync())
             {
                 await RefreshSaveSnapshotAsync(silentWhenNone: true);
@@ -97,12 +95,54 @@ public partial class MainWindow : Window
             await RefreshLiveAsync();
             _liveTimer.Start();
         }
+        catch (OperationCanceledException) when (_windowCancellation.IsCancellationRequested)
+        {
+            // Normal shutdown while an optional save or live refresh is still pending.
+        }
         catch (Exception exception)
         {
-            _diagnostics.Add("Application", "Startup failed", exception.Message);
-            MessageBox.Show($"The card database could not be loaded.\n\n{exception.Message}", "YFM Fusion Companion", MessageBoxButton.OK, MessageBoxImage.Error);
-            Close();
+            _diagnostics.Add("Optional startup services", "Unavailable", exception.Message);
+            SetLiveUnavailable(
+                "Automatic save/live startup was unavailable.",
+                "The offline adviser, analyzer, and optimizer remain ready. Live Duel will retry automatically every second.",
+                "UNAVAILABLE",
+                "#7B3B45");
+            _liveTimer.Start();
         }
+    }
+
+    private void InitializeOfflineWorkspace()
+    {
+        if (_catalog is not null)
+        {
+            return;
+        }
+
+        var databasePath = Path.Combine(AppContext.BaseDirectory, "Data", "yfm.db");
+        if (!File.Exists(databasePath))
+        {
+            throw new FileNotFoundException(
+                $"The required database was not found at '{databasePath}'. Keep the Data folder beside the executable and extract the entire release archive before starting the companion.",
+                databasePath);
+        }
+
+        _catalog = FusionCatalog.Load(databasePath);
+        _planner = new TacticalFusionPlanner(_catalog);
+        _deckAnalyzer = new DeckAnalyzer(_catalog);
+        _ownedDeckOptimizer = new OwnedDeckOptimizer(_catalog);
+        _strategyEvaluator = new ForbiddenMemoriesStrategyEvaluator(_catalog);
+        var search = new CardSearchService(_catalog.Cards);
+        AddPickers(HandPickerPanel, _handPickers, "Hand", search);
+        AddPickers(MonsterPickerPanel, _monsterPickers, "Monster", search);
+        AddPickers(SpellPickerPanel, _spellPickers, "Spell / Trap", search);
+        AddDeckPickers(search);
+        InitializeOptimizer(_catalog);
+        InitializeCampaignOptimizer(_catalog);
+        DatabaseStatus.Text = string.Create(
+            CultureInfo.InvariantCulture,
+            $"Offline database ready • {_catalog.Cards.Count:N0} cards • {_catalog.FusionPairs.Count:N0} resolved fusion pairs");
+        _diagnostics.Add("Application", "Database ready", "Bundled offline card database validated.");
+        _handPickers[0].FocusInput();
     }
 
     private void MainWindow_Closing(object? sender, CancelEventArgs e)
@@ -221,7 +261,7 @@ public partial class MainWindow : Window
         {
             if (!RetroArchConfigInspector.IsRetroArchRunning())
             {
-                SetLiveUnavailable("RetroArch is not running.", "Start RetroArch and Forbidden Memories. The companion will retry automatically every 5 seconds.", "DISCONNECTED", "#7B3B45");
+                SetLiveUnavailable("RetroArch is not running.", "Start RetroArch and Forbidden Memories. The companion will retry automatically every second.", "DISCONNECTED", "#7B3B45");
                 return;
             }
 
@@ -256,7 +296,7 @@ public partial class MainWindow : Window
         {
             SetLiveUnavailable(
                 "RetroArch is running, but its read-only UDP interface did not answer.",
-                "If you just enabled Network Commands, restart RetroArch once. The companion will retry automatically every 5 seconds.",
+                "If you just enabled Network Commands, restart RetroArch once. The companion will retry automatically every second.",
                 "DISCONNECTED",
                 "#7B3B45");
         }
@@ -272,7 +312,7 @@ public partial class MainWindow : Window
         {
             SetLiveUnavailable(
                 "The duel changed during this refresh.",
-                $"{exception.Message} The companion will retry automatically in 5 seconds.",
+                $"{exception.Message} The companion will retry automatically in one second.",
                 "UPDATING",
                 "#805C1D",
                 updateSucceeded: true);
@@ -413,17 +453,35 @@ public partial class MainWindow : Window
         var tacticalRecommendations = _planner.FindRecommendations(hand, monsters, spells, true)
             .Take(100)
             .ToArray();
+        var guardianTargets = snapshot.OpponentField
+            .Select(fieldCard => new GuardianFieldTarget(
+                fieldCard.Slot,
+                fieldCard.Attack,
+                fieldCard.Defense,
+                GuardianBattlePosition.Unknown,
+                null))
+            .ToArray();
         var recommendations = tacticalRecommendations
-            .Select(ToResultRow)
+            .Select(recommendation => ToLiveAdviceRow(
+                recommendation,
+                GuardianStarPresentation.Create(
+                    recommendation.FinalCard,
+                    recommendation.EffectiveAttack,
+                    guardianTargets)))
             .ToArray();
         LiveAdviceGrid.ItemsSource = recommendations;
         CompactAdviceGrid.ItemsSource = tacticalRecommendations
             .Take(20)
-            .Select(CompactLivePresentation.CreateRow)
+            .Select(recommendation => CompactLivePresentation.CreateRow(
+                recommendation,
+                GuardianStarPresentation.Create(
+                    recommendation.FinalCard,
+                    recommendation.EffectiveAttack,
+                    guardianTargets)))
             .ToArray();
         LiveAdviceSummary.Text = recommendations.Length == 0
             ? "No valid fusion or final equip route is available from the current hand and active field."
-            : $"{recommendations.Length:N0} best legal routes from the current hand order; updated automatically. Equips are applied only to the final monster.";
+            : $"{recommendations.Length:N0} best legal routes from the current hand order; updated automatically. Equips are applied only to the final monster. Guardian lines show each available star; F#? means the enemy's active star or battle position is not verified, so no result is guessed.";
     }
 
     private LiveCardRow ToLiveCardRow(int slot, int cardId, LiveFieldCard? liveField, int terrainId = 0)
@@ -553,7 +611,7 @@ public partial class MainWindow : Window
             ? selectedGoal
             : OptimizerGoal.GeneralCampaign;
         var isCampaignGoal = goal != OptimizerGoal.ManualCustom && _campaignDeckOptimizer is not null;
-        var hasSavedBudget = _saveSnapshot is not null;
+        var hasSavedBudget = _saveSnapshot?.StarChips is not null;
         var choosingSpecificOpponent = goal == OptimizerGoal.SpecificOpponent && isCampaignGoal;
         CampaignOpponentCombo.Visibility = choosingSpecificOpponent ? Visibility.Visible : Visibility.Collapsed;
         CampaignOpponentCombo.IsEnabled = choosingSpecificOpponent;
@@ -574,7 +632,8 @@ public partial class MainWindow : Window
             OptimizerGoal.SpecificOpponent => "Choose the duelist you want to beat. Threat ordering is useful matchup guidance, not a promised win rate.",
             OptimizerGoal.FinalGauntlet => "This is a separate late-game deck configuration, not the general campaign recommendation.",
             OptimizerGoal.ManualCustom => "Manual custom mode uses the existing profile, type, field, and opponent-type inputs. Saved Star Chips are used only by a campaign plan.",
-            _ when hasSavedBudget => string.Create(CultureInfo.InvariantCulture, $"General campaign plan ready. Saved snapshot budget: {_saveSnapshot!.StarChips:N0} Star Chips. Checking the box creates a virtual purchase plan only."),
+            _ when hasSavedBudget => string.Create(CultureInfo.InvariantCulture, $"General campaign plan ready. Saved snapshot budget: {_saveSnapshot!.StarChips!.Value:N0} Star Chips. Checking the box creates a virtual purchase plan only."),
+            _ when _saveSnapshot is not null => "This save's Star Chip value could not be validated, so campaign planning will use only the owned quantities below.",
             _ => "Load a saved snapshot to use its Star Chip budget; the optimizer otherwise uses only the owned quantities below."
         };
     }
@@ -991,13 +1050,20 @@ public partial class MainWindow : Window
         var warnings = snapshot.Warnings.Count == 0
             ? string.Empty
             : $" Warnings: {string.Join(" ", snapshot.Warnings)}";
+        var deckState = snapshot.HasCompleteDeck
+            ? "40 valid deck card IDs"
+            : $"{snapshot.DeckCardIds.Count(cardId => cardId is >= 1 and <= Ps1MemoryCardReader.CardCount):N0}/40 valid deck card IDs (deck load disabled)";
+        var starChipState = snapshot.StarChips is uint starChips
+            ? $"{starChips:N0} Star Chips"
+            : "Star Chips unavailable (value failed validation)";
         SaveValidationText.Text = string.Create(
             CultureInfo.InvariantCulture,
-            $"Directory checksum valid • file identity {snapshot.DirectoryFileName} • both 0x680-byte save copies match • 40 valid card IDs • {snapshot.StarChips:N0} Star Chips • {snapshot.UnlockedDuelistIds.Count:N0}/{Ps1MemoryCardReader.DuelistCount:N0} Free Duel opponents unlocked. {ageText} RetroArch may not flush a new save until the game closes, and the in-game Library must be opened before saving for its flags to refresh.{warnings}");
+            $"Directory checksum valid • file identity {snapshot.DirectoryFileName} • both 0x680-byte save copies match • {deckState} • {starChipState} • {snapshot.UnlockedDuelistIds.Count:N0}/{Ps1MemoryCardReader.DuelistCount:N0} Free Duel opponents unlocked. {ageText} RetroArch may not flush a new save until the game closes, and the in-game Library must be opened before saving for its flags to refresh.{warnings}");
         SaveSnapshotStatus.Text = $"Loaded {Path.GetFileName(snapshot.FilePath)} as a saved snapshot. No game or save data was modified.";
         ApplyOwnedButton.IsEnabled = true;
-        ApplyDeckButton.IsEnabled = true;
+        ApplyDeckButton.IsEnabled = snapshot.HasCompleteDeck;
         SaveDeckGrid.ItemsSource = snapshot.DeckCardIds
+            .Where(cardId => cardId is >= 1 and <= Ps1MemoryCardReader.CardCount)
             .Select((cardId, index) => new SaveDeckRow(index + 1, _catalog.GetCard(cardId)))
             .ToArray();
         SaveCollectionGrid.ItemsSource = _catalog.Cards
@@ -1032,8 +1098,9 @@ public partial class MainWindow : Window
 
     private void ApplyDeckSnapshot_Click(object sender, RoutedEventArgs e)
     {
-        if (_saveSnapshot is null || _catalog is null)
+        if (_saveSnapshot is null || _catalog is null || !_saveSnapshot.HasCompleteDeck)
         {
+            DeckResultSummary.Text = "This saved snapshot does not contain a complete 40-card deck, so there is nothing safe to load into Deck Analyzer.";
             return;
         }
 
@@ -1044,6 +1111,11 @@ public partial class MainWindow : Window
 
     private void LoadDeckAnalyzerFromSnapshot(SaveSnapshot snapshot)
     {
+        if (!snapshot.HasCompleteDeck)
+        {
+            return;
+        }
+
         _deckAnalysisCancellation?.Cancel();
         for (var index = 0; index < _deckPickers.Count; index++)
         {
@@ -1097,7 +1169,8 @@ public partial class MainWindow : Window
             Profile: profile,
             PreferredMonsterTypes: ParseTypes(PreferredTypesTextBox.Text),
             PreferredFieldCardId: preferredFieldId,
-            OpponentMonsterTypes: ParseTypes(OpponentTypesTextBox.Text));
+            OpponentMonsterTypes: ParseTypes(OpponentTypesTextBox.Text),
+            AlreadyRedeemedCardNames: ParseCardNames(AlreadyRedeemedCardsTextBox.Text));
         var currentDeck = _deckPickers
             .Where(picker => picker.SelectedCard is not null)
             .Select(picker => picker.SelectedCard!.Id)
@@ -1276,9 +1349,9 @@ public partial class MainWindow : Window
         CampaignPurchaseSummary.Text = campaignPlan.DeckPlan.StarChipsEnabled
             ? string.Create(
                 CultureInfo.InvariantCulture,
-                $"Virtual purchase plan: spend {campaignPlan.DeckPlan.SpentStarChips:N0} of {campaignPlan.DeckPlan.StartingStarChips:N0} saved Star Chips; {campaignPlan.DeckPlan.RemainingStarChips:N0} remain. Nothing was written to the save.")
+                $"Virtual purchase plan: spend {campaignPlan.DeckPlan.SpentStarChips:N0} of {campaignPlan.DeckPlan.StartingStarChips:N0} saved Star Chips; {campaignPlan.DeckPlan.RemainingStarChips:N0} remain. Nothing was written to the save. Password-redemption history is not stored by the game; any names entered above were excluded from this plan.")
             : "No Star Chips used. This deck was built only from the owned quantities entered or loaded above.";
-        PurchasePlanGrid.ItemsSource = campaignPlan.DeckPlan.Purchases;
+        PurchasePlanGrid.ItemsSource = BuildPurchaseRows(campaignPlan.DeckPlan);
         CampaignThreatsGrid.ItemsSource = campaignPlan.Context.Safety.Threats
             .OrderByDescending(threat => threat.Attack)
             .ThenByDescending(threat => threat.Importance)
@@ -1319,6 +1392,24 @@ public partial class MainWindow : Window
         _ => throw new ArgumentOutOfRangeException(nameof(goal), "Manual custom mode has no campaign opponent scope.")
     };
 
+    private static CampaignPurchaseRow[] BuildPurchaseRows(StarChipDeckPlan plan)
+    {
+        long cumulativeSpend = 0;
+        return [.. plan.Purchases.Select(purchase =>
+        {
+            cumulativeSpend += purchase.TotalCost;
+            return new CampaignPurchaseRow(
+                purchase.Card.Name,
+                purchase.Card.Password ?? "—",
+                purchase.Copies,
+                purchase.UnitCost,
+                purchase.TotalCost,
+                cumulativeSpend,
+                Math.Max(0, (long)plan.StartingStarChips - cumulativeSpend),
+                purchase.Rationale);
+        })];
+    }
+
     private static string FormatGuardianStars(IReadOnlyList<string> stars) =>
         stars.Count == 0
             ? "?"
@@ -1328,6 +1419,11 @@ public partial class MainWindow : Window
     private static string[] ParseTypes(string text) =>
         [.. text.Split([',', ';', '/'], StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
             .Distinct(StringComparer.OrdinalIgnoreCase)];
+
+    private static HashSet<string> ParseCardNames(string text) =>
+        new(
+            text.Split([',', ';'], StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries),
+            StringComparer.OrdinalIgnoreCase);
 
     private void ShowDeckReport(DeckAnalysisReport report)
     {
@@ -1577,6 +1673,24 @@ public partial class MainWindow : Window
             recommendation.ContainsGlitch);
     }
 
+    private static LiveAdviceRow ToLiveAdviceRow(
+        TacticalRecommendation recommendation,
+        GuardianLiveAdvice guardianAdvice)
+    {
+        var baseRow = ToResultRow(recommendation);
+        return new LiveAdviceRow(
+            baseRow.Result,
+            baseRow.Attack,
+            baseRow.Defense,
+            baseRow.HandOrder,
+            baseRow.Route,
+            baseRow.Field,
+            baseRow.IsGlitch,
+            guardianAdvice.FirstChoice,
+            guardianAdvice.SecondChoice,
+            guardianAdvice.FirstChoiceOutcomes);
+    }
+
     private static string FormatStep(TacticalStep step) => step.Kind switch
     {
         TacticalStepKind.StartFromHand => $"H{step.SourceSlot} {step.Material.Name}",
@@ -1622,6 +1736,18 @@ public partial class MainWindow : Window
         string Field,
         bool IsGlitch);
 
+    private sealed record LiveAdviceRow(
+        string Result,
+        int Attack,
+        int Defense,
+        string HandOrder,
+        string Route,
+        string Field,
+        bool IsGlitch,
+        string GuardianStar1,
+        string GuardianStar2,
+        string GuardianOutcomes);
+
     private sealed record DeckResultRow(
         string Result,
         int Attack,
@@ -1666,6 +1792,16 @@ public partial class MainWindow : Window
         int Attack,
         string GuardianStars,
         string Source);
+
+    private sealed record CampaignPurchaseRow(
+        string Card,
+        string Password,
+        int Copies,
+        int UnitCost,
+        long TotalCost,
+        long CumulativeSpend,
+        long Remaining,
+        string Rationale);
 
     private sealed record SaveDeckRow(int Slot, Card Card);
 

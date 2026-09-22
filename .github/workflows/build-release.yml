@@ -22,10 +22,26 @@ jobs:
           dotnet-version: 9.0.316
           cache: true
           cache-dependency-path: '**/packages.lock.json'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
       - name: Restore
         run: dotnet restore YfmFusionCompanion.sln --locked-mode
       - name: Test
         run: dotnet test YfmFusionCompanion.sln --configuration Release --no-restore
+      - name: Validate campaign research invariants
+        shell: pwsh
+        run: powershell -NoProfile -ExecutionPolicy Bypass -File tools/Phase1Research/Verify-Phase1ResearchData.ps1 docs/research/data
+      - name: Run Phase 4 acceptance probes
+        run: dotnet run --project tools/YfmCompanion.Phase4Audit --configuration Release -- . phase4-acceptance-results.json
+      - name: Regenerate current user guide
+        shell: pwsh
+        run: |
+          python -m pip install --disable-pip-version-check reportlab==4.4.4
+          python tools/CreateUserGuide.py
+          if (-not (Test-Path -LiteralPath output/pdf/YFM-Fusion-Companion-User-Guide.pdf -PathType Leaf)) {
+            throw 'The regenerated PDF user guide was not created.'
+          }
       - name: Publish Windows x64
         run: dotnet publish src/YfmCompanion.Desktop/YfmCompanion.Desktop.csproj --configuration Release --runtime win-x64 --self-contained true --output publish
       - name: Assemble portable package

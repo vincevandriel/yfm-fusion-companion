@@ -173,7 +173,7 @@
                                     <ColumnDefinition Width="2*" />
                                     <ColumnDefinition Width="Auto" />
                                 </Grid.ColumnDefinitions>
-                                <TextBlock Text="Automatic read-only update every 5 seconds" Foreground="{StaticResource MutedBrush}" VerticalAlignment="Center" />
+                                <TextBlock Text="Automatic read-only update every second" Foreground="{StaticResource MutedBrush}" VerticalAlignment="Center" />
                                 <TextBlock x:Name="LiveStatusText" Grid.Column="1" Text="Checking RetroArch…" TextWrapping="Wrap" Foreground="{StaticResource MutedBrush}" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="12,0" />
                                 <Button x:Name="InspectorToggleButton" Grid.Column="2" Content="INSPECT CARDS" Click="ToggleInspector_Click" Background="#245475" Foreground="{StaticResource TextBrush}" Padding="12,7" Margin="0" />
                             </Grid>
@@ -271,6 +271,9 @@
                                             <DataGridTextColumn Header="HAND ORDER" Binding="{Binding HandOrder}" Width="1.6*" />
                                             <DataGridTextColumn Header="ROUTE" Binding="{Binding Route}" Width="4*" />
                                             <DataGridTextColumn Header="FIELD" Binding="{Binding Field}" Width="1.2*" />
+                                            <DataGridTextColumn Header="STAR 1" Binding="{Binding GuardianStar1}" Width="105" />
+                                            <DataGridTextColumn Header="STAR 2" Binding="{Binding GuardianStar2}" Width="105" />
+                                            <DataGridTextColumn Header="VS FIELD" Binding="{Binding GuardianOutcomes}" Width="120" />
                                         </DataGrid.Columns>
                                     </DataGrid>
                                 </Grid>
@@ -319,6 +322,7 @@
                                     <ColumnDefinition Width="*" />
                                 </Grid.ColumnDefinitions>
                                 <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
                                     <RowDefinition Height="Auto" />
                                     <RowDefinition Height="Auto" />
                                     <RowDefinition Height="Auto" />
@@ -408,6 +412,7 @@
                                     <RowDefinition Height="Auto" />
                                     <RowDefinition Height="Auto" />
                                     <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
                                 </Grid.RowDefinitions>
                                 <StackPanel Margin="0,0,12,8">
                                     <TextBlock Text="PROFILE" Foreground="{StaticResource MutedBrush}" FontSize="11" />
@@ -440,6 +445,10 @@
                                 </StackPanel>
                                 <TextBlock x:Name="OptimizerProfileDescription" Grid.Row="2" Grid.ColumnSpan="3" TextWrapping="Wrap" Foreground="{StaticResource MutedBrush}" VerticalAlignment="Center" />
                                 <CheckBox x:Name="OptimizerIncludeGlitchesCheckBox" Grid.Row="2" Grid.Column="3" Content="Include documented glitch fusions" IsChecked="True" HorizontalAlignment="Right" />
+                                <StackPanel Grid.Row="3" Grid.ColumnSpan="4" Margin="0,6,0,0">
+                                    <TextBlock Text="ALREADY REDEEMED PASSWORD CARD NAMES • comma separated" Foreground="{StaticResource MutedBrush}" FontSize="11" />
+                                    <TextBox x:Name="AlreadyRedeemedCardsTextBox" ToolTip="Optional. These card names are excluded from virtual Star Chip recommendations because a save does not record past password redemption." />
+                                </StackPanel>
                             </Grid>
                         </GroupBox>
                         <Grid Grid.Row="1" Margin="0,14,0,12">
@@ -458,8 +467,8 @@
                         </Grid>
                         <Grid Grid.Row="2">
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="0.9*" />
-                                <ColumnDefinition Width="1.4*" />
+                            <ColumnDefinition Width="0.8*" />
+                            <ColumnDefinition Width="1.6*" />
                             </Grid.ColumnDefinitions>
                             <GroupBox Header="OWNED INVENTORY" Margin="0,0,12,0">
                                 <Grid>
@@ -471,7 +480,7 @@
                                     <DataGrid x:Name="OwnedCardsGrid" Grid.Row="1" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="False" AlternationCount="2" SelectionChanged="OwnedCards_SelectionChanged">
                                         <DataGrid.Columns>
                                             <DataGridTextColumn Header="#" Binding="{Binding Card.Id}" Width="50" IsReadOnly="True" />
-                                            <DataGridTextColumn Header="CARD" Binding="{Binding Card.Name}" Width="*" IsReadOnly="True" />
+                                            <DataGridTextColumn Header="CARD" Binding="{Binding Card.Name}" Width="170" IsReadOnly="True" />
                                             <DataGridTextColumn Header="TYPE" Binding="{Binding Card.PrimaryType}" Width="95" IsReadOnly="True" />
                                             <DataGridTextColumn Header="ATK" Binding="{Binding Card.Attack}" Width="60" IsReadOnly="True" />
                                             <DataGridTextColumn Header="DEF" Binding="{Binding Card.Defense}" Width="60" IsReadOnly="True" />
@@ -510,50 +519,54 @@
                                         <DataGrid x:Name="OptimizedDeckGrid" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True" AlternationCount="2" Margin="0,8,0,0">
                                             <DataGrid.Columns>
                                                 <DataGridTextColumn Header="COPIES" Binding="{Binding Copies}" Width="60" />
-                                                <DataGridTextColumn Header="CARD" Binding="{Binding Card.Name}" Width="1.4*" />
+                                                <DataGridTextColumn Header="CARD" Binding="{Binding Card.Name}" Width="180" />
                                                 <DataGridTextColumn Header="TYPE" Binding="{Binding Card.PrimaryType}" Width="95" />
                                                 <DataGridTextColumn Header="ATK" Binding="{Binding Card.Attack}" Width="60" />
-                                                <DataGridTextColumn Header="WHY INCLUDED" Binding="{Binding ContributionReason}" Width="3*" />
+                                                <DataGridTextColumn Header="WHY INCLUDED" Binding="{Binding ContributionReason}" Width="260" />
                                             </DataGrid.Columns>
                                         </DataGrid>
                                     </TabItem>
                                     <TabItem Header="OUTCOMES">
                                         <DataGrid x:Name="OptimizationTargetsGrid" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True" AlternationCount="2" Margin="0,8,0,0">
                                             <DataGrid.Columns>
-                                                <DataGridTextColumn Header="RESULT" Binding="{Binding Result.Name}" Width="1.4*" />
+                                                <DataGridTextColumn Header="RESULT" Binding="{Binding Result.Name}" Width="180" />
                                                 <DataGridTextColumn Header="FINAL ATK" Binding="{Binding EffectiveAttack}" Width="75" />
                                                 <DataGridTextColumn Header="CHANCE" Binding="{Binding FormattedProbability}" Width="90" />
-                                                <DataGridTextColumn Header="REPRESENTATIVE ROUTE" Binding="{Binding Route}" Width="3*" />
+                                                <DataGridTextColumn Header="REPRESENTATIVE ROUTE" Binding="{Binding Route}" Width="260" />
                                             </DataGrid.Columns>
                                         </DataGrid>
                                     </TabItem>
                                     <TabItem Header="LIMITS">
                                         <DataGrid x:Name="LimitedCardsGrid" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True" AlternationCount="2" Margin="0,8,0,0">
                                             <DataGrid.Columns>
-                                                <DataGridTextColumn Header="CARD" Binding="{Binding Card.Name}" Width="1.5*" />
+                                                <DataGridTextColumn Header="CARD" Binding="{Binding Card.Name}" Width="180" />
                                                 <DataGridTextColumn Header="IN DECK" Binding="{Binding IncludedCopies}" Width="70" />
                                                 <DataGridTextColumn Header="OWNED" Binding="{Binding OwnedCopies}" Width="70" />
-                                                <DataGridTextColumn Header="LIMIT" Binding="{Binding LimitingReason}" Width="2*" />
+                                                <DataGridTextColumn Header="LIMIT" Binding="{Binding LimitingReason}" Width="260" />
                                             </DataGrid.Columns>
                                         </DataGrid>
                                     </TabItem>
                                     <TabItem Header="LOW VALUE">
                                         <DataGrid x:Name="ExcludedCardsGrid" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True" AlternationCount="2" Margin="0,8,0,0">
                                             <DataGrid.Columns>
-                                                <DataGridTextColumn Header="CARD" Binding="{Binding Card.Name}" Width="1.2*" />
+                                                <DataGridTextColumn Header="CARD" Binding="{Binding Card.Name}" Width="180" />
                                                 <DataGridTextColumn Header="TIER" Binding="{Binding Tier}" Width="90" />
                                                 <DataGridTextColumn Header="ROLE" Binding="{Binding Role}" Width="1.2*" />
-                                                <DataGridTextColumn Header="WHY LEFT OUT" Binding="{Binding Rationale}" Width="3*" />
+                                                <DataGridTextColumn Header="WHY LEFT OUT" Binding="{Binding Rationale}" Width="260" />
                                             </DataGrid.Columns>
                                         </DataGrid>
                                     </TabItem>
                                     <TabItem Header="STAR CHIPS">
                                         <DataGrid x:Name="PurchasePlanGrid" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True" AlternationCount="2" Margin="0,8,0,0">
                                             <DataGrid.Columns>
-                                                <DataGridTextColumn Header="CARD" Binding="{Binding Card.Name}" Width="1.4*" />
-                                                <DataGridTextColumn Header="COPIES" Binding="{Binding Copies}" Width="65" />
-                                                <DataGridTextColumn Header="COST" Binding="{Binding TotalCost}" Width="75" />
-                                                <DataGridTextColumn Header="WHY THIS PURCHASE" Binding="{Binding Rationale}" Width="3*" />
+                                                <DataGridTextColumn Header="CARD" Binding="{Binding Card}" Width="145" />
+                                                <DataGridTextColumn Header="PASSWORD" Binding="{Binding Password}" Width="85" />
+                                                <DataGridTextColumn Header="QTY" Binding="{Binding Copies}" Width="48" />
+                                                <DataGridTextColumn Header="EACH" Binding="{Binding UnitCost}" Width="62" />
+                                                <DataGridTextColumn Header="TOTAL" Binding="{Binding TotalCost}" Width="65" />
+                                                <DataGridTextColumn Header="SPENT" Binding="{Binding CumulativeSpend}" Width="65" />
+                                                <DataGridTextColumn Header="LEFT" Binding="{Binding Remaining}" Width="65" />
+                                                <DataGridTextColumn Header="WHY THIS PURCHASE" Binding="{Binding Rationale}" Width="240" />
                                             </DataGrid.Columns>
                                         </DataGrid>
                                     </TabItem>
@@ -650,7 +663,13 @@
                     <DataGridTemplateColumn Header="ROUTE" Width="98">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <TextBlock Text="{Binding Route}" TextWrapping="Wrap" ToolTip="{Binding Route}" Padding="3,2" />
+                                <StackPanel Margin="3,2">
+                                    <TextBlock Text="{Binding Route}" TextWrapping="Wrap" ToolTip="{Binding Route}" />
+                                    <TextBlock Text="{Binding GuardianStar1}" Foreground="{StaticResource MutedBrush}" FontSize="10" />
+                                    <TextBlock Text="{Binding GuardianOutcomes1}" Foreground="{StaticResource MutedBrush}" FontSize="10" />
+                                    <TextBlock Text="{Binding GuardianStar2}" Foreground="{StaticResource MutedBrush}" FontSize="10" />
+                                    <TextBlock Text="{Binding GuardianOutcomes2}" Foreground="{StaticResource MutedBrush}" FontSize="10" />
+                                </StackPanel>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>

@@ -35,7 +35,8 @@ public sealed record DeckOptimizationOptions(
     int? PreferredFieldCardId = null,
     IReadOnlyList<string>? OpponentMonsterTypes = null,
     OpponentSafetyContext? SafetyContext = null,
-    OpponentSafetyContext? SecondarySafetyContext = null);
+    OpponentSafetyContext? SecondarySafetyContext = null,
+    IReadOnlySet<string>? AlreadyRedeemedCardNames = null);
 
 public sealed record DeckSafetyTarget(
     int OpponentId,
@@ -45,14 +46,16 @@ public sealed record DeckSafetyTarget(
     int Attack,
     IReadOnlyList<string> PossibleGuardianStars,
     double Importance,
-    bool IsFusionThreat);
+    bool IsFusionThreat,
+    string? ThreatPrimaryType = null);
 
 public sealed record OpponentSafetyContext(
     string Label,
     IReadOnlyList<int> OpponentIds,
     IReadOnlyList<string> OpponentMonsterTypes,
     IReadOnlyList<DeckSafetyTarget> Threats,
-    string Methodology);
+    string Methodology,
+    int? ActiveFieldCardId = null);
 
 public sealed record CardStrategyAssessment(
     Card Card,
@@ -94,7 +97,11 @@ public sealed record DeckSafetyAssessment(
     string Label,
     double HeuristicScore,
     int ThreatCount,
-    string Methodology);
+    string Methodology,
+    int SafeOpponentCount = 0,
+    int OpponentCount = 0,
+    double WorstOpponentScore = 0,
+    double EstimatedOpeningAnswerCoverage = 0);
 
 public sealed record DeckOptimizationReport(
     IReadOnlyList<OptimizedDeckEntry> Deck,

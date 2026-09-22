@@ -36,15 +36,12 @@ public sealed class CampaignOptimizationContextBuilder(
         int? specificOpponentId = null,
         int threatsPerOpponent = 5)
     {
-        if (threatsPerOpponent <= 0)
-        {
-            throw new ArgumentOutOfRangeException(nameof(threatsPerOpponent));
-        }
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(threatsPerOpponent);
 
         var opponentIds = scope switch
         {
             CampaignOpponentScope.GeneralSafety => _researchData.Policy.GeneralSafetyDuelistIds.Order().ToArray(),
-            CampaignOpponentScope.FinalGauntlet => _researchData.Policy.FinalGauntletDuelistIds.Order().ToArray(),
+            CampaignOpponentScope.FinalGauntlet => [.. _researchData.Policy.FinalGauntletDuelistIds.Order()],
             CampaignOpponentScope.SpecificOpponent when specificOpponentId is not null => [specificOpponentId.Value],
             CampaignOpponentScope.SpecificOpponent => throw new ArgumentException(
                 "A specific opponent ID is required for opponent-specific optimization.", nameof(specificOpponentId)),
@@ -99,9 +96,9 @@ public sealed class CampaignOptimizationContextBuilder(
         var safety = new OpponentSafetyContext(
             label,
             opponentIds,
-            monsterTypes.Order(StringComparer.OrdinalIgnoreCase).ToArray(),
+            [.. monsterTypes.Order(StringComparer.OrdinalIgnoreCase)],
             targets,
-            "Counters use each concrete opponent Deck pool and reachable non-glitch fusion pairs. Guardian-Star scoring assumes the player chooses their better printed star and conservatively tests every printed enemy star. AI star choice is not inferred. Opportunity weights are not win probabilities.");
+            "Counters use each concrete opponent Deck pool and reachable non-glitch two-through-five-material hand chains. A selected field applies its type modifier to both the candidate and threat. Guardian-Star scoring assumes the player chooses their better printed star and conservatively tests every printed enemy star. AI star choice and enemy battle position are not inferred. Opportunity weights are not win probabilities.");
         return new CampaignOptimizationContext(scope, safety, reports);
     }
 
@@ -115,13 +112,13 @@ public sealed class CampaignOptimizationContextBuilder(
             card.Id,
             card.Name,
             card.Attack,
-            new[] { card.GuardianStar1, card.GuardianStar2 }
+            [.. new[] { card.GuardianStar1, card.GuardianStar2 }
                 .Where(star => !string.IsNullOrWhiteSpace(star))
                 .Cast<string>()
-                .Distinct(StringComparer.OrdinalIgnoreCase)
-                .ToArray(),
+                .Distinct(StringComparer.OrdinalIgnoreCase)],
             importance,
-            isFusionThreat);
+            isFusionThreat,
+            card.PrimaryType);
 }
 
 public sealed class CampaignDeckOptimizer(
@@ -142,13 +139,20 @@ public sealed class CampaignDeckOptimizer(
         IProgress<DeckOptimizationProgress>? progress = null,
         CancellationToken cancellationToken = default)
     {
-        var context = _contextBuilder.Build(scope, specificOpponentId);
-        var secondaryContext = scope == CampaignOpponentScope.GeneralSafety
-            ? _contextBuilder.Build(CampaignOpponentScope.FinalGauntlet).Safety
-            : null;
         var baseOptions = options ?? new DeckOptimizationOptions(
             IncludeGlitches: false,
             Profile: DeckStrategyProfile.ControlAndSafety);
+        var context = _contextBuilder.Build(scope, specificOpponentId);
+        context = context with
+        {
+            Safety = context.Safety with { ActiveFieldCardId = baseOptions.PreferredFieldCardId }
+        };
+        var secondaryContext = scope == CampaignOpponentScope.GeneralSafety
+            ? _contextBuilder.Build(CampaignOpponentScope.FinalGauntlet).Safety with
+            {
+                ActiveFieldCardId = baseOptions.PreferredFieldCardId
+            }
+            : null;
         var campaignOptions = baseOptions with
         {
             OpponentMonsterTypes = context.Safety.OpponentMonsterTypes,

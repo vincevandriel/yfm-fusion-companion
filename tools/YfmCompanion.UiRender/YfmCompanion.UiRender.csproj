@@ -9,4 +9,9 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\YfmCompanion.Desktop\YfmCompanion.Desktop.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="..\..\artifacts\yfm.db" Link="Data\yfm.db">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
 </Project>

@@ -94,6 +94,29 @@ public sealed class Ps1MemoryCardReaderTests
     }
 
     [Fact]
+    public void PreservesCollectionWhenDeckIsEmptyAndRejectsInvalidStarChips()
+    {
+        var bytes = CreateMemoryCard(blockNumber: 1);
+        var blockOffset = Ps1MemoryCardReader.BlockSize;
+        foreach (var copyOffset in new[] { Ps1MemoryCardReader.FirstSaveCopyOffset, Ps1MemoryCardReader.SecondSaveCopyOffset })
+        {
+            Array.Clear(bytes, blockOffset + copyOffset, Ps1MemoryCardReader.DeckSize * sizeof(ushort));
+            BinaryPrimitives.WriteUInt32LittleEndian(
+                bytes.AsSpan(blockOffset + copyOffset + Ps1MemoryCardReader.StarChipsOffset, sizeof(uint)),
+                uint.MaxValue);
+        }
+
+        var snapshot = Assert.Single(Ps1MemoryCardReader.Parse("empty-deck.srm", DateTime.UnixEpoch, bytes));
+
+        Assert.False(snapshot.HasCompleteDeck);
+        Assert.All(snapshot.DeckCardIds, cardId => Assert.Equal(0, cardId));
+        Assert.Equal(2, snapshot.GetChestQuantity(41));
+        Assert.Null(snapshot.StarChips);
+        Assert.Contains(snapshot.Warnings, warning => warning.Contains("deck", StringComparison.OrdinalIgnoreCase));
+        Assert.Contains(snapshot.Warnings, warning => warning.Contains("Star Chip", StringComparison.OrdinalIgnoreCase));
+    }
+
+    [Fact]
     public void LockedFileReturnsFailureAndLeavesCallerOperational()
     {
         if (!OperatingSystem.IsWindows())

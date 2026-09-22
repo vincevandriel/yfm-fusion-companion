@@ -30,7 +30,7 @@ def footer(pdf: canvas.Canvas, page_number: int) -> None:
     pdf.line(34, 24, PAGE_W - 34, 24)
     pdf.setFillColor(MUTED)
     pdf.setFont("Helvetica", 7.5)
-    pdf.drawString(36, 12, "YFM Fusion Companion v1.0.0 - public Windows x64 guide")
+    pdf.drawString(36, 12, "YFM Fusion Companion - public Windows x64 guide")
     pdf.drawRightString(PAGE_W - 36, 12, f"Page {page_number}")
 
 
@@ -175,7 +175,7 @@ def cover(pdf: canvas.Canvas) -> None:
     pdf.drawCentredString(PAGE_W / 2, PAGE_H - 220, "Illustrated User Guide")
     pdf.setFillColor(MUTED)
     pdf.setFont("Helvetica", 12)
-    pdf.drawCentredString(PAGE_W / 2, PAGE_H - 253, "Yu-Gi-Oh! Forbidden Memories - Windows x64 - Version 1.0.0")
+    pdf.drawCentredString(PAGE_W / 2, PAGE_H - 253, "Yu-Gi-Oh! Forbidden Memories - Windows x64 companion")
     pdf.setStrokeColor(CYAN)
     pdf.setLineWidth(2)
     pdf.line(PAGE_W / 2 - 165, PAGE_H - 278, PAGE_W / 2 + 165, PAGE_H - 278)
@@ -196,7 +196,7 @@ def installation_page(pdf: canvas.Canvas) -> None:
     pdf.setFont("Helvetica-Bold", 15)
     pdf.drawString(58, 492, "Four steps")
     draw_bullets(pdf, 58, 461, 325, [
-        "Download yfm_companion_windows_x64_v1.0.0.zip from the Releases page.",
+        "Download the latest yfm_companion_windows_x64 release ZIP from the Releases page.",
         "Extract the entire ZIP. Never run the program from inside the ZIP preview.",
         "Run install_dependencies.cmd first. It checks Windows x64 and verifies that the executable and database stayed together.",
         "Start YFM Fusion Companion.exe. The bottom line should report 722 cards and 25,146 resolved fusion pairs.",
@@ -315,7 +315,7 @@ def build() -> None:
     pdf = canvas.Canvas(str(OUTPUT), pagesize=(PAGE_W, PAGE_H), pageCompression=1)
     pdf.setTitle("YFM Fusion Companion - Illustrated User Guide")
     pdf.setAuthor("Vincent van Driel")
-    pdf.setSubject("Public user manual for YFM Fusion Companion v1.0.0")
+    pdf.setSubject("Public user manual for YFM Fusion Companion")
 
     cover(pdf)
     installation_page(pdf)
@@ -333,7 +333,7 @@ def build() -> None:
     screenshot_page(pdf, 6, "Live Duel", "Validated state refreshes automatically every second", "live-duel.png", [
         "Connection and read-only status.", "Life Points, terrain, and update health.",
         "Current ordered five-card hand.", "Player and opponent active field positions.",
-        "Best legal live routes.", "Open the selected-card inspector.",
+        "Best legal live routes and both guardian-star chains; F#? preserves unknown opponent state.", "Open the selected-card inspector.",
     ], [(0.47, 0.22), (0.62, 0.30), (0.13, 0.48), (0.66, 0.48), (0.48, 0.77), (0.93, 0.22)])
     screenshot_page(pdf, 7, "Card Inspector", "Select a live card, then inspect basic and advanced catalog data", "live-duel-inspector.png", [
         "Select a card in any live table.", "Inspector slides over the right edge.",
@@ -341,18 +341,19 @@ def build() -> None:
     ], [(0.20, 0.47), (0.86, 0.27), (0.86, 0.45), (0.86, 0.69)])
     screenshot_page(pdf, 8, "Save Snapshot", "Imports supported memory-card images without modifying them", "save-snapshot.png", [
         "Refresh discovery or choose an SRM/MCR file.", "Source, timestamp, and validation details.",
-        "Saved 40-card constructed deck.", "Chest, deck, total owned, and Library flag.",
+        "Saved 40-card constructed deck; incomplete decks cannot be loaded into Deck Analyzer.", "Chest, deck, total owned, and Library flag.",
         "Copy snapshot data into the two analysis tabs.",
     ], [(0.19, 0.22), (0.24, 0.38), (0.18, 0.66), (0.70, 0.66), (0.58, 0.22)])
-    screenshot_page(pdf, 9, "Owned-card Optimizer", "Builds a legal 40-card deck for the selected strategy and matchup", "owned-card-optimizer.png", [
-        "Choose profile, focus types, field, and opponent types.", "Search and enter owned quantities.",
-        "Build, cancel, clear, or set filtered cards to three.", "Exact finalist metrics.",
-        "Deck, outcomes, limits, and exclusions explain the result.",
-    ], [(0.48, 0.21), (0.20, 0.56), (0.22, 0.34), (0.63, 0.43), (0.70, 0.56)])
+    screenshot_page(pdf, 9, "Campaign and owned-card optimizer", "Builds a legal 40-card deck for general play, one duelist, or the final gauntlet", "campaign-plan.png", [
+        "Choose campaign scope, target duelist, profile, field, and types.", "Enter or load owned quantities; visible rows match the calculation.",
+        "Saved Star Chips are optional and only create a virtual purchase plan.", "Enter already redeemed password-card names so they are excluded.",
+        "Safety summary, exact hand metrics, purchases, threats, outcomes, limits, and exclusions explain the result.",
+    ], [(0.33, 0.21), (0.18, 0.62), (0.58, 0.27), (0.46, 0.36), (0.69, 0.65)])
     screenshot_page(pdf, 10, "Compact Live", "A narrow right-side companion that leaves the central duel area visible", "compact.png", [
         "Result name and effective ATK.", "Hand routes use plain slot numbers.",
-        "F(1)-F(5) are monster positions; F(6)-F(10) are spell/trap positions.", "PIN stays above the game; FULL restores the normal window.",
-    ], [(0.34, 0.10), (0.76, 0.10), (0.80, 0.15), (0.85, 0.02)])
+        "F(1)-F(5) are monster positions; F(6)-F(10) are spell/trap positions.", "Two guardian chains and F# outcomes stay beneath the route; ? means unknown.",
+        "PIN stays above the game; FULL restores the normal window.",
+    ], [(0.34, 0.10), (0.76, 0.10), (0.80, 0.15), (0.80, 0.23), (0.85, 0.02)])
     safety_page(pdf)
     pdf.save()
 

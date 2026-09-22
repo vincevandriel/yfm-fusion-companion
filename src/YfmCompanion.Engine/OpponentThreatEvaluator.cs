@@ -18,7 +18,7 @@ public sealed record OpponentThreatReport(
     string Methodology)
 {
     public const string NonProbabilityMethodology =
-        "Threat ordering uses weighted material-pair opportunity and reachable ATK. It is not a duel win probability or an exact generated-deck probability.";
+        "Threat ordering uses weighted material opportunity for reachable two-through-five-material hand chains and reachable ATK. It is not a duel win probability or an exact generated-deck probability.";
 }
 
 public sealed class OpponentThreatEvaluator(FusionCatalog catalog)
@@ -31,10 +31,7 @@ public sealed class OpponentThreatEvaluator(FusionCatalog catalog)
         int maximumFusionThreats = 20)
     {
         ArgumentNullException.ThrowIfNull(deckPool);
-        if (maximumFusionThreats <= 0)
-        {
-            throw new ArgumentOutOfRangeException(nameof(maximumFusionThreats));
-        }
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(maximumFusionThreats);
 
         var entries = deckPool.ToArray();
         if (entries.Length == 0)
@@ -67,6 +64,7 @@ public sealed class OpponentThreatEvaluator(FusionCatalog catalog)
         }
 
         var accumulated = new Dictionary<int, ThreatAccumulator>();
+        var currentChainStates = new Dictionary<int, ChainState>();
         for (var firstIndex = 0; firstIndex < entries.Length; firstIndex++)
         {
             for (var secondIndex = firstIndex; secondIndex < entries.Length; secondIndex++)
@@ -83,22 +81,41 @@ public sealed class OpponentThreatEvaluator(FusionCatalog catalog)
                     continue;
                 }
 
-                if (!accumulated.TryGetValue(resultCardId, out var threat))
-                {
-                    threat = new ThreatAccumulator(_catalog.GetCard(resultCardId));
-                    accumulated.Add(resultCardId, threat);
-                }
+                var opportunityWeight = SaturatingMultiply(first.Weight, second.Weight);
+                AddThreat(resultCardId, opportunityWeight, first.CardId, second.CardId, accumulated);
+                AddChainState(currentChainStates, resultCardId, opportunityWeight, first.CardId, second.CardId);
+            }
+        }
 
-                var opportunityWeight = checked((long)first.Weight * second.Weight);
-                threat.OpportunityWeight = checked(threat.OpportunityWeight + opportunityWeight);
-                threat.StrongestMaterialPairAttack = Math.Max(
-                    threat.StrongestMaterialPairAttack,
-                    Math.Max(_catalog.GetCard(first.CardId).Attack, _catalog.GetCard(second.CardId).Attack));
-                if (threat.RepresentativePairs.Count < 3)
+        for (var materialCount = 3; materialCount <= 5 && currentChainStates.Count > 0; materialCount++)
+        {
+            var nextChainStates = new Dictionary<int, ChainState>();
+            foreach (var state in currentChainStates)
+            {
+                foreach (var next in entries)
                 {
-                    threat.RepresentativePairs.Add((first.CardId, second.CardId));
+                    if (!_catalog.TryResolvePair(state.Key, next.CardId, includeGlitches, out var resultCardId, out _))
+                    {
+                        continue;
+                    }
+
+                    var opportunityWeight = SaturatingMultiply(state.Value.OpportunityWeight, next.Weight);
+                    AddThreat(
+                        resultCardId,
+                        opportunityWeight,
+                        state.Value.FirstCardId,
+                        state.Value.SecondCardId,
+                        accumulated);
+                    AddChainState(
+                        nextChainStates,
+                        resultCardId,
+                        opportunityWeight,
+                        state.Value.FirstCardId,
+                        state.Value.SecondCardId);
                 }
             }
+
+            currentChainStates = nextChainStates;
         }
 
         var fusionThreats = accumulated.Values
@@ -120,6 +137,59 @@ public sealed class OpponentThreatEvaluator(FusionCatalog catalog)
             entries.Sum(entry => (long)entry.Weight),
             OpponentThreatReport.NonProbabilityMethodology);
     }
+
+    private static void AddChainState(
+        IDictionary<int, ChainState> states,
+        int resultCardId,
+        long opportunityWeight,
+        int firstCardId,
+        int secondCardId)
+    {
+        if (states.TryGetValue(resultCardId, out var existing))
+        {
+            states[resultCardId] = existing with
+            {
+                OpportunityWeight = SaturatingAdd(existing.OpportunityWeight, opportunityWeight)
+            };
+            return;
+        }
+
+        states.Add(resultCardId, new ChainState(opportunityWeight, firstCardId, secondCardId));
+    }
+
+    private void AddThreat(
+        int resultCardId,
+        long opportunityWeight,
+        int firstCardId,
+        int secondCardId,
+        IDictionary<int, ThreatAccumulator> accumulated)
+    {
+        if (!accumulated.TryGetValue(resultCardId, out var threat))
+        {
+            threat = new ThreatAccumulator(_catalog.GetCard(resultCardId));
+            accumulated.Add(resultCardId, threat);
+        }
+
+        threat.OpportunityWeight = SaturatingAdd(threat.OpportunityWeight, opportunityWeight);
+        threat.StrongestMaterialPairAttack = Math.Max(
+            threat.StrongestMaterialPairAttack,
+            Math.Max(_catalog.GetCard(firstCardId).Attack, _catalog.GetCard(secondCardId).Attack));
+        if (threat.RepresentativePairs.Count < 3)
+        {
+            threat.RepresentativePairs.Add((firstCardId, secondCardId));
+        }
+    }
+
+    private static long SaturatingMultiply(long first, long second) =>
+        first > 0 && second > long.MaxValue / first ? long.MaxValue : first * second;
+
+    private static long SaturatingAdd(long first, long second) =>
+        first > long.MaxValue - second ? long.MaxValue : first + second;
+
+    private sealed record ChainState(
+        long OpportunityWeight,
+        int FirstCardId,
+        int SecondCardId);
 
     private sealed class ThreatAccumulator(Card result)
     {
