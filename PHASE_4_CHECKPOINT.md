@@ -23,6 +23,6 @@ The nine findings from the independent Phase 4 audit have been repaired and re-a
 - Unknown enemy battle position or active guardian star is displayed as `F#?`; the application does not guess.
 - Campaign output is labeled modeled/best-found rather than a guaranteed global optimum or win rate.
 - Saves, game memory, ROMs, and RetroArch configuration remain read-only.
-- No GitHub tag, public release, installed copy, save, or emulator configuration was changed by this repair.
+- The repair itself did not alter a save, emulator configuration, ROM, or game memory. Its subsequently verified public publication is recorded in `PUBLIC_RELEASE_CHECKPOINT.md`.
 
-The next external action would be publishing the verified source/candidate, but that is separate from this completed local repair gate.
+The verified source/candidate was subsequently published as v1.1.0. See `PUBLIC_RELEASE_CHECKPOINT.md` for the remote workflow, asset hashes, and independent fresh-download verification.
