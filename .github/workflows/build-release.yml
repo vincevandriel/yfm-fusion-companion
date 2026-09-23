@@ -49,9 +49,24 @@ jobs:
         run: |
           New-Item -ItemType Directory -Path package | Out-Null
           Copy-Item publish/* package -Recurse
+          foreach ($requiredPublishFile in @(
+            'YFM Fusion Companion.exe',
+            'Data/yfm.db',
+            'ResearchData/guardian_star_rules.json',
+            'ResearchData/opponent_reference.json',
+            'ResearchData/optimizer_policy.json',
+            'ResearchData/source_manifest.json'
+          )) {
+            if (-not (Test-Path -LiteralPath (Join-Path 'publish' $requiredPublishFile) -PathType Leaf)) {
+              throw "Required published file is missing: $requiredPublishFile"
+            }
+          }
           Copy-Item install_dependencies.ps1, install_dependencies.cmd, README.md, RELEASE_NOTES.md, LICENSE, THIRD_PARTY_NOTICES.md package
           New-Item -ItemType Directory -Path package/Documentation | Out-Null
-          Copy-Item output/pdf/YFM-Fusion-Companion-User-Guide.pdf package/Documentation
+          Copy-Item docs/SETUP.md, docs/LIMITATIONS.md, output/pdf/YFM-Fusion-Companion-User-Guide.pdf package/Documentation
+          if (-not (Test-Path -LiteralPath 'package/Data/yfm.db' -PathType Leaf)) {
+            throw 'The portable package is missing Data/yfm.db.'
+          }
           Compress-Archive -Path package/* -DestinationPath yfm_companion_windows_x64_${{ github.ref_name }}.zip
           $zipHash = (Get-FileHash -Algorithm SHA256 yfm_companion_windows_x64_${{ github.ref_name }}.zip).Hash
           $pdfHash = (Get-FileHash -Algorithm SHA256 output/pdf/YFM-Fusion-Companion-User-Guide.pdf).Hash
