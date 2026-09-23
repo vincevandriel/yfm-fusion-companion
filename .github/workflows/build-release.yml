@@ -15,14 +15,14 @@ jobs:
   windows:
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-dotnet@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-dotnet@v6
         with:
           # Keep implicit framework/linker dependencies aligned with the audited lock files.
           dotnet-version: 9.0.316
           cache: true
           cache-dependency-path: '**/packages.lock.json'
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with:
           python-version: '3.12'
       - name: Restore
@@ -74,7 +74,7 @@ jobs:
             "$zipHash  yfm_companion_windows_x64_${{ github.ref_name }}.zip"
             "$pdfHash  YFM-Fusion-Companion-User-Guide.pdf"
           ) | Set-Content -Encoding ascii yfm_companion_windows_x64_${{ github.ref_name }}_SHA256.txt
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: yfm_companion_windows_x64
           path: |
