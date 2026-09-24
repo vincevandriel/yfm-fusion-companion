@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><OutputType>Exe</OutputType></PropertyGroup>
+  <PropertyGroup Condition="'$(LegacyBaseline)' == 'true'">
+    <DefineConstants>$(DefineConstants);LEGACY_BASELINE</DefineConstants>
+  </PropertyGroup>
+  <ItemGroup Condition="'$(LegacyBaseline)' == 'true'">
+    <Compile Remove="LiveOptimizerBenchmark.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\YfmCompanion.Engine\YfmCompanion.Engine.csproj" />
+    <ProjectReference Include="..\..\src\YfmCompanion.RetroArch\YfmCompanion.RetroArch.csproj" />
+  </ItemGroup>
+</Project>

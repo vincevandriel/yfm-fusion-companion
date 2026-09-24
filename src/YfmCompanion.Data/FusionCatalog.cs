@@ -1,4 +1,6 @@
 using Microsoft.Data.Sqlite;
+using System.Security.Cryptography;
+using System.Text.Json;
 
 namespace YfmCompanion.Data;
 
@@ -12,6 +14,20 @@ public sealed class FusionCatalog
     private readonly Dictionary<(int Low, int High), IReadOnlyList<FusionRuleReference>> _ruleReferences;
     private readonly HashSet<(int EquipCardId, int EquippedCardId)> _equipCompatibility;
     private readonly Dictionary<int, IReadOnlyList<string>> _categories;
+    private string? _contentIdentity;
+
+    // A bounded, short transaction used before creating a resumable search checkpoint.
+    // Hash actual immutable tables directly, rather than scanning all pairs once per card.
+    public string ContentIdentity => LazyInitializer.EnsureInitialized(ref _contentIdentity, () =>
+        Convert.ToHexString(SHA256.HashData(JsonSerializer.SerializeToUtf8Bytes(new
+        {
+            Schema = "catalog-content-v1",
+            Cards = _cards.Values.OrderBy(c => c.Id).ToArray(),
+            Pairs = _pairs.Values.OrderBy(p => p.MaterialLowId).ThenBy(p => p.MaterialHighId).ToArray(),
+            Equips = _equipCompatibility.OrderBy(p => p.EquipCardId).ThenBy(p => p.EquippedCardId)
+                .Select(p => new { p.EquipCardId, p.EquippedCardId }).ToArray(),
+            Categories = _categories.OrderBy(p => p.Key).Select(p => new { Id = p.Key, Values = p.Value }).ToArray()
+        }))));
 
     public FusionCatalog(
         IEnumerable<Card> cards,
@@ -45,7 +61,7 @@ public sealed class FusionCatalog
             .GroupBy(item => item.CardId)
             .ToDictionary(
                 group => group.Key,
-                group => (IReadOnlyList<string>)[.. group.Select(item => item.Category).Distinct(StringComparer.OrdinalIgnoreCase).Order(StringComparer.OrdinalIgnoreCase)]);
+                group => (IReadOnlyList<string>)Array.AsReadOnly(group.Select(item => item.Category).Distinct(StringComparer.OrdinalIgnoreCase).Order(StringComparer.OrdinalIgnoreCase).ToArray()));
 
         foreach (var pair in _pairs.Values)
         {

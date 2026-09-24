@@ -1,391 +1,254 @@
+using System.Diagnostics;
 using YfmCompanion.Data;
 
 namespace YfmCompanion.Engine;
 
-public sealed class DeckAnalyzer(FusionCatalog catalog)
+public sealed class DeckAnalyzer
 {
-    public DeckAnalysisReport Analyze(
-        IEnumerable<int> deckCardIds,
-        bool includeGlitches = true,
-        IProgress<DeckAnalysisProgress>? progress = null,
+    private const int Offset = 723;
+    private readonly FusionCatalog _catalog;
+    private readonly BoundedAnalysisCache _cache;
+    private readonly object _gate = new();
+    private readonly HandRoute[] _routes = new HandRoute[2169];
+    private readonly int[] _stamps = new int[2169];
+    private readonly List<int> _outcomes = new(64);
+    private readonly Accumulator _accumulator = new();
+    private int _stamp;
+    private int[] _hand = [];
+    private bool _includeGlitches;
+    private CancellationToken _token;
+
+    public DeckAnalyzer(FusionCatalog catalog, long cacheByteLimit = 256L * 1024 * 1024)
+    {
+        ArgumentNullException.ThrowIfNull(catalog);
+        ArgumentOutOfRangeException.ThrowIfNegative(cacheByteLimit);
+        _catalog = catalog;
+        _cache = new(cacheByteLimit);
+    }
+
+    public AnalysisCacheDiagnostics CacheDiagnostics { get { lock (_gate) return _cache.Diagnostics; } }
+
+    public DeckAnalysisReport Analyze(IEnumerable<int> deckCardIds, bool includeGlitches = true,
+        IProgress<DeckAnalysisProgress>? progress = null, CancellationToken cancellationToken = default) =>
+        AnalyzeCore(deckCardIds, includeGlitches, null, 0, progress, cancellationToken);
+
+    public DeckAnalysisReport AnalyzeSampled(IEnumerable<int> deckCardIds, int sampleCount, int seed,
+        bool includeGlitches = true, IProgress<DeckAnalysisProgress>? progress = null,
         CancellationToken cancellationToken = default)
     {
-        var deck = deckCardIds.ToArray();
-        if (deck.Length > 40)
-        {
-            throw new ArgumentException("A deck may contain at most 40 cards.", nameof(deckCardIds));
-        }
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(sampleCount);
+        return AnalyzeCore(deckCardIds, includeGlitches, sampleCount, seed, progress, cancellationToken);
+    }
 
-        foreach (var cardId in deck)
+    private DeckAnalysisReport AnalyzeCore(IEnumerable<int> deckCardIds, bool glitches, int? samples, int seed,
+        IProgress<DeckAnalysisProgress>? progress, CancellationToken token)
+    {
+        ArgumentNullException.ThrowIfNull(deckCardIds);
+        token.ThrowIfCancellationRequested();
+        var deck = deckCardIds.Order().ToArray();
+        if (deck.Length > 40) throw new ArgumentException("A deck may contain at most 40 cards.", nameof(deckCardIds));
+        foreach (var id in deck) _ = _catalog.GetCard(id);
+        while (!Monitor.TryEnter(_gate, 50)) token.ThrowIfCancellationRequested();
+        try
         {
-            _ = catalog.GetCard(cardId);
+            token.ThrowIfCancellationRequested();
+            var handSize = Math.Min(5, deck.Length);
+            var total = deck.Length < 2 ? 0 : samples ?? Choose(deck.Length, handSize);
+            progress?.Report(new(0, total));
+            token.ThrowIfCancellationRequested();
+            var key = new AnalysisCacheKey(0, $"D:{glitches}:{samples}:{seed}:{string.Join(',', deck)}");
+            if (_cache.TryGet<DeckAnalysisReport>(key, out var cached))
+            {
+                progress?.Report(new(total, total));
+                return cached!;
+            }
+            var accumulator = _accumulator;
+            accumulator.Reset(total);
+            var watch = Stopwatch.StartNew();
+            var hand = new int[handSize];
+            void Evaluate(long weight)
+            {
+                token.ThrowIfCancellationRequested();
+                accumulator.Add(EvaluateHand(hand, glitches, token), weight, _catalog);
+                // Copy multiplicities can jump over count thresholds; elapsed time cannot miss them.
+                if (watch.ElapsedMilliseconds >= 200)
+                {
+                    progress?.Report(new(accumulator.Completed, total));
+                    watch.Restart();
+                }
+            }
+            if (total > 0 && samples is { } count)
+            {
+                var random = new Random(seed);
+                var positions = new int[deck.Length];
+                for (var sample = 0; sample < count; sample++)
+                {
+                    for (var p = 0; p < positions.Length; p++) positions[p] = p;
+                    for (var p = 0; p < handSize; p++)
+                    {
+                        var next = random.Next(p, positions.Length);
+                        (positions[p], positions[next]) = (positions[next], positions[p]);
+                        hand[p] = deck[positions[p]];
+                    }
+                    Array.Sort(hand);
+                    Evaluate(1);
+                }
+            }
+            else if (total > 0)
+            {
+                var groups = deck.GroupBy(id => id).Select(g => (Id: g.Key, Count: g.Count())).ToArray();
+                var suffix = new int[groups.Length + 1];
+                for (var i = groups.Length - 1; i >= 0; i--) suffix[i] = suffix[i + 1] + groups[i].Count;
+                void Enumerate(int group, int used, long weight)
+                {
+                    token.ThrowIfCancellationRequested();
+                    if (used == handSize) { Evaluate(weight); return; }
+                    if (group == groups.Length || suffix[group] < handSize - used) return;
+                    var minimum = Math.Max(0, handSize - used - suffix[group + 1]);
+                    var maximum = Math.Min(groups[group].Count, handSize - used);
+                    for (var take = minimum; take <= maximum; take++)
+                    {
+                        Array.Fill(hand, groups[group].Id, used, take);
+                        Enumerate(group + 1, used + take, checked(weight * Choose(groups[group].Count, take)));
+                    }
+                }
+                Enumerate(0, 0, 1);
+            }
+            if (accumulator.Completed != total) throw new InvalidDataException("Hand accounting did not match its expected total.");
+            var report = accumulator.Report(deck.Length, handSize, samples, _catalog);
+            _cache.Add(key, report, 512 + report.FusionResults.Count * 1536L);
+            progress?.Report(new(total, total));
+            return report;
         }
+        finally { Monitor.Exit(_gate); }
+    }
 
-        if (deck.Length < 2)
+    private HandRoute[] EvaluateHand(int[] hand, bool glitches, CancellationToken token)
+    {
+        ulong packed = (ulong)hand.Length << 50;
+        for (var i = 0; i < hand.Length; i++) packed |= (ulong)hand[i] << (i * 10);
+        var key = new AnalysisCacheKey(packed | (glitches ? 1UL << 54 : 0));
+        if (_cache.TryGet<HandRoute[]>(key, out var cached)) return cached!;
+        if (_stamp == int.MaxValue) { Array.Clear(_stamps); _stamp = 0; }
+        _stamp++;
+        _outcomes.Clear();
+        _hand = hand;
+        _includeGlitches = glitches;
+        _token = token;
+        for (var start = 0; start < hand.Length; start++) Explore(hand[start], 1 << start, 1, (ulong)hand[start], 0, false);
+        // Empty hands are cheap to recompute and common in sparse starter inventories.
+        // Do not spend an LRU node/key on each of hundreds of thousands of empty outcomes.
+        var value = _outcomes.Count == 0 ? Array.Empty<HandRoute>() : new HandRoute[_outcomes.Count];
+        for (var i = 0; i < value.Length; i++) value[i] = _routes[_outcomes[i]];
+        if (value.Length > 0) _cache.Add(key, value, 32L + value.Length * 40L);
+        return value;
+    }
+
+    private void Record(HandRoute route)
+    {
+        if (_stamps[route.Outcome] != _stamp)
         {
-            return new DeckAnalysisReport(deck.Length, deck.Length, 0, 0, 0, 0, 0, 0, 0, []);
+            _stamps[route.Outcome] = _stamp;
+            _outcomes.Add(route.Outcome);
+            _routes[route.Outcome] = route;
         }
+        else if (route.BetterThan(_routes[route.Outcome])) _routes[route.Outcome] = route;
+    }
 
-        var handSize = Math.Min(5, deck.Length);
-        var totalHands = Choose(deck.Length, handSize);
-        var accumulator = new AnalysisAccumulator(catalog, totalHands);
-        var groups = deck
-            .GroupBy(cardId => cardId)
-            .OrderBy(group => group.Key)
-            .Select(group => new CardMultiplicity(group.Key, group.Count()))
-            .ToArray();
-        var hand = new int[handSize];
-        EnumerateHandCompositions(
-            groups,
-            hand,
-            groupIndex: 0,
-            handIndex: 0,
-            remainingCards: handSize,
-            multiplicity: 1,
-            includeGlitches,
-            accumulator,
-            cancellationToken,
-            progress);
-        progress?.Report(new DeckAnalysisProgress(totalHands, totalHands));
-        return accumulator.CreateReport(deck.Length, handSize);
+    private void Explore(int current, int mask, int depth, ulong materials, ulong results, bool hasGlitch)
+    {
+        _token.ThrowIfCancellationRequested();
+        for (var next = 0; next < _hand.Length; next++)
+        {
+            if ((mask & (1 << next)) != 0) continue;
+            if (_catalog.CanEquip(_hand[next], current))
+            {
+                var bonus = _hand[next] == 657 ? 1000 : 500;
+                Record(new(current + (bonus == 1000 ? 2 : 1) * Offset,
+                    materials | (ulong)_hand[next] << (depth * 10),
+                    results | (ulong)current << ((depth - 1) * 10), (byte)(depth + 1), hasGlitch));
+            }
+            if (depth == 1 && (_hand[next] < current || (_hand[next] == current && (1 << next) <= mask))) continue;
+            if (!_catalog.TryResolvePair(current, _hand[next], _includeGlitches, out var result, out var glitch)) continue;
+            var m = materials | (ulong)_hand[next] << (depth * 10);
+            var r = results | (ulong)result << ((depth - 1) * 10);
+            Record(new(result, m, r, (byte)(depth + 1), hasGlitch || glitch));
+            Explore(result, mask | (1 << next), depth + 1, m, r, hasGlitch || glitch);
+        }
     }
 
     public static long Choose(int population, int selected)
     {
-        if (selected < 0 || population < 0 || selected > population)
-        {
-            return 0;
-        }
-
+        if (selected < 0 || population < 0 || selected > population) return 0;
         selected = Math.Min(selected, population - selected);
         long result = 1;
-        for (var index = 1; index <= selected; index++)
-        {
-            result = checked(result * (population - selected + index) / index);
-        }
-
+        for (var i = 1; i <= selected; i++) result = checked(result * (population - selected + i) / i);
         return result;
     }
 
-    private static void EnumerateHandCompositions(
-        IReadOnlyList<CardMultiplicity> groups,
-        int[] hand,
-        int groupIndex,
-        int handIndex,
-        int remainingCards,
-        long multiplicity,
-        bool includeGlitches,
-        AnalysisAccumulator accumulator,
-        CancellationToken cancellationToken,
-        IProgress<DeckAnalysisProgress>? progress)
+    private readonly record struct HandRoute(int Outcome, ulong Materials, ulong Results, byte Count, bool Glitch)
     {
-        if (remainingCards == 0)
+        public int CardId => Outcome % Offset;
+        public int Bonus => Outcome / Offset * 500;
+        public bool BetterThan(HandRoute other) => Glitch.CompareTo(other.Glitch) < 0 || (Glitch == other.Glitch && Count < other.Count);
+        public DeckFusionRoute Materialize(FusionCatalog catalog)
         {
-            cancellationToken.ThrowIfCancellationRequested();
-            accumulator.EvaluateHand(hand, includeGlitches, multiplicity);
-            if ((accumulator.CompletedHands & 0xFFF) == 0)
-            {
-                progress?.Report(new DeckAnalysisProgress(accumulator.CompletedHands, accumulator.TotalHands));
-            }
-
-            return;
-        }
-
-        if (groupIndex >= groups.Count)
-        {
-            return;
-        }
-
-        var availableInLaterGroups = 0;
-        for (var index = groupIndex + 1; index < groups.Count; index++)
-        {
-            availableInLaterGroups += groups[index].Count;
-        }
-
-        var group = groups[groupIndex];
-        var minimumTake = Math.Max(0, remainingCards - availableInLaterGroups);
-        var maximumTake = Math.Min(group.Count, remainingCards);
-        for (var take = minimumTake; take <= maximumTake; take++)
-        {
-            for (var index = 0; index < take; index++)
-            {
-                hand[handIndex + index] = group.CardId;
-            }
-
-            EnumerateHandCompositions(
-                groups,
-                hand,
-                groupIndex + 1,
-                handIndex + take,
-                remainingCards - take,
-                checked(multiplicity * Choose(group.Count, take)),
-                includeGlitches,
-                accumulator,
-                cancellationToken,
-                progress);
+            var materials = new Card[Count];
+            var results = new Card[Count - 1];
+            for (var i = 0; i < materials.Length; i++) materials[i] = catalog.GetCard((int)(Materials >> (i * 10) & 1023));
+            for (var i = 0; i < results.Length; i++) results[i] = catalog.GetCard((int)(Results >> (i * 10) & 1023));
+            return new(Array.AsReadOnly(materials), Array.AsReadOnly(results), Glitch, Bonus > 0, Bonus);
         }
     }
 
-    private sealed class AnalysisAccumulator(FusionCatalog catalog, long totalHands)
+    private sealed class Accumulator
     {
-        private const int EquippedOutcomeOffset = 723;
-        private readonly long[] _handsByOutcome = new long[2_169];
-        private readonly DeckFusionRoute?[] _representativeRoutes = new DeckFusionRoute?[2_169];
-        private readonly int[] _seenStamp = new int[2_169];
-        private readonly List<int> _seenOutcomes = new(64);
-        private int _stamp;
-        private long _handsWithAny;
-        private long _hands2000;
-        private long _hands2500;
-        private long _hands2800;
-        private long _hands3000;
-        private long _sumBestAttack;
+        private long _total;
+        private readonly long[] _counts = new long[2169];
+        private readonly HandRoute[] _representatives = new HandRoute[2169];
+        private long _any, _at2000, _at2500, _at2800, _at3000, _sum;
+        public long Completed { get; private set; }
 
-        public long CompletedHands { get; private set; }
-        public long TotalHands => totalHands;
-
-        public void EvaluateHand(int[] hand, bool includeGlitches, long multiplicity)
+        public void Reset(long total)
         {
-            _stamp++;
-            _seenOutcomes.Clear();
-            Span<byte> sequence = stackalloc byte[5];
-            Span<int> intermediateResults = stackalloc int[4];
-            Span<bool> glitches = stackalloc bool[4];
-            for (var start = 0; start < hand.Length; start++)
-            {
-                sequence[0] = (byte)start;
-                Explore(
-                    hand,
-                    hand[start],
-                    usedMask: 1 << start,
-                    depth: 1,
-                    sequence,
-                    intermediateResults,
-                    glitches,
-                    includeGlitches);
-            }
-
-            var bestAttack = 0;
-            foreach (var outcomeKey in _seenOutcomes)
-            {
-                _handsByOutcome[outcomeKey] += multiplicity;
-                var resultId = OutcomeCardId(outcomeKey);
-                var attackBonus = BonusForOutcome(outcomeKey);
-                bestAttack = Math.Max(bestAttack, catalog.GetCard(resultId).Attack + attackBonus);
-            }
-
-            if (_seenOutcomes.Count > 0)
-            {
-                _handsWithAny += multiplicity;
-            }
-
-            if (bestAttack >= 2_000) _hands2000 += multiplicity;
-            if (bestAttack >= 2_500) _hands2500 += multiplicity;
-            if (bestAttack >= 2_800) _hands2800 += multiplicity;
-            if (bestAttack >= 3_000) _hands3000 += multiplicity;
-            _sumBestAttack += bestAttack * multiplicity;
-            CompletedHands += multiplicity;
+            _total = total;
+            Array.Clear(_counts);
+            _any = _at2000 = _at2500 = _at2800 = _at3000 = _sum = Completed = 0;
+            // Representatives are structs; entries are replaced on the first count.
+            // Reuse these large scratch arrays under the analyzer lock. Returned
+            // reports own their materialized arrays and never reference this scratch.
         }
 
-        public DeckAnalysisReport CreateReport(int deckSize, int handSize)
+        public void Add(HandRoute[] routes, long weight, FusionCatalog catalog)
         {
-            var results = Enumerable.Range(1, 2_168)
-                .Where(outcomeKey => outcomeKey % EquippedOutcomeOffset != 0 && _handsByOutcome[outcomeKey] > 0)
-                .Select(outcomeKey => new DeckFusionResult(
-                    catalog.GetCard(OutcomeCardId(outcomeKey)),
-                    _handsByOutcome[outcomeKey],
-                    totalHands,
-                    _representativeRoutes[outcomeKey] ?? throw new InvalidDataException("Missing representative route."),
-                    BonusForOutcome(outcomeKey),
-                    BonusForOutcome(outcomeKey)))
-                .OrderByDescending(result => result.EffectiveAttack)
-                .ThenByDescending(result => result.EffectiveDefense)
-                .ThenByDescending(result => result.Probability)
-                .ThenBy(result => result.Result.Name, StringComparer.OrdinalIgnoreCase)
-                .ToArray();
-
-            return new DeckAnalysisReport(
-                deckSize,
-                handSize,
-                totalHands,
-                _handsWithAny,
-                _hands2000,
-                _hands2500,
-                _hands2800,
-                _hands3000,
-                totalHands == 0 ? 0 : (double)_sumBestAttack / totalHands,
-                results);
+            var best = 0;
+            foreach (var route in routes)
+            {
+                if (_counts[route.Outcome] == 0 || route.BetterThan(_representatives[route.Outcome])) _representatives[route.Outcome] = route;
+                _counts[route.Outcome] += weight;
+                best = Math.Max(best, catalog.GetCard(route.CardId).Attack + route.Bonus);
+            }
+            if (routes.Length > 0) _any += weight;
+            if (best >= 2000) _at2000 += weight;
+            if (best >= 2500) _at2500 += weight;
+            if (best >= 2800) _at2800 += weight;
+            if (best >= 3000) _at3000 += weight;
+            _sum += best * weight;
+            Completed += weight;
         }
 
-        private void Explore(
-            IReadOnlyList<int> hand,
-            int currentCardId,
-            int usedMask,
-            int depth,
-            Span<byte> sequence,
-            Span<int> intermediateResults,
-            Span<bool> glitches,
-            bool includeGlitches)
+        public DeckAnalysisReport Report(int deckSize, int handSize, int? samples, FusionCatalog catalog)
         {
-            RecordTerminalEquips(
-                hand,
-                currentCardId,
-                usedMask,
-                depth,
-                sequence,
-                intermediateResults,
-                glitches);
-
-            for (var next = 0; next < hand.Count; next++)
+            var results = Enumerable.Range(1, 2168).Where(i => _counts[i] > 0).Select(i =>
             {
-                if ((usedMask & (1 << next)) != 0 ||
-                    (depth == 1 && !IsCanonicalInitialPair(hand, sequence[0], next)) ||
-                    !catalog.TryResolvePair(currentCardId, hand[next], includeGlitches, out var resultId, out var isGlitch))
-                {
-                    continue;
-                }
-
-                sequence[depth] = (byte)next;
-                intermediateResults[depth - 1] = resultId;
-                glitches[depth - 1] = isGlitch;
-                RecordRoute(hand, resultId, depth + 1, sequence, intermediateResults, glitches);
-                Explore(
-                    hand,
-                    resultId,
-                    usedMask | (1 << next),
-                    depth + 1,
-                    sequence,
-                    intermediateResults,
-                    glitches,
-                    includeGlitches);
-            }
+                var route = _representatives[i];
+                return new DeckFusionResult(catalog.GetCard(route.CardId), _counts[i], _total,
+                    route.Materialize(catalog), route.Bonus, route.Bonus);
+            }).OrderByDescending(r => r.EffectiveAttack).ThenByDescending(r => r.EffectiveDefense)
+                .ThenByDescending(r => r.Probability).ThenBy(r => r.Result.Name, StringComparer.OrdinalIgnoreCase).ToArray();
+            return new(deckSize, handSize, _total, _any, _at2000, _at2500, _at2800, _at3000,
+                _total == 0 ? 0 : (double)_sum / _total, Array.AsReadOnly(results))
+            { TotalBestFusionAttack = _sum, IsExact = samples is null, SampleCount = samples ?? 0 };
         }
-
-        private void RecordRoute(
-            IReadOnlyList<int> hand,
-            int resultId,
-            int materialCount,
-            ReadOnlySpan<byte> sequence,
-            ReadOnlySpan<int> intermediateResults,
-            ReadOnlySpan<bool> glitches)
-        {
-            if (_seenStamp[resultId] != _stamp)
-            {
-                _seenStamp[resultId] = _stamp;
-                _seenOutcomes.Add(resultId);
-            }
-
-            var containsGlitch = glitches[..(materialCount - 1)].Contains(true);
-            var existing = _representativeRoutes[resultId];
-            if (existing is not null &&
-                (existing.ContainsGlitch.CompareTo(containsGlitch) < 0 ||
-                 (existing.ContainsGlitch == containsGlitch && existing.MaterialCount <= materialCount)))
-            {
-                return;
-            }
-
-            var materials = new Card[materialCount];
-            for (var index = 0; index < materialCount; index++)
-            {
-                materials[index] = catalog.GetCard(hand[sequence[index]]);
-            }
-
-            var results = new Card[materialCount - 1];
-            for (var index = 0; index < results.Length; index++)
-            {
-                results[index] = catalog.GetCard(intermediateResults[index]);
-            }
-
-            _representativeRoutes[resultId] = new DeckFusionRoute(materials, results, containsGlitch);
-        }
-
-        private void RecordTerminalEquips(
-            IReadOnlyList<int> hand,
-            int currentCardId,
-            int usedMask,
-            int depth,
-            ReadOnlySpan<byte> sequence,
-            ReadOnlySpan<int> intermediateResults,
-            ReadOnlySpan<bool> glitches)
-        {
-            for (var next = 0; next < hand.Count; next++)
-            {
-                if ((usedMask & (1 << next)) != 0)
-                {
-                    continue;
-                }
-
-                // An equip is a terminal material applied to the accumulated
-                // monster. Starting with the equip would display the operation
-                // backwards and could imply that its bonus survives a fusion.
-                var equip = catalog.CanEquip(hand[next], currentCardId)
-                    ? catalog.ResolveEquip(currentCardId, hand[next])
-                    : null;
-                if (equip is null)
-                {
-                    continue;
-                }
-
-                var outcomeKey = (equip.AttackBonus == 1_000 ? 2 * EquippedOutcomeOffset : EquippedOutcomeOffset) + equip.EquippedCard.Id;
-                if (_seenStamp[outcomeKey] != _stamp)
-                {
-                    _seenStamp[outcomeKey] = _stamp;
-                    _seenOutcomes.Add(outcomeKey);
-                }
-
-                var containsGlitch = glitches[..Math.Max(0, depth - 1)].Contains(true);
-                var existing = _representativeRoutes[outcomeKey];
-                if (existing is not null &&
-                    (existing.ContainsGlitch.CompareTo(containsGlitch) < 0 ||
-                     (existing.ContainsGlitch == containsGlitch && existing.MaterialCount <= depth + 1)))
-                {
-                    continue;
-                }
-
-                var materials = new Card[depth + 1];
-                for (var index = 0; index < depth; index++)
-                {
-                    materials[index] = catalog.GetCard(hand[sequence[index]]);
-                }
-
-                materials[depth] = catalog.GetCard(hand[next]);
-                var results = new Card[depth];
-                for (var index = 0; index < depth - 1; index++)
-                {
-                    results[index] = catalog.GetCard(intermediateResults[index]);
-                }
-
-                results[^1] = equip.EquippedCard;
-                _representativeRoutes[outcomeKey] = new DeckFusionRoute(
-                    materials,
-                    results,
-                    containsGlitch,
-                    EndsWithEquip: true,
-                    EquipBonus: equip.AttackBonus);
-            }
-        }
-
-        private static int OutcomeCardId(int outcomeKey) =>
-            outcomeKey % EquippedOutcomeOffset;
-
-        private static bool IsCanonicalInitialPair(
-            IReadOnlyList<int> hand,
-            int firstIndex,
-            int secondIndex)
-        {
-            var firstCardId = hand[firstIndex];
-            var secondCardId = hand[secondIndex];
-            return firstCardId < secondCardId ||
-                (firstCardId == secondCardId && firstIndex < secondIndex);
-        }
-
-        private static int BonusForOutcome(int outcomeKey) => outcomeKey switch
-        {
-            > 1_446 => 1_000,
-            > EquippedOutcomeOffset => 500,
-            _ => 0
-        };
     }
-
-    private sealed record CardMultiplicity(int CardId, int Count);
 }

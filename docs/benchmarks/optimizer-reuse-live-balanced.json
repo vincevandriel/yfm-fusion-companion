@@ -1,0 +1,3656 @@
+{
+  "SchemaVersion": 2,
+  "CapturedUtc": "2026-09-23T19:36:52.1990381+00:00",
+  "LogicalProcessors": 12,
+  "Privacy": "Only poll timing, status, success and duel-active booleans; no game cards, save contents, paths or raw memory.",
+  "Inventory": "Synthetic near-complete collection",
+  "Mode": "Balanced",
+  "PollIntervalMilliseconds": 1000,
+  "MaximumConcurrentReads": 1,
+  "SuccessfulReads": 68,
+  "FailedReads": 0,
+  "ActiveDuelReads": 68,
+  "FirstUsableDeckMilliseconds": 994.0590000000002,
+  "FirstProgressMilliseconds": 46.57970000000023,
+  "MaximumProgressGapMilliseconds": 752.1287999999995,
+  "ResultState": "Completed",
+  "ExactHands": 658008,
+  "ResultStatisticsExact": true,
+  "ProvenOptimal": false,
+  "CandidatesExamined": 404580,
+  "SearchCache": {
+    "AccountedBytes": 239282016,
+    "LimitBytes": 268435456,
+    "Hits": 49189220,
+    "Misses": 8696756,
+    "Entries": 113856
+  },
+  "AllocatedBytesIncludingLivePolling": 11429088112,
+  "ProcessLifetimePeakWorkingSetBytes": 223477760,
+  "Polls": [
+    {
+      "Phase": "idle",
+      "StartedMilliseconds": 1001.8004,
+      "DurationMilliseconds": 493.77869999999996,
+      "Success": true,
+      "DuelActive": true,
+      "Playback": "Paused",
+      "ErrorType": null
+    },
+    {
+      "Phase": "idle",
+      "StartedMilliseconds": 2015.3915,
+      "DurationMilliseconds": 503.2331999999999,
+      "Success": true,
+      "DuelActive": true,
+      "Playback": "Paused",
+      "ErrorType": null
+    },
+    {
+      "Phase": "idle",
+      "StartedMilliseconds": 3010.6198,
+      "DurationMilliseconds": 525.0293999999999,
+      "Success": true,
+      "DuelActive": true,
+      "Playback": "Paused",
+      "ErrorType": null
+    },
+    {
+      "Phase": "idle",
+      "StartedMilliseconds": 4001.1548,
+      "DurationMilliseconds": 488.7950000000005,
+      "Success": true,
+      "DuelActive": true,
+      "Playback": "Paused",
+      "ErrorType": null
+    },
+    {
+      "Phase": "idle",
+      "StartedMilliseconds": 5000.6279,
+      "DurationMilliseconds": 508.8306999999995,
+      "Success": true,
+      "DuelActive": true,
+      "Playback": "Paused",
+      "ErrorType": null
+    },
+    {
+      "Phase": "optimizer",
+      "StartedMilliseconds": 5999.9572,
+      "DurationMilliseconds": 520.5461999999998,
+      "Success": true,
+      "DuelActive": true,
+      "Playback": "Paused",
+      "ErrorType": null
+    },
+    {
+      "Phase": "optimizer",
+      "StartedMilliseconds": 7006.2142,
+      "DurationMilliseconds": 509.3648999999996,
+      "Success": true,
+      "DuelActive": true,
+      "Playback": "Paused",
+      "ErrorType": null
+    },
+    {
+      "Phase": "optimizer",
+      "StartedMilliseconds": 8005.7295,
+      "DurationMilliseconds": 530.3375999999998,
+      "Success": true,
+      "DuelActive": true,
+      "Playback": "Paused",
+      "ErrorType": null
+    },
+    {
+      "Phase": "optimizer",
+      "StartedMilliseconds": 9004.3456,
+      "DurationMilliseconds": 561.9704999999994,
+      "Success": true,
+      "DuelActive": true,
+      "Playback": "Paused",
+      "ErrorType": null
+    },
+    {
+      "Phase": "optimizer",
+      "StartedMilliseconds": 10005.3396,
+      "DurationMilliseconds": 534.6914000000015,
+      "Success": true,
+      "DuelActive": true,
+      "Playback": "Paused",
+      "ErrorType": null
+    },
+    {
+      "Phase": "optimizer",
+      "StartedMilliseconds": 11013.5958,
+      "DurationMilliseconds": 545.7331000000013,
+      "Success": true,
+      "DuelActive": true,
+      "Playback": "Paused",
+      "ErrorType": null
+    },
+    {
+      "Phase": "optimizer",
+      "StartedMilliseconds": 12001.914,
+      "DurationMilliseconds": 559.3786999999993,
+      "Success": true,
+      "DuelActive": true,
+      "Playback": "Paused",
+      "ErrorType": null
+    },
+    {
+      "Phase": "optimizer",
+      "StartedMilliseconds": 13011.3125,
+      "DurationMilliseconds": 544.4220000000005,
+      "Success": true,
+      "DuelActive": true,
+      "Playback": "Paused",
+      "ErrorType": null
+    },
+    {
+      "Phase": "optimizer",
+      "StartedMilliseconds": 14005.6994,
+      "DurationMilliseconds": 573.3284000000003,
+      "Success": true,
+      "DuelActive": true,
+      "Playback": "Paused",
+      "ErrorType": null
+    },
+    {
+      "Phase": "optimizer",
+      "StartedMilliseconds": 15000.7462,
+      "DurationMilliseconds": 571.1598000000013,
+      "Success": true,
+      "DuelActive": true,
+      "Playback": "Paused",
+      "ErrorType": null
+    },
+    {
+      "Phase": "optimizer",
+      "StartedMilliseconds": 16014.8045,
+      "DurationMilliseconds": 578.8809999999994,
+      "Success": true,
+      "DuelActive": true,
+      "Playback": "Paused",
+      "ErrorType": null
+    },
+    {
+      "Phase": "optimizer",
+      "StartedMilliseconds": 17000.4104,
+      "DurationMilliseconds": 590.4107999999978,
+      "Success": true,
+      "DuelActive": true,
+      "Playback": "Paused",
+      "ErrorType": null
+    },
+    {
+      "Phase": "optimizer",
+      "StartedMilliseconds": 18000.4971,
+      "DurationMilliseconds": 560.6742999999988,
+      "Success": true,
+      "DuelActive": true,
+      "Playback": "Paused",
+      "ErrorType": null
+    },
+    {
+      "Phase": "optimizer",
+      "StartedMilliseconds": 19012.4883,
+      "DurationMilliseconds": 588.1250999999975,
+      "Success": true,
+      "DuelActive": true,
+      "Playback": "Paused",
+      "ErrorType": null
+    },
+    {
+      "Phase": "optimizer",
+      "StartedMilliseconds": 20000.759,
+      "DurationMilliseconds": 557.7981000000036,
+      "Success": true,
+      "DuelActive": true,
+      "Playback": "Paused",
+      "ErrorType": null
+    },
+    {
+      "Phase": "optimizer",
+      "StartedMilliseconds": 21000.6136,
+      "DurationMilliseconds": 611.2762999999977,
+      "Success": true,
+      "DuelActive": true,
+      "Playback": "Paused",
+      "ErrorType": null
+    },
+    {
+      "Phase": "optimizer",
+      "StartedMilliseconds": 22001.4757,
+      "DurationMilliseconds": 565.6679000000004,
+      "Success": true,
+      "DuelActive": true,
+      "Playback": "Paused",
+      "ErrorType": null
+    },
+    {
+      "Phase": "optimizer",
+      "StartedMilliseconds": 23003.0031,
+      "DurationMilliseconds": 562.3180999999968,
+      "Success": true,
+      "DuelActive": true,
+      "Playback": "Paused",
+      "ErrorType": null
+    },
+    {
+      "Phase": "optimizer",
+      "StartedMilliseconds": 24017.9104,
+      "DurationMilliseconds": 607.5387999999984,
+      "Success": true,
+      "DuelActive": true,
+      "Playback": "Paused",
+      "ErrorType": null
+    },
+    {
+      "Phase": "optimizer",
+      "StartedMilliseconds": 25000.5781,
+      "DurationMilliseconds": 529.4039000000012,
+      "Success": true,
+      "DuelActive": true,
+      "Playback": "Paused",
+      "ErrorType": null
+    },
+    {
+      "Phase": "optimizer",
+      "StartedMilliseconds": 26007.4022,
+      "DurationMilliseconds": 513.3172999999988,
+      "Success": true,
+      "DuelActive": true,
+      "Playback": "Paused",
+      "ErrorType": null
+    },
+    {
+      "Phase": "optimizer",
+      "StartedMilliseconds": 27005.3909,
+      "DurationMilliseconds": 500.4189000000006,
+      "Success": true,
+      "DuelActive": true,
+      "Playback": "Paused",
+      "ErrorType": null
+    },
+    {
+      "Phase": "optimizer",
+      "StartedMilliseconds": 28010.3852,
+      "DurationMilliseconds": 531.7507000000005,
+      "Success": true,
+      "DuelActive": true,
+      "Playback": "Paused",
+      "ErrorType": null
+    },
+    {
+      "Phase": "optimizer",
+      "StartedMilliseconds": 29012.1835,
+      "DurationMilliseconds": 537.7491000000009,
+      "Success": true,
+      "DuelActive": true,
+      "Playback": "Paused",
+      "ErrorType": null
+    },
+    {
+      "Phase": "optimizer",
+      "StartedMilliseconds": 30003.0464,
+      "DurationMilliseconds": 572.5900000000001,
+      "Success": true,
+      "DuelActive": true,
+      "Playback": "Paused",
+      "ErrorType": null
+    },
+    {
+      "Phase": "optimizer",
+      "StartedMilliseconds": 31015.5386,
+      "DurationMilliseconds": 556.8591000000015,
+      "Success": true,
+      "DuelActive": true,
+      "Playback": "Paused",
+      "ErrorType": null
+    },
+    {
+      "Phase": "optimizer",
+      "StartedMilliseconds": 32005.7089,
+      "DurationMilliseconds": 582.3684999999969,
+      "Success": true,
+      "DuelActive": true,
+      "Playback": "Paused",
+      "ErrorType": null
+    },
+    {
+      "Phase": "optimizer",
+      "StartedMilliseconds": 33019.0875,
+      "DurationMilliseconds": 519.8948999999993,
+      "Success": true,
+      "DuelActive": true,
+      "Playback": "Paused",
+      "ErrorType": null
+    },
+    {
+      "Phase": "optimizer",
+      "StartedMilliseconds": 34005.6988,
+      "DurationMilliseconds": 520.160100000001,
+      "Success": true,
+      "DuelActive": true,
+      "Playback": "Paused",
+      "ErrorType": null
+    },
+    {
+      "Phase": "optimizer",
+      "StartedMilliseconds": 35010.4819,
+      "DurationMilliseconds": 580.1339999999982,
+      "Success": true,
+      "DuelActive": true,
+      "Playback": "Paused",
+      "ErrorType": null
+    },
+    {
+      "Phase": "optimizer",
+      "StartedMilliseconds": 36006.6837,
+      "DurationMilliseconds": 564.1690000000017,
+      "Success": true,
+      "DuelActive": true,
+      "Playback": "Paused",
+      "ErrorType": null
+    },
+    {
+      "Phase": "optimizer",
+      "StartedMilliseconds": 37013.276,
+      "DurationMilliseconds": 531.5476000000053,
+      "Success": true,
+      "DuelActive": true,
+      "Playback": "Paused",
+      "ErrorType": null
+    },
+    {
+      "Phase": "optimizer",
+      "StartedMilliseconds": 38011.9481,
+      "DurationMilliseconds": 608.5619999999981,
+      "Success": true,
+      "DuelActive": true,
+      "Playback": "Paused",
+      "ErrorType": null
+    },
+    {
+      "Phase": "optimizer",
+      "StartedMilliseconds": 39010.1682,
+      "DurationMilliseconds": 513.0160000000033,
+      "Success": true,
+      "DuelActive": true,
+      "Playback": "Paused",
+      "ErrorType": null
+    },
+    {
+      "Phase": "optimizer",
+      "StartedMilliseconds": 40001.8025,
+      "DurationMilliseconds": 523.6269000000029,
+      "Success": true,
+      "DuelActive": true,
+      "Playback": "Paused",
+      "ErrorType": null
+    },
+    {
+      "Phase": "optimizer",
+      "StartedMilliseconds": 41005.678,
+      "DurationMilliseconds": 557.0811000000031,
+      "Success": true,
+      "DuelActive": true,
+      "Playback": "Paused",
+      "ErrorType": null
+    },
+    {
+      "Phase": "optimizer",
+      "StartedMilliseconds": 42000.8279,
+      "DurationMilliseconds": 598.4336000000039,
+      "Success": true,
+      "DuelActive": true,
+      "Playback": "Paused",
+      "ErrorType": null
+    },
+    {
+      "Phase": "optimizer",
+      "StartedMilliseconds": 43015.5056,
+      "DurationMilliseconds": 560.1191000000035,
+      "Success": true,
+      "DuelActive": true,
+      "Playback": "Paused",
+      "ErrorType": null
+    },
+    {
+      "Phase": "optimizer",
+      "StartedMilliseconds": 44011.5052,
+      "DurationMilliseconds": 505.6275999999998,
+      "Success": true,
+      "DuelActive": true,
+      "Playback": "Paused",
+      "ErrorType": null
+    },
+    {
+      "Phase": "optimizer",
+      "StartedMilliseconds": 45022.7415,
+      "DurationMilliseconds": 534.3804000000018,
+      "Success": true,
+      "DuelActive": true,
+      "Playback": "Paused",
+      "ErrorType": null
+    },
+    {
+      "Phase": "optimizer",
+      "StartedMilliseconds": 46031.3358,
+      "DurationMilliseconds": 518.724000000002,
+      "Success": true,
+      "DuelActive": true,
+      "Playback": "Paused",
+      "ErrorType": null
+    },
+    {
+      "Phase": "optimizer",
+      "StartedMilliseconds": 47009.3084,
+      "DurationMilliseconds": 550.9704999999958,
+      "Success": true,
+      "DuelActive": true,
+      "Playback": "Paused",
+      "ErrorType": null
+    },
+    {
+      "Phase": "optimizer",
+      "StartedMilliseconds": 48003.2526,
+      "DurationMilliseconds": 533.2699999999968,
+      "Success": true,
+      "DuelActive": true,
+      "Playback": "Paused",
+      "ErrorType": null
+    },
+    {
+      "Phase": "optimizer",
+      "StartedMilliseconds": 49009.3463,
+      "DurationMilliseconds": 559.5454000000027,
+      "Success": true,
+      "DuelActive": true,
+      "Playback": "Paused",
+      "ErrorType": null
+    },
+    {
+      "Phase": "optimizer",
+      "StartedMilliseconds": 50000.2676,
+      "DurationMilliseconds": 517.2880999999979,
+      "Success": true,
+      "DuelActive": true,
+      "Playback": "Paused",
+      "ErrorType": null
+    },
+    {
+      "Phase": "optimizer",
+      "StartedMilliseconds": 51036.0274,
+      "DurationMilliseconds": 556.7756000000008,
+      "Success": true,
+      "DuelActive": true,
+      "Playback": "Paused",
+      "ErrorType": null
+    },
+    {
+      "Phase": "optimizer",
+      "StartedMilliseconds": 52013.0457,
+      "DurationMilliseconds": 547.5020999999979,
+      "Success": true,
+      "DuelActive": true,
+      "Playback": "Paused",
+      "ErrorType": null
+    },
+    {
+      "Phase": "optimizer",
+      "StartedMilliseconds": 53009.365,
+      "DurationMilliseconds": 534.5989000000045,
+      "Success": true,
+      "DuelActive": true,
+      "Playback": "Paused",
+      "ErrorType": null
+    },
+    {
+      "Phase": "optimizer",
+      "StartedMilliseconds": 54001.0676,
+      "DurationMilliseconds": 499.95650000000023,
+      "Success": true,
+      "DuelActive": true,
+      "Playback": "Paused",
+      "ErrorType": null
+    },
+    {
+      "Phase": "optimizer",
+      "StartedMilliseconds": 55011.6218,
+      "DurationMilliseconds": 514.9297999999981,
+      "Success": true,
+      "DuelActive": true,
+      "Playback": "Paused",
+      "ErrorType": null
+    },
+    {
+      "Phase": "optimizer",
+      "StartedMilliseconds": 56005.5282,
+      "DurationMilliseconds": 565.0924999999988,
+      "Success": true,
+      "DuelActive": true,
+      "Playback": "Paused",
+      "ErrorType": null
+    },
+    {
+      "Phase": "optimizer",
+      "StartedMilliseconds": 57000.2444,
+      "DurationMilliseconds": 513.6751999999979,
+      "Success": true,
+      "DuelActive": true,
+      "Playback": "Paused",
+      "ErrorType": null
+    },
+    {
+      "Phase": "optimizer",
+      "StartedMilliseconds": 58029.6372,
+      "DurationMilliseconds": 492.44130000000587,
+      "Success": true,
+      "DuelActive": true,
+      "Playback": "Paused",
+      "ErrorType": null
+    },
+    {
+      "Phase": "optimizer",
+      "StartedMilliseconds": 58999.467,
+      "DurationMilliseconds": 522.1718000000037,
+      "Success": true,
+      "DuelActive": true,
+      "Playback": "Paused",
+      "ErrorType": null
+    },
+    {
+      "Phase": "optimizer",
+      "StartedMilliseconds": 60027.5112,
+      "DurationMilliseconds": 524.2362999999968,
+      "Success": true,
+      "DuelActive": true,
+      "Playback": "Paused",
+      "ErrorType": null
+    },
+    {
+      "Phase": "optimizer",
+      "StartedMilliseconds": 61006.5878,
+      "DurationMilliseconds": 542.3076999999976,
+      "Success": true,
+      "DuelActive": true,
+      "Playback": "Paused",
+      "ErrorType": null
+    },
+    {
+      "Phase": "optimizer",
+      "StartedMilliseconds": 61999.3968,
+      "DurationMilliseconds": 515.700499999999,
+      "Success": true,
+      "DuelActive": true,
+      "Playback": "Paused",
+      "ErrorType": null
+    },
+    {
+      "Phase": "optimizer",
+      "StartedMilliseconds": 63000.1547,
+      "DurationMilliseconds": 543.6183000000019,
+      "Success": true,
+      "DuelActive": true,
+      "Playback": "Paused",
+      "ErrorType": null
+    },
+    {
+      "Phase": "optimizer",
+      "StartedMilliseconds": 64012.919,
+      "DurationMilliseconds": 510.2404999999999,
+      "Success": true,
+      "DuelActive": true,
+      "Playback": "Paused",
+      "ErrorType": null
+    },
+    {
+      "Phase": "optimizer",
+      "StartedMilliseconds": 65011.924,
+      "DurationMilliseconds": 533.7743000000046,
+      "Success": true,
+      "DuelActive": true,
+      "Playback": "Paused",
+      "ErrorType": null
+    },
+    {
+      "Phase": "post-optimizer",
+      "StartedMilliseconds": 65999.9877,
+      "DurationMilliseconds": 479.6987000000081,
+      "Success": true,
+      "DuelActive": true,
+      "Playback": "Paused",
+      "ErrorType": null
+    },
+    {
+      "Phase": "post-optimizer",
+      "StartedMilliseconds": 67010.9045,
+      "DurationMilliseconds": 510.9577999999892,
+      "Success": true,
+      "DuelActive": true,
+      "Playback": "Paused",
+      "ErrorType": null
+    },
+    {
+      "Phase": "post-optimizer",
+      "StartedMilliseconds": 68007.7168,
+      "DurationMilliseconds": 477.95320000000356,
+      "Success": true,
+      "DuelActive": true,
+      "Playback": "Paused",
+      "ErrorType": null
+    }
+  ],
+  "Progress": [
+    {
+      "Milliseconds": 46.57970000000023,
+      "State": "Preparing",
+      "HasBest": false,
+      "CompletedHands": null,
+      "TotalHands": null,
+      "Stage": "Preparing",
+      "SearchConsumedMilliseconds": 0,
+      "CandidatesExamined": 0
+    },
+    {
+      "Milliseconds": 77.1212000000005,
+      "State": "Preparing",
+      "HasBest": false,
+      "CompletedHands": null,
+      "TotalHands": null,
+      "Stage": "Catalog identity validated",
+      "SearchConsumedMilliseconds": 0,
+      "CandidatesExamined": 0
+    },
+    {
+      "Milliseconds": 829.25,
+      "State": "Preparing",
+      "HasBest": false,
+      "CompletedHands": null,
+      "TotalHands": null,
+      "Stage": "Inventory and scoring prepared",
+      "SearchConsumedMilliseconds": 0,
+      "CandidatesExamined": 0
+    },
+    {
+      "Milliseconds": 994.0590000000002,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null,
+      "Stage": "First legal deck found",
+      "SearchConsumedMilliseconds": 164.7773,
+      "CandidatesExamined": 1
+    },
+    {
+      "Milliseconds": 1196.8166,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 359.3618,
+      "CandidatesExamined": 421
+    },
+    {
+      "Milliseconds": 1397.0172000000002,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 567.3057,
+      "CandidatesExamined": 895
+    },
+    {
+      "Milliseconds": 1597.0508,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 767.6838,
+      "CandidatesExamined": 1759
+    },
+    {
+      "Milliseconds": 1797.1187,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 967.6907,
+      "CandidatesExamined": 2755
+    },
+    {
+      "Milliseconds": 1997.2151999999996,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 1167.8326,
+      "CandidatesExamined": 4027
+    },
+    {
+      "Milliseconds": 2197.2559,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null,
+      "Stage": "Search budget consumed",
+      "SearchConsumedMilliseconds": 1367.9695,
+      "CandidatesExamined": 5137
+    },
+    {
+      "Milliseconds": 2397.3352000000004,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 1567.9536,
+      "CandidatesExamined": 6293
+    },
+    {
+      "Milliseconds": 2609.8178,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null,
+      "Stage": "Search budget consumed",
+      "SearchConsumedMilliseconds": 1780.5291,
+      "CandidatesExamined": 7281
+    },
+    {
+      "Milliseconds": 2812.8535,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null,
+      "Stage": "Search budget consumed",
+      "SearchConsumedMilliseconds": 1983.5642,
+      "CandidatesExamined": 8605
+    },
+    {
+      "Milliseconds": 3012.9344,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 2183.5634,
+      "CandidatesExamined": 9823
+    },
+    {
+      "Milliseconds": 3212.9664000000002,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 2383.4142,
+      "CandidatesExamined": 10960
+    },
+    {
+      "Milliseconds": 3426.314300000001,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 2575.1413,
+      "CandidatesExamined": 11915
+    },
+    {
+      "Milliseconds": 3626.4065,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 2796.9798,
+      "CandidatesExamined": 13035
+    },
+    {
+      "Milliseconds": 3836.7789000000002,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 2983.0125,
+      "CandidatesExamined": 14320
+    },
+    {
+      "Milliseconds": 4041.890700000001,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null,
+      "Stage": "Search budget consumed",
+      "SearchConsumedMilliseconds": 3212.603,
+      "CandidatesExamined": 15355
+    },
+    {
+      "Milliseconds": 4241.959599999999,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 3412.5148,
+      "CandidatesExamined": 16395
+    },
+    {
+      "Milliseconds": 4450.620100000001,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 3606.7789,
+      "CandidatesExamined": 17516
+    },
+    {
+      "Milliseconds": 4650.6822999999995,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 3821.2485,
+      "CandidatesExamined": 18650
+    },
+    {
+      "Milliseconds": 4850.842,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 4021.4059,
+      "CandidatesExamined": 19441
+    },
+    {
+      "Milliseconds": 5050.9361,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 4221.548,
+      "CandidatesExamined": 20551
+    },
+    {
+      "Milliseconds": 5250.990199999999,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 4421.4008,
+      "CandidatesExamined": 21824
+    },
+    {
+      "Milliseconds": 5451.158200000001,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 4621.6202,
+      "CandidatesExamined": 22944
+    },
+    {
+      "Milliseconds": 5651.2113,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 4821.8411,
+      "CandidatesExamined": 24134
+    },
+    {
+      "Milliseconds": 5867.708,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 5014.5742,
+      "CandidatesExamined": 25297
+    },
+    {
+      "Milliseconds": 6067.764899999999,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 5238.3783,
+      "CandidatesExamined": 26441
+    },
+    {
+      "Milliseconds": 6277.499199999999,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null,
+      "Stage": "Search budget consumed",
+      "SearchConsumedMilliseconds": 5448.2116,
+      "CandidatesExamined": 27816
+    },
+    {
+      "Milliseconds": 6477.556100000001,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 5648.1939,
+      "CandidatesExamined": 28922
+    },
+    {
+      "Milliseconds": 6677.6599,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 5848.1373,
+      "CandidatesExamined": 30128
+    },
+    {
+      "Milliseconds": 6895.671800000001,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 6041.6402,
+      "CandidatesExamined": 31315
+    },
+    {
+      "Milliseconds": 7095.7699999999995,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 6266.37,
+      "CandidatesExamined": 32520
+    },
+    {
+      "Milliseconds": 7299.500800000001,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 6447.5338,
+      "CandidatesExamined": 33977
+    },
+    {
+      "Milliseconds": 7499.5438,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 6670.1868,
+      "CandidatesExamined": 35219
+    },
+    {
+      "Milliseconds": 7699.596700000001,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 6870.2423,
+      "CandidatesExamined": 36398
+    },
+    {
+      "Milliseconds": 7899.726299999999,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 7070.2287,
+      "CandidatesExamined": 37776
+    },
+    {
+      "Milliseconds": 8100.7671,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 7261.6114,
+      "CandidatesExamined": 39036
+    },
+    {
+      "Milliseconds": 8300.8373,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 7471.4812,
+      "CandidatesExamined": 40373
+    },
+    {
+      "Milliseconds": 8500.865600000001,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 7671.3159,
+      "CandidatesExamined": 41712
+    },
+    {
+      "Milliseconds": 8720.1721,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 7867.0293,
+      "CandidatesExamined": 42864
+    },
+    {
+      "Milliseconds": 8932.6734,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 8088.5222,
+      "CandidatesExamined": 44067
+    },
+    {
+      "Milliseconds": 9141.3599,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 8286.5115,
+      "CandidatesExamined": 45595
+    },
+    {
+      "Milliseconds": 9341.4695,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 8512.0842,
+      "CandidatesExamined": 46897
+    },
+    {
+      "Milliseconds": 9541.525000000001,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 8712.1717,
+      "CandidatesExamined": 48187
+    },
+    {
+      "Milliseconds": 9761.4775,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null,
+      "Stage": "Search budget consumed",
+      "SearchConsumedMilliseconds": 8932.1901,
+      "CandidatesExamined": 49461
+    },
+    {
+      "Milliseconds": 9967.005099999998,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 0,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 9126.9405,
+      "CandidatesExamined": 50722
+    },
+    {
+      "Milliseconds": 10174.804499999998,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null,
+      "Stage": "Search budget consumed",
+      "SearchConsumedMilliseconds": 9345.517,
+      "CandidatesExamined": 52345
+    },
+    {
+      "Milliseconds": 10374.926200000002,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 9545.5143,
+      "CandidatesExamined": 53615
+    },
+    {
+      "Milliseconds": 10574.982899999999,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 9745.6166,
+      "CandidatesExamined": 54678
+    },
+    {
+      "Milliseconds": 10775.1636,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 9943.7942,
+      "CandidatesExamined": 55916
+    },
+    {
+      "Milliseconds": 10975.229800000001,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 10145.7586,
+      "CandidatesExamined": 57424
+    },
+    {
+      "Milliseconds": 11175.435000000001,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 10345.9398,
+      "CandidatesExamined": 58624
+    },
+    {
+      "Milliseconds": 11382.6367,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 10531.2519,
+      "CandidatesExamined": 59816
+    },
+    {
+      "Milliseconds": 11582.684999999998,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 10753.225,
+      "CandidatesExamined": 61170
+    },
+    {
+      "Milliseconds": 11783.479299999999,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 10929.1255,
+      "CandidatesExamined": 62710
+    },
+    {
+      "Milliseconds": 11983.522399999998,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 11154.1608,
+      "CandidatesExamined": 63929
+    },
+    {
+      "Milliseconds": 12183.6911,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 11354.2032,
+      "CandidatesExamined": 65296
+    },
+    {
+      "Milliseconds": 12383.7297,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 11554.337,
+      "CandidatesExamined": 66546
+    },
+    {
+      "Milliseconds": 12589.894,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 11745.5158,
+      "CandidatesExamined": 68013
+    },
+    {
+      "Milliseconds": 12789.959299999999,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 11960.5758,
+      "CandidatesExamined": 69418
+    },
+    {
+      "Milliseconds": 12990.0498,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 12160.6955,
+      "CandidatesExamined": 70484
+    },
+    {
+      "Milliseconds": 13190.0687,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 0,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 12360.7809,
+      "CandidatesExamined": 71804
+    },
+    {
+      "Milliseconds": 13390.338899999999,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 12560.727,
+      "CandidatesExamined": 73184
+    },
+    {
+      "Milliseconds": 13590.398399999998,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 12761.0499,
+      "CandidatesExamined": 74654
+    },
+    {
+      "Milliseconds": 13790.4486,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 12961.1037,
+      "CandidatesExamined": 76008
+    },
+    {
+      "Milliseconds": 14011.7644,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null,
+      "Stage": "Search budget consumed",
+      "SearchConsumedMilliseconds": 13182.475,
+      "CandidatesExamined": 77325
+    },
+    {
+      "Milliseconds": 14211.9172,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 13382.4605,
+      "CandidatesExamined": 78712
+    },
+    {
+      "Milliseconds": 14412.102599999998,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 13582.5551,
+      "CandidatesExamined": 80320
+    },
+    {
+      "Milliseconds": 14612.1915,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 13782.82,
+      "CandidatesExamined": 81651
+    },
+    {
+      "Milliseconds": 14812.3053,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 13982.9092,
+      "CandidatesExamined": 83070
+    },
+    {
+      "Milliseconds": 15012.3983,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 14182.9922,
+      "CandidatesExamined": 84245
+    },
+    {
+      "Milliseconds": 15221.0989,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 14376.7241,
+      "CandidatesExamined": 85589
+    },
+    {
+      "Milliseconds": 15421.2059,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 14591.7185,
+      "CandidatesExamined": 87152
+    },
+    {
+      "Milliseconds": 15629.978,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 14777.9057,
+      "CandidatesExamined": 88450
+    },
+    {
+      "Milliseconds": 15830.006300000001,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 15000.649,
+      "CandidatesExamined": 89882
+    },
+    {
+      "Milliseconds": 16030.0798,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 15200.6993,
+      "CandidatesExamined": 91325
+    },
+    {
+      "Milliseconds": 16237.8789,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 15397.388,
+      "CandidatesExamined": 92691
+    },
+    {
+      "Milliseconds": 16437.9258,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 15608.5819,
+      "CandidatesExamined": 94197
+    },
+    {
+      "Milliseconds": 16637.954999999998,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 15808.5642,
+      "CandidatesExamined": 95515
+    },
+    {
+      "Milliseconds": 16840.7768,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null,
+      "Stage": "Search budget consumed",
+      "SearchConsumedMilliseconds": 16011.4902,
+      "CandidatesExamined": 96753
+    },
+    {
+      "Milliseconds": 17040.7955,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null,
+      "Stage": "Search budget consumed",
+      "SearchConsumedMilliseconds": 16211.5092,
+      "CandidatesExamined": 98137
+    },
+    {
+      "Milliseconds": 17265.6077,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 16409.5878,
+      "CandidatesExamined": 99756
+    },
+    {
+      "Milliseconds": 17468.3131,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 16613.114,
+      "CandidatesExamined": 100936
+    },
+    {
+      "Milliseconds": 17668.3593,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 16838.8869,
+      "CandidatesExamined": 102155
+    },
+    {
+      "Milliseconds": 17875.586199999998,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 17037.3607,
+      "CandidatesExamined": 103500
+    },
+    {
+      "Milliseconds": 18075.6109,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 17246.259,
+      "CandidatesExamined": 105098
+    },
+    {
+      "Milliseconds": 18275.6835,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 17446.3271,
+      "CandidatesExamined": 106379
+    },
+    {
+      "Milliseconds": 18493.985099999998,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null,
+      "Stage": "Search budget consumed",
+      "SearchConsumedMilliseconds": 17664.6986,
+      "CandidatesExamined": 107575
+    },
+    {
+      "Milliseconds": 18694.070499999998,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 17864.7111,
+      "CandidatesExamined": 108981
+    },
+    {
+      "Milliseconds": 18898.4395,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 18045.7952,
+      "CandidatesExamined": 110608
+    },
+    {
+      "Milliseconds": 19098.5359,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 18269.1558,
+      "CandidatesExamined": 111940
+    },
+    {
+      "Milliseconds": 19298.5546,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 18469.1968,
+      "CandidatesExamined": 113238
+    },
+    {
+      "Milliseconds": 19498.6337,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 18669.277,
+      "CandidatesExamined": 114662
+    },
+    {
+      "Milliseconds": 19699.9279,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null,
+      "Stage": "Search budget consumed",
+      "SearchConsumedMilliseconds": 18870.6347,
+      "CandidatesExamined": 116075
+    },
+    {
+      "Milliseconds": 19899.979499999998,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 19070.6314,
+      "CandidatesExamined": 117641
+    },
+    {
+      "Milliseconds": 20100.1021,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 19270.7062,
+      "CandidatesExamined": 118940
+    },
+    {
+      "Milliseconds": 20300.246199999998,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 19470.7718,
+      "CandidatesExamined": 120192
+    },
+    {
+      "Milliseconds": 20513.521,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 19669.8861,
+      "CandidatesExamined": 121553
+    },
+    {
+      "Milliseconds": 20736.4585,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 19883.0623,
+      "CandidatesExamined": 123285
+    },
+    {
+      "Milliseconds": 20936.5003,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 20107.0845,
+      "CandidatesExamined": 124555
+    },
+    {
+      "Milliseconds": 21136.567199999998,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 20307.221,
+      "CandidatesExamined": 125957
+    },
+    {
+      "Milliseconds": 21336.6473,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 20507.2639,
+      "CandidatesExamined": 127330
+    },
+    {
+      "Milliseconds": 21545.1698,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null,
+      "Stage": "Search budget consumed",
+      "SearchConsumedMilliseconds": 20715.883,
+      "CandidatesExamined": 128912
+    },
+    {
+      "Milliseconds": 21745.2343,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 20915.8179,
+      "CandidatesExamined": 130515
+    },
+    {
+      "Milliseconds": 21945.2941,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 21115.9537,
+      "CandidatesExamined": 131827
+    },
+    {
+      "Milliseconds": 22167.9848,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null,
+      "Stage": "Search budget consumed",
+      "SearchConsumedMilliseconds": 21338.6977,
+      "CandidatesExamined": 133157
+    },
+    {
+      "Milliseconds": 22368.0596,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 21538.7018,
+      "CandidatesExamined": 134593
+    },
+    {
+      "Milliseconds": 22568.1018,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 21738.7231,
+      "CandidatesExamined": 136261
+    },
+    {
+      "Milliseconds": 22768.1413,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 21938.7954,
+      "CandidatesExamined": 137748
+    },
+    {
+      "Milliseconds": 22968.1904,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 22138.8242,
+      "CandidatesExamined": 139172
+    },
+    {
+      "Milliseconds": 23187.8271,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 22336.5777,
+      "CandidatesExamined": 140582
+    },
+    {
+      "Milliseconds": 23387.919599999997,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 22558.5423,
+      "CandidatesExamined": 142095
+    },
+    {
+      "Milliseconds": 23589.7732,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 22753.1192,
+      "CandidatesExamined": 143698
+    },
+    {
+      "Milliseconds": 23789.825,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 22960.4262,
+      "CandidatesExamined": 145175
+    },
+    {
+      "Milliseconds": 23989.893099999998,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 23160.4723,
+      "CandidatesExamined": 146505
+    },
+    {
+      "Milliseconds": 24189.963499999998,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 23360.5906,
+      "CandidatesExamined": 147825
+    },
+    {
+      "Milliseconds": 24390.2409,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 23553.4533,
+      "CandidatesExamined": 149282
+    },
+    {
+      "Milliseconds": 24590.357099999997,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 23760.9538,
+      "CandidatesExamined": 150665
+    },
+    {
+      "Milliseconds": 24790.374799999998,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null,
+      "Stage": "Search budget consumed",
+      "SearchConsumedMilliseconds": 23961.0887,
+      "CandidatesExamined": 152089
+    },
+    {
+      "Milliseconds": 24990.438599999998,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 24161.0624,
+      "CandidatesExamined": 153325
+    },
+    {
+      "Milliseconds": 25195.057,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null,
+      "Stage": "Search budget consumed",
+      "SearchConsumedMilliseconds": 24365.7687,
+      "CandidatesExamined": 154872
+    },
+    {
+      "Milliseconds": 25395.1178,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 24565.7636,
+      "CandidatesExamined": 156356
+    },
+    {
+      "Milliseconds": 25595.1923,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 24765.8412,
+      "CandidatesExamined": 157689
+    },
+    {
+      "Milliseconds": 25795.3135,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 24965.8011,
+      "CandidatesExamined": 159072
+    },
+    {
+      "Milliseconds": 25999.5293,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 25142.8557,
+      "CandidatesExamined": 160381
+    },
+    {
+      "Milliseconds": 26203.761599999998,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null,
+      "Stage": "Search budget consumed",
+      "SearchConsumedMilliseconds": 25374.4749,
+      "CandidatesExamined": 161596
+    },
+    {
+      "Milliseconds": 26403.8124,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 25574.4416,
+      "CandidatesExamined": 162891
+    },
+    {
+      "Milliseconds": 26603.8333,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null,
+      "Stage": "Search budget consumed",
+      "SearchConsumedMilliseconds": 25774.5464,
+      "CandidatesExamined": 164327
+    },
+    {
+      "Milliseconds": 26805.0349,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null,
+      "Stage": "Search budget consumed",
+      "SearchConsumedMilliseconds": 25975.7483,
+      "CandidatesExamined": 165966
+    },
+    {
+      "Milliseconds": 27005.232,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 26175.7144,
+      "CandidatesExamined": 167360
+    },
+    {
+      "Milliseconds": 27205.261,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 26375.9089,
+      "CandidatesExamined": 168827
+    },
+    {
+      "Milliseconds": 27405.28,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 0,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 26575.9917,
+      "CandidatesExamined": 170171
+    },
+    {
+      "Milliseconds": 27605.299199999998,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 0,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 26776.0111,
+      "CandidatesExamined": 171556
+    },
+    {
+      "Milliseconds": 27805.329700000002,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 26975.9569,
+      "CandidatesExamined": 173300
+    },
+    {
+      "Milliseconds": 28018.420400000003,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 27166.1322,
+      "CandidatesExamined": 174569
+    },
+    {
+      "Milliseconds": 28218.499299999996,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 27389.1016,
+      "CandidatesExamined": 175833
+    },
+    {
+      "Milliseconds": 28418.616499999996,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 27589.0988,
+      "CandidatesExamined": 177296
+    },
+    {
+      "Milliseconds": 28629.9703,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 27785.1797,
+      "CandidatesExamined": 178908
+    },
+    {
+      "Milliseconds": 28830.0391,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 28000.6017,
+      "CandidatesExamined": 180425
+    },
+    {
+      "Milliseconds": 29030.096299999997,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 28200.7037,
+      "CandidatesExamined": 181775
+    },
+    {
+      "Milliseconds": 29230.224000000002,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 28400.8115,
+      "CandidatesExamined": 183050
+    },
+    {
+      "Milliseconds": 29439.594899999996,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 28594.9156,
+      "CandidatesExamined": 184480
+    },
+    {
+      "Milliseconds": 29639.618300000002,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null,
+      "Stage": "Search budget consumed",
+      "SearchConsumedMilliseconds": 28810.3318,
+      "CandidatesExamined": 186200
+    },
+    {
+      "Milliseconds": 29859.819799999997,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 29008.1241,
+      "CandidatesExamined": 187492
+    },
+    {
+      "Milliseconds": 30059.856,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 29230.4499,
+      "CandidatesExamined": 188935
+    },
+    {
+      "Milliseconds": 30259.912599999996,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 29430.5287,
+      "CandidatesExamined": 190385
+    },
+    {
+      "Milliseconds": 30484.620300000002,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 29624.2502,
+      "CandidatesExamined": 191805
+    },
+    {
+      "Milliseconds": 30684.7454,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 29855.3145,
+      "CandidatesExamined": 192975
+    },
+    {
+      "Milliseconds": 30884.8047,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 30055.2737,
+      "CandidatesExamined": 194112
+    },
+    {
+      "Milliseconds": 31084.906799999997,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 30255.5085,
+      "CandidatesExamined": 195545
+    },
+    {
+      "Milliseconds": 31285.1671,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 30455.6362,
+      "CandidatesExamined": 196758
+    },
+    {
+      "Milliseconds": 31485.2428,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 30655.8844,
+      "CandidatesExamined": 198209
+    },
+    {
+      "Milliseconds": 31685.298199999997,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 30855.9321,
+      "CandidatesExamined": 199647
+    },
+    {
+      "Milliseconds": 31887.2128,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 31044.1011,
+      "CandidatesExamined": 201110
+    },
+    {
+      "Milliseconds": 32087.283499999998,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 31257.9323,
+      "CandidatesExamined": 202712
+    },
+    {
+      "Milliseconds": 32287.3018,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 31458.0126,
+      "CandidatesExamined": 204003
+    },
+    {
+      "Milliseconds": 32487.3502,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 31658.0039,
+      "CandidatesExamined": 205233
+    },
+    {
+      "Milliseconds": 32687.374299999996,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 31858.0252,
+      "CandidatesExamined": 206719
+    },
+    {
+      "Milliseconds": 32887.445,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 32057.9339,
+      "CandidatesExamined": 208224
+    },
+    {
+      "Milliseconds": 33087.5086,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 32258.1614,
+      "CandidatesExamined": 209534
+    },
+    {
+      "Milliseconds": 33287.5702,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 32458.2242,
+      "CandidatesExamined": 210636
+    },
+    {
+      "Milliseconds": 33495.1646,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 32649.674,
+      "CandidatesExamined": 212191
+    },
+    {
+      "Milliseconds": 33695.2724,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 32865.8966,
+      "CandidatesExamined": 213734
+    },
+    {
+      "Milliseconds": 33895.3882,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 33065.886,
+      "CandidatesExamined": 215024
+    },
+    {
+      "Milliseconds": 34095.4132,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 33266.0522,
+      "CandidatesExamined": 216403
+    },
+    {
+      "Milliseconds": 34300.1805,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 33459.7466,
+      "CandidatesExamined": 217789
+    },
+    {
+      "Milliseconds": 34522.7529,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 33669.9153,
+      "CandidatesExamined": 219536
+    },
+    {
+      "Milliseconds": 34722.7893,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 33893.439,
+      "CandidatesExamined": 220829
+    },
+    {
+      "Milliseconds": 34922.8078,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null,
+      "Stage": "Search budget consumed",
+      "SearchConsumedMilliseconds": 34093.5212,
+      "CandidatesExamined": 222305
+    },
+    {
+      "Milliseconds": 35122.9168,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 34293.4375,
+      "CandidatesExamined": 223616
+    },
+    {
+      "Milliseconds": 35329.585,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 0,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 34482.698,
+      "CandidatesExamined": 225152
+    },
+    {
+      "Milliseconds": 35529.6357,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 34700.2925,
+      "CandidatesExamined": 226824
+    },
+    {
+      "Milliseconds": 35742.631,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 34891.3313,
+      "CandidatesExamined": 228191
+    },
+    {
+      "Milliseconds": 35942.8211,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 35113.3097,
+      "CandidatesExamined": 229568
+    },
+    {
+      "Milliseconds": 36142.9081,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 35313.4737,
+      "CandidatesExamined": 230930
+    },
+    {
+      "Milliseconds": 36344.8755,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null,
+      "Stage": "Search budget consumed",
+      "SearchConsumedMilliseconds": 35515.5892,
+      "CandidatesExamined": 232563
+    },
+    {
+      "Milliseconds": 36544.9962,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 35715.5057,
+      "CandidatesExamined": 233952
+    },
+    {
+      "Milliseconds": 36745.0155,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 35915.6648,
+      "CandidatesExamined": 235444
+    },
+    {
+      "Milliseconds": 36963.0372,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 36111.5492,
+      "CandidatesExamined": 236878
+    },
+    {
+      "Milliseconds": 37163.1132,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 36333.7567,
+      "CandidatesExamined": 238357
+    },
+    {
+      "Milliseconds": 37363.1352,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 36533.723,
+      "CandidatesExamined": 239976
+    },
+    {
+      "Milliseconds": 37567.590599999996,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 36713.0495,
+      "CandidatesExamined": 241170
+    },
+    {
+      "Milliseconds": 37767.674,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 36938.3019,
+      "CandidatesExamined": 242457
+    },
+    {
+      "Milliseconds": 37980.018599999996,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 37137.4334,
+      "CandidatesExamined": 243804
+    },
+    {
+      "Milliseconds": 38184.9625,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 0,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 37332.831,
+      "CandidatesExamined": 245512
+    },
+    {
+      "Milliseconds": 38385.0575,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 37555.6642,
+      "CandidatesExamined": 246765
+    },
+    {
+      "Milliseconds": 38585.076199999996,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null,
+      "Stage": "Search budget consumed",
+      "SearchConsumedMilliseconds": 37755.7905,
+      "CandidatesExamined": 248205
+    },
+    {
+      "Milliseconds": 38785.301,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 37955.7918,
+      "CandidatesExamined": 249456
+    },
+    {
+      "Milliseconds": 38985.3241,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 38155.9256,
+      "CandidatesExamined": 251078
+    },
+    {
+      "Milliseconds": 39185.3514,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 38356.0104,
+      "CandidatesExamined": 252542
+    },
+    {
+      "Milliseconds": 39385.426699999996,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 38556.0755,
+      "CandidatesExamined": 253869
+    },
+    {
+      "Milliseconds": 39585.4871,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 38756.1302,
+      "CandidatesExamined": 255207
+    },
+    {
+      "Milliseconds": 39794.2154,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null,
+      "Stage": "Search budget consumed",
+      "SearchConsumedMilliseconds": 38964.9291,
+      "CandidatesExamined": 256681
+    },
+    {
+      "Milliseconds": 39994.4139,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 39164.9121,
+      "CandidatesExamined": 258416
+    },
+    {
+      "Milliseconds": 40214.156,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 39362.3922,
+      "CandidatesExamined": 259699
+    },
+    {
+      "Milliseconds": 40414.2551,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 39584.8266,
+      "CandidatesExamined": 260980
+    },
+    {
+      "Milliseconds": 40614.3374,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 39784.9624,
+      "CandidatesExamined": 262325
+    },
+    {
+      "Milliseconds": 40820.6973,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 39963.8366,
+      "CandidatesExamined": 264016
+    },
+    {
+      "Milliseconds": 41030.6416,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null,
+      "Stage": "Search budget consumed",
+      "SearchConsumedMilliseconds": 40201.354,
+      "CandidatesExamined": 265252
+    },
+    {
+      "Milliseconds": 41230.6807,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 40401.3086,
+      "CandidatesExamined": 266633
+    },
+    {
+      "Milliseconds": 41430.8844,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 40601.4041,
+      "CandidatesExamined": 268000
+    },
+    {
+      "Milliseconds": 41631.1525,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null,
+      "Stage": "Search budget consumed",
+      "SearchConsumedMilliseconds": 40801.8652,
+      "CandidatesExamined": 269582
+    },
+    {
+      "Milliseconds": 41831.1798,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 41001.7673,
+      "CandidatesExamined": 271010
+    },
+    {
+      "Milliseconds": 42031.2177,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 41201.8642,
+      "CandidatesExamined": 272294
+    },
+    {
+      "Milliseconds": 42231.2619,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 41401.9186,
+      "CandidatesExamined": 273731
+    },
+    {
+      "Milliseconds": 42434.7011,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 41596.5371,
+      "CandidatesExamined": 275195
+    },
+    {
+      "Milliseconds": 42634.8135,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 41805.3081,
+      "CandidatesExamined": 276800
+    },
+    {
+      "Milliseconds": 42834.834,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 42005.4888,
+      "CandidatesExamined": 278169
+    },
+    {
+      "Milliseconds": 43051.3499,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null,
+      "Stage": "Search budget consumed",
+      "SearchConsumedMilliseconds": 42222.0633,
+      "CandidatesExamined": 279431
+    },
+    {
+      "Milliseconds": 43253.1147,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 42410.2109,
+      "CandidatesExamined": 280832
+    },
+    {
+      "Milliseconds": 43453.3246,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 42623.839,
+      "CandidatesExamined": 282510
+    },
+    {
+      "Milliseconds": 43653.4228,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 42824.0334,
+      "CandidatesExamined": 283940
+    },
+    {
+      "Milliseconds": 43853.51,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 43024.0921,
+      "CandidatesExamined": 285295
+    },
+    {
+      "Milliseconds": 44053.5432,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 43224.0365,
+      "CandidatesExamined": 286720
+    },
+    {
+      "Milliseconds": 44265.679599999996,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null,
+      "Stage": "Search budget consumed",
+      "SearchConsumedMilliseconds": 43436.3918,
+      "CandidatesExamined": 288108
+    },
+    {
+      "Milliseconds": 44465.7335,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 43636.2332,
+      "CandidatesExamined": 289648
+    },
+    {
+      "Milliseconds": 44665.8084,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 43836.4168,
+      "CandidatesExamined": 290853
+    },
+    {
+      "Milliseconds": 44865.8695,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 44036.5163,
+      "CandidatesExamined": 292163
+    },
+    {
+      "Milliseconds": 45076.9398,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null,
+      "Stage": "Search budget consumed",
+      "SearchConsumedMilliseconds": 44247.6528,
+      "CandidatesExamined": 293656
+    },
+    {
+      "Milliseconds": 45277.0459,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 44447.6635,
+      "CandidatesExamined": 295130
+    },
+    {
+      "Milliseconds": 45477.0655,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null,
+      "Stage": "Search budget consumed",
+      "SearchConsumedMilliseconds": 44647.7795,
+      "CandidatesExamined": 296523
+    },
+    {
+      "Milliseconds": 45695.693999999996,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null,
+      "Stage": "Search budget consumed",
+      "SearchConsumedMilliseconds": 44866.4067,
+      "CandidatesExamined": 297916
+    },
+    {
+      "Milliseconds": 45895.7293,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 45066.3501,
+      "CandidatesExamined": 299316
+    },
+    {
+      "Milliseconds": 46108.8365,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 45255.9484,
+      "CandidatesExamined": 301025
+    },
+    {
+      "Milliseconds": 46308.905,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 45479.5508,
+      "CandidatesExamined": 302308
+    },
+    {
+      "Milliseconds": 46508.9454,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 45679.4002,
+      "CandidatesExamined": 303728
+    },
+    {
+      "Milliseconds": 46708.9824,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 45879.6028,
+      "CandidatesExamined": 305080
+    },
+    {
+      "Milliseconds": 46920.1492,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null,
+      "Stage": "Search budget consumed",
+      "SearchConsumedMilliseconds": 46090.8624,
+      "CandidatesExamined": 306663
+    },
+    {
+      "Milliseconds": 47120.2162,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 46290.8518,
+      "CandidatesExamined": 308226
+    },
+    {
+      "Milliseconds": 47320.2874,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 46490.9039,
+      "CandidatesExamined": 309630
+    },
+    {
+      "Milliseconds": 47531.3521,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 46678.9407,
+      "CandidatesExamined": 310883
+    },
+    {
+      "Milliseconds": 47732.0332,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null,
+      "Stage": "Search budget consumed",
+      "SearchConsumedMilliseconds": 46902.7466,
+      "CandidatesExamined": 312210
+    },
+    {
+      "Milliseconds": 47941.9664,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 47090.0926,
+      "CandidatesExamined": 313973
+    },
+    {
+      "Milliseconds": 48142.1669,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 47312.6495,
+      "CandidatesExamined": 315344
+    },
+    {
+      "Milliseconds": 48342.1948,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 47512.8442,
+      "CandidatesExamined": 316854
+    },
+    {
+      "Milliseconds": 48542.3556,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 47712.8639,
+      "CandidatesExamined": 318192
+    },
+    {
+      "Milliseconds": 48742.3898,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 47913.0393,
+      "CandidatesExamined": 319609
+    },
+    {
+      "Milliseconds": 48942.4647,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 48113.1193,
+      "CandidatesExamined": 321204
+    },
+    {
+      "Milliseconds": 49162.6764,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null,
+      "Stage": "Search budget consumed",
+      "SearchConsumedMilliseconds": 48333.3891,
+      "CandidatesExamined": 322598
+    },
+    {
+      "Milliseconds": 49362.7725,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 48533.3599,
+      "CandidatesExamined": 323985
+    },
+    {
+      "Milliseconds": 49562.826499999996,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 48733.4649,
+      "CandidatesExamined": 325341
+    },
+    {
+      "Milliseconds": 49772.9048,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 48931.8552,
+      "CandidatesExamined": 326970
+    },
+    {
+      "Milliseconds": 49972.9424,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 49143.5549,
+      "CandidatesExamined": 328615
+    },
+    {
+      "Milliseconds": 50190.0419,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null,
+      "Stage": "Search budget consumed",
+      "SearchConsumedMilliseconds": 49360.7551,
+      "CandidatesExamined": 330032
+    },
+    {
+      "Milliseconds": 50390.0648,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 49560.7033,
+      "CandidatesExamined": 331323
+    },
+    {
+      "Milliseconds": 50590.1847,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 49760.7672,
+      "CandidatesExamined": 332810
+    },
+    {
+      "Milliseconds": 50790.3751,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 49960.6706,
+      "CandidatesExamined": 334368
+    },
+    {
+      "Milliseconds": 50990.4278,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 50161.0804,
+      "CandidatesExamined": 335663
+    },
+    {
+      "Milliseconds": 51190.448599999996,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 50361.0438,
+      "CandidatesExamined": 336836
+    },
+    {
+      "Milliseconds": 51397.7109,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 50557.9565,
+      "CandidatesExamined": 338208
+    },
+    {
+      "Milliseconds": 51608.2893,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null,
+      "Stage": "Search budget consumed",
+      "SearchConsumedMilliseconds": 50779.0021,
+      "CandidatesExamined": 339911
+    },
+    {
+      "Milliseconds": 51808.3571,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 50978.9531,
+      "CandidatesExamined": 341265
+    },
+    {
+      "Milliseconds": 52008.4687,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 51178.9921,
+      "CandidatesExamined": 342704
+    },
+    {
+      "Milliseconds": 52208.517,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 51379.1588,
+      "CandidatesExamined": 344091
+    },
+    {
+      "Milliseconds": 52412.5898,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null,
+      "Stage": "Search budget consumed",
+      "SearchConsumedMilliseconds": 51583.3012,
+      "CandidatesExamined": 345517
+    },
+    {
+      "Milliseconds": 52612.7324,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 51783.3269,
+      "CandidatesExamined": 347125
+    },
+    {
+      "Milliseconds": 52812.7654,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 51983.4218,
+      "CandidatesExamined": 348486
+    },
+    {
+      "Milliseconds": 53028.9292,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null,
+      "Stage": "Search budget consumed",
+      "SearchConsumedMilliseconds": 52199.6427,
+      "CandidatesExamined": 349825
+    },
+    {
+      "Milliseconds": 53231.3822,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null,
+      "Stage": "Search budget consumed",
+      "SearchConsumedMilliseconds": 52402.0955,
+      "CandidatesExamined": 351196
+    },
+    {
+      "Milliseconds": 53434.9484,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 52583.4277,
+      "CandidatesExamined": 352890
+    },
+    {
+      "Milliseconds": 53635.1642,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 52805.607,
+      "CandidatesExamined": 354304
+    },
+    {
+      "Milliseconds": 53835.2223,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 53005.8354,
+      "CandidatesExamined": 355700
+    },
+    {
+      "Milliseconds": 54035.2715,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 53205.8832,
+      "CandidatesExamined": 357160
+    },
+    {
+      "Milliseconds": 54235.3857,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 53405.8578,
+      "CandidatesExamined": 358476
+    },
+    {
+      "Milliseconds": 54435.4461,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 53605.9753,
+      "CandidatesExamined": 359720
+    },
+    {
+      "Milliseconds": 54635.4817,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 53806.0926,
+      "CandidatesExamined": 361060
+    },
+    {
+      "Milliseconds": 54835.5112,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 54006.0028,
+      "CandidatesExamined": 362448
+    },
+    {
+      "Milliseconds": 55038.1809,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 54201.949,
+      "CandidatesExamined": 364025
+    },
+    {
+      "Milliseconds": 55238.3578,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 54408.8773,
+      "CandidatesExamined": 365584
+    },
+    {
+      "Milliseconds": 55438.4448,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 54609.0817,
+      "CandidatesExamined": 367005
+    },
+    {
+      "Milliseconds": 55647.2281,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null,
+      "Stage": "Search budget consumed",
+      "SearchConsumedMilliseconds": 54817.941,
+      "CandidatesExamined": 368263
+    },
+    {
+      "Milliseconds": 55850.2142,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null,
+      "Stage": "Search budget consumed",
+      "SearchConsumedMilliseconds": 55020.9277,
+      "CandidatesExamined": 369656
+    },
+    {
+      "Milliseconds": 56061.0635,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 55208.3999,
+      "CandidatesExamined": 371369
+    },
+    {
+      "Milliseconds": 56261.0815,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null,
+      "Stage": "Search budget consumed",
+      "SearchConsumedMilliseconds": 55431.7955,
+      "CandidatesExamined": 372710
+    },
+    {
+      "Milliseconds": 56461.109599999996,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 55631.7461,
+      "CandidatesExamined": 373873
+    },
+    {
+      "Milliseconds": 56661.1421,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 55831.6368,
+      "CandidatesExamined": 375248
+    },
+    {
+      "Milliseconds": 56863.3221,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null,
+      "Stage": "Search budget consumed",
+      "SearchConsumedMilliseconds": 56034.034,
+      "CandidatesExamined": 376911
+    },
+    {
+      "Milliseconds": 57063.3491,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 56233.9921,
+      "CandidatesExamined": 378339
+    },
+    {
+      "Milliseconds": 57263.3969,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 56434.0304,
+      "CandidatesExamined": 379731
+    },
+    {
+      "Milliseconds": 57463.4306,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 56634.0157,
+      "CandidatesExamined": 381075
+    },
+    {
+      "Milliseconds": 57668.5846,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 56827.5881,
+      "CandidatesExamined": 382479
+    },
+    {
+      "Milliseconds": 57868.647899999996,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 57039.2958,
+      "CandidatesExamined": 383978
+    },
+    {
+      "Milliseconds": 58068.715899999996,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 57239.3444,
+      "CandidatesExamined": 385204
+    },
+    {
+      "Milliseconds": 58268.8001,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 57439.3915,
+      "CandidatesExamined": 386427
+    },
+    {
+      "Milliseconds": 58488.1526,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 57635.197,
+      "CandidatesExamined": 387978
+    },
+    {
+      "Milliseconds": 58692.498,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null,
+      "Stage": "Search budget consumed",
+      "SearchConsumedMilliseconds": 57863.2115,
+      "CandidatesExamined": 389217
+    },
+    {
+      "Milliseconds": 58892.6732,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 58063.1918,
+      "CandidatesExamined": 390576
+    },
+    {
+      "Milliseconds": 59092.7832,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 58263.2795,
+      "CandidatesExamined": 391904
+    },
+    {
+      "Milliseconds": 59296.1576,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 58443.6558,
+      "CandidatesExamined": 393558
+    },
+    {
+      "Milliseconds": 59496.2472,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 58666.7284,
+      "CandidatesExamined": 395040
+    },
+    {
+      "Milliseconds": 59696.318,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 58866.9718,
+      "CandidatesExamined": 396446
+    },
+    {
+      "Milliseconds": 59896.3808,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 59067.0265,
+      "CandidatesExamined": 397796
+    },
+    {
+      "Milliseconds": 60100.4346,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 59262.1591,
+      "CandidatesExamined": 399213
+    },
+    {
+      "Milliseconds": 60300.5268,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 59471.1664,
+      "CandidatesExamined": 400899
+    },
+    {
+      "Milliseconds": 60517.4978,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null,
+      "Stage": "Search budget consumed",
+      "SearchConsumedMilliseconds": 59688.2111,
+      "CandidatesExamined": 402178
+    },
+    {
+      "Milliseconds": 60717.519,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160,
+      "Stage": "Sampled deck analysis",
+      "SearchConsumedMilliseconds": 59888.1734,
+      "CandidatesExamined": 403502
+    },
+    {
+      "Milliseconds": 60830.13709999999,
+      "State": "Verifying",
+      "HasBest": true,
+      "CompletedHands": 0,
+      "TotalHands": 658008,
+      "Stage": "Verifying shortlisted deck",
+      "SearchConsumedMilliseconds": 60000.8482,
+      "CandidatesExamined": 404580
+    },
+    {
+      "Milliseconds": 60908.367,
+      "State": "Verifying",
+      "HasBest": true,
+      "CompletedHands": 0,
+      "TotalHands": 658008,
+      "Stage": "Verifying shortlisted deck",
+      "SearchConsumedMilliseconds": 60000.8482,
+      "CandidatesExamined": 404580
+    },
+    {
+      "Milliseconds": 60929.827099999995,
+      "State": "Completed",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null,
+      "Stage": "Result ready for installation",
+      "SearchConsumedMilliseconds": 60000.8482,
+      "CandidatesExamined": 404580
+    }
+  ]
+}

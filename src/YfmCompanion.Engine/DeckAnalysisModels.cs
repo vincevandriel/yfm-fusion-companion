@@ -43,6 +43,12 @@ public sealed record DeckAnalysisReport(
     double ExpectedBestFusionAttack,
     IReadOnlyList<DeckFusionResult> FusionResults)
 {
+    public long TotalBestFusionAttack { get; init; }
+    public bool IsExact { get; init; } = true;
+    public int SampleCount { get; init; }
+    // Conservative 95% normal-approximation margin for sampled proportions, not a win rate.
+    public double ProbabilityMargin95 => IsExact || SampleCount == 0 ? 0 : Math.Min(1, 1.96 * Math.Sqrt(0.25 / SampleCount));
+
     public double AnyFusionProbability => Probability(HandsWithAnyFusion);
     public double AtLeast2000Probability => Probability(HandsAtLeast2000);
     public double AtLeast2500Probability => Probability(HandsAtLeast2500);

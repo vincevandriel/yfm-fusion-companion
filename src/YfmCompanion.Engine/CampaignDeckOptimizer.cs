@@ -30,11 +30,14 @@ public sealed class CampaignOptimizationContextBuilder(
     private readonly FusionCatalog _catalog = catalog;
     private readonly CampaignResearchData _researchData = researchData;
     private readonly OpponentThreatEvaluator _threatEvaluator = new(catalog);
+    private readonly Dictionary<(int Id, int Count), OpponentThreatReport> _reports = [];
 
     public CampaignOptimizationContext Build(
         CampaignOpponentScope scope,
         int? specificOpponentId = null,
-        int threatsPerOpponent = 5)
+        int threatsPerOpponent = 5,
+        IProgress<DeckOptimizationProgress>? progress = null,
+        CancellationToken cancellationToken = default)
     {
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(threatsPerOpponent);
 
@@ -57,6 +60,8 @@ public sealed class CampaignOptimizationContextBuilder(
         var monsterTypes = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         foreach (var opponentId in opponentIds)
         {
+            cancellationToken.ThrowIfCancellationRequested();
+            progress?.Report(new("Preparing opponent threats", reports.Count, opponentIds.Length));
             var opponent = _researchData.Opponents[opponentId];
             foreach (var entry in opponent.DeckPool)
             {
@@ -67,10 +72,18 @@ public sealed class CampaignOptimizationContextBuilder(
                 }
             }
 
-            var report = _threatEvaluator.Evaluate(
-                opponent.DeckPool,
-                includeGlitches: false,
-                maximumFusionThreats: threatsPerOpponent);
+            OpponentThreatReport report;
+            lock (_reports)
+            {
+                if (!_reports.TryGetValue((opponentId, threatsPerOpponent), out report!))
+                {
+                    report = _threatEvaluator.Evaluate(opponent.DeckPool, includeGlitches: false,
+                        maximumFusionThreats: threatsPerOpponent, cancellationToken: cancellationToken);
+                    // Bound alternate-settings preparation; the builder is tied to one catalog/research snapshot.
+                    if (_reports.Count >= 128) _reports.Clear();
+                    _reports.Add((opponentId, threatsPerOpponent), report);
+                }
+            }
             reports.Add(report);
             targets.Add(ToTarget(opponent, report.StrongestBaseMonster, 1.0, isFusionThreat: false));
 
@@ -86,6 +99,7 @@ public sealed class CampaignOptimizationContextBuilder(
             }
         }
 
+        progress?.Report(new("Preparing opponent threats", reports.Count, opponentIds.Length));
         var label = scope switch
         {
             CampaignOpponentScope.GeneralSafety => "General campaign safety (33 opponents; final gauntlet excluded)",
@@ -142,13 +156,13 @@ public sealed class CampaignDeckOptimizer(
         var baseOptions = options ?? new DeckOptimizationOptions(
             IncludeGlitches: false,
             Profile: DeckStrategyProfile.ControlAndSafety);
-        var context = _contextBuilder.Build(scope, specificOpponentId);
+        var context = _contextBuilder.Build(scope, specificOpponentId, progress: progress, cancellationToken: cancellationToken);
         context = context with
         {
             Safety = context.Safety with { ActiveFieldCardId = baseOptions.PreferredFieldCardId }
         };
         var secondaryContext = scope == CampaignOpponentScope.GeneralSafety
-            ? _contextBuilder.Build(CampaignOpponentScope.FinalGauntlet).Safety with
+            ? _contextBuilder.Build(CampaignOpponentScope.FinalGauntlet, progress: progress, cancellationToken: cancellationToken).Safety with
             {
                 ActiveFieldCardId = baseOptions.PreferredFieldCardId
             }

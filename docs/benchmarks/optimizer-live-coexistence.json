@@ -1,0 +1,2716 @@
+{
+  "SchemaVersion": 1,
+  "CapturedUtc": "2026-09-23T18:52:54.7110003+00:00",
+  "LogicalProcessors": 12,
+  "Privacy": "Only poll timing, status, success and duel-active booleans; no game cards, save contents, paths or raw memory.",
+  "Inventory": "Synthetic near-complete collection",
+  "Mode": "Balanced",
+  "PollIntervalMilliseconds": 1000,
+  "MaximumConcurrentReads": 1,
+  "SuccessfulReads": 69,
+  "FailedReads": 0,
+  "ActiveDuelReads": 0,
+  "FirstUsableDeckMilliseconds": 1492.4251000000004,
+  "FirstProgressMilliseconds": 48.144500000000335,
+  "MaximumProgressGapMilliseconds": 1415.0617999999995,
+  "ResultState": "Completed",
+  "ExactHands": 658008,
+  "ResultStatisticsExact": true,
+  "Polls": [
+    {
+      "Phase": "idle",
+      "StartedMilliseconds": 1008.983,
+      "DurationMilliseconds": 157.38210000000004,
+      "Success": true,
+      "DuelActive": false,
+      "Playback": "Paused",
+      "ErrorType": null
+    },
+    {
+      "Phase": "idle",
+      "StartedMilliseconds": 2003.6206,
+      "DurationMilliseconds": 142.2340999999999,
+      "Success": true,
+      "DuelActive": false,
+      "Playback": "Paused",
+      "ErrorType": null
+    },
+    {
+      "Phase": "idle",
+      "StartedMilliseconds": 3014.6877,
+      "DurationMilliseconds": 143.21720000000005,
+      "Success": true,
+      "DuelActive": false,
+      "Playback": "Paused",
+      "ErrorType": null
+    },
+    {
+      "Phase": "idle",
+      "StartedMilliseconds": 4008.7324,
+      "DurationMilliseconds": 156.7475999999997,
+      "Success": true,
+      "DuelActive": false,
+      "Playback": "Paused",
+      "ErrorType": null
+    },
+    {
+      "Phase": "idle",
+      "StartedMilliseconds": 5013.2684,
+      "DurationMilliseconds": 157.80000000000018,
+      "Success": true,
+      "DuelActive": false,
+      "Playback": "Paused",
+      "ErrorType": null
+    },
+    {
+      "Phase": "optimizer",
+      "StartedMilliseconds": 6009.0397,
+      "DurationMilliseconds": 158.8134999999993,
+      "Success": true,
+      "DuelActive": false,
+      "Playback": "Paused",
+      "ErrorType": null
+    },
+    {
+      "Phase": "optimizer",
+      "StartedMilliseconds": 7002.7846,
+      "DurationMilliseconds": 142.33299999999963,
+      "Success": true,
+      "DuelActive": false,
+      "Playback": "Paused",
+      "ErrorType": null
+    },
+    {
+      "Phase": "optimizer",
+      "StartedMilliseconds": 8015.0706,
+      "DurationMilliseconds": 141.78799999999956,
+      "Success": true,
+      "DuelActive": false,
+      "Playback": "Paused",
+      "ErrorType": null
+    },
+    {
+      "Phase": "optimizer",
+      "StartedMilliseconds": 9010.6398,
+      "DurationMilliseconds": 157.27559999999903,
+      "Success": true,
+      "DuelActive": false,
+      "Playback": "Paused",
+      "ErrorType": null
+    },
+    {
+      "Phase": "optimizer",
+      "StartedMilliseconds": 10001.9108,
+      "DurationMilliseconds": 141.28570000000036,
+      "Success": true,
+      "DuelActive": false,
+      "Playback": "Paused",
+      "ErrorType": null
+    },
+    {
+      "Phase": "optimizer",
+      "StartedMilliseconds": 11012.0997,
+      "DurationMilliseconds": 156.8216999999986,
+      "Success": true,
+      "DuelActive": false,
+      "Playback": "Paused",
+      "ErrorType": null
+    },
+    {
+      "Phase": "optimizer",
+      "StartedMilliseconds": 12003.999,
+      "DurationMilliseconds": 143.02109999999993,
+      "Success": true,
+      "DuelActive": false,
+      "Playback": "Paused",
+      "ErrorType": null
+    },
+    {
+      "Phase": "optimizer",
+      "StartedMilliseconds": 13011.8167,
+      "DurationMilliseconds": 158.2489999999998,
+      "Success": true,
+      "DuelActive": false,
+      "Playback": "Paused",
+      "ErrorType": null
+    },
+    {
+      "Phase": "optimizer",
+      "StartedMilliseconds": 14006.0864,
+      "DurationMilliseconds": 142.82710000000043,
+      "Success": true,
+      "DuelActive": false,
+      "Playback": "Paused",
+      "ErrorType": null
+    },
+    {
+      "Phase": "optimizer",
+      "StartedMilliseconds": 15002.791,
+      "DurationMilliseconds": 142.26960000000145,
+      "Success": true,
+      "DuelActive": false,
+      "Playback": "Paused",
+      "ErrorType": null
+    },
+    {
+      "Phase": "optimizer",
+      "StartedMilliseconds": 16014.1369,
+      "DurationMilliseconds": 143.33300000000054,
+      "Success": true,
+      "DuelActive": false,
+      "Playback": "Paused",
+      "ErrorType": null
+    },
+    {
+      "Phase": "optimizer",
+      "StartedMilliseconds": 17013.9991,
+      "DurationMilliseconds": 157.77690000000075,
+      "Success": true,
+      "DuelActive": false,
+      "Playback": "Paused",
+      "ErrorType": null
+    },
+    {
+      "Phase": "optimizer",
+      "StartedMilliseconds": 18008.7789,
+      "DurationMilliseconds": 159.3286999999982,
+      "Success": true,
+      "DuelActive": false,
+      "Playback": "Paused",
+      "ErrorType": null
+    },
+    {
+      "Phase": "optimizer",
+      "StartedMilliseconds": 19010.1198,
+      "DurationMilliseconds": 157.35729999999967,
+      "Success": true,
+      "DuelActive": false,
+      "Playback": "Paused",
+      "ErrorType": null
+    },
+    {
+      "Phase": "optimizer",
+      "StartedMilliseconds": 20004.9568,
+      "DurationMilliseconds": 142.2927000000018,
+      "Success": true,
+      "DuelActive": false,
+      "Playback": "Paused",
+      "ErrorType": null
+    },
+    {
+      "Phase": "optimizer",
+      "StartedMilliseconds": 21013.1946,
+      "DurationMilliseconds": 158.81500000000233,
+      "Success": true,
+      "DuelActive": false,
+      "Playback": "Paused",
+      "ErrorType": null
+    },
+    {
+      "Phase": "optimizer",
+      "StartedMilliseconds": 22003.0471,
+      "DurationMilliseconds": 142.77210000000196,
+      "Success": true,
+      "DuelActive": false,
+      "Playback": "Paused",
+      "ErrorType": null
+    },
+    {
+      "Phase": "optimizer",
+      "StartedMilliseconds": 23000.7548,
+      "DurationMilliseconds": 143.2399000000005,
+      "Success": true,
+      "DuelActive": false,
+      "Playback": "Paused",
+      "ErrorType": null
+    },
+    {
+      "Phase": "optimizer",
+      "StartedMilliseconds": 24011.6785,
+      "DurationMilliseconds": 156.34819999999672,
+      "Success": true,
+      "DuelActive": false,
+      "Playback": "Paused",
+      "ErrorType": null
+    },
+    {
+      "Phase": "optimizer",
+      "StartedMilliseconds": 25006.316,
+      "DurationMilliseconds": 155.81460000000152,
+      "Success": true,
+      "DuelActive": false,
+      "Playback": "Paused",
+      "ErrorType": null
+    },
+    {
+      "Phase": "optimizer",
+      "StartedMilliseconds": 26015.5386,
+      "DurationMilliseconds": 143.2488000000012,
+      "Success": true,
+      "DuelActive": false,
+      "Playback": "Paused",
+      "ErrorType": null
+    },
+    {
+      "Phase": "optimizer",
+      "StartedMilliseconds": 27008.1969,
+      "DurationMilliseconds": 155.74820000000182,
+      "Success": true,
+      "DuelActive": false,
+      "Playback": "Paused",
+      "ErrorType": null
+    },
+    {
+      "Phase": "optimizer",
+      "StartedMilliseconds": 28002.0522,
+      "DurationMilliseconds": 141.27810000000318,
+      "Success": true,
+      "DuelActive": false,
+      "Playback": "Paused",
+      "ErrorType": null
+    },
+    {
+      "Phase": "optimizer",
+      "StartedMilliseconds": 29013.3969,
+      "DurationMilliseconds": 156.4395000000004,
+      "Success": true,
+      "DuelActive": false,
+      "Playback": "Paused",
+      "ErrorType": null
+    },
+    {
+      "Phase": "optimizer",
+      "StartedMilliseconds": 30004.8717,
+      "DurationMilliseconds": 141.79939999999988,
+      "Success": true,
+      "DuelActive": false,
+      "Playback": "Paused",
+      "ErrorType": null
+    },
+    {
+      "Phase": "optimizer",
+      "StartedMilliseconds": 31015.7598,
+      "DurationMilliseconds": 143.24309999999969,
+      "Success": true,
+      "DuelActive": false,
+      "Playback": "Paused",
+      "ErrorType": null
+    },
+    {
+      "Phase": "optimizer",
+      "StartedMilliseconds": 32008.4111,
+      "DurationMilliseconds": 157.8178999999982,
+      "Success": true,
+      "DuelActive": false,
+      "Playback": "Paused",
+      "ErrorType": null
+    },
+    {
+      "Phase": "optimizer",
+      "StartedMilliseconds": 33000.4788,
+      "DurationMilliseconds": 142.2983000000022,
+      "Success": true,
+      "DuelActive": false,
+      "Playback": "Paused",
+      "ErrorType": null
+    },
+    {
+      "Phase": "optimizer",
+      "StartedMilliseconds": 34007.8281,
+      "DurationMilliseconds": 159.80310000000463,
+      "Success": true,
+      "DuelActive": false,
+      "Playback": "Paused",
+      "ErrorType": null
+    },
+    {
+      "Phase": "optimizer",
+      "StartedMilliseconds": 35004.2308,
+      "DurationMilliseconds": 142.76660000000265,
+      "Success": true,
+      "DuelActive": false,
+      "Playback": "Paused",
+      "ErrorType": null
+    },
+    {
+      "Phase": "optimizer",
+      "StartedMilliseconds": 36014.9407,
+      "DurationMilliseconds": 141.761599999998,
+      "Success": true,
+      "DuelActive": false,
+      "Playback": "Paused",
+      "ErrorType": null
+    },
+    {
+      "Phase": "optimizer",
+      "StartedMilliseconds": 37012.8391,
+      "DurationMilliseconds": 158.2471000000005,
+      "Success": true,
+      "DuelActive": false,
+      "Playback": "Paused",
+      "ErrorType": null
+    },
+    {
+      "Phase": "optimizer",
+      "StartedMilliseconds": 38005.062,
+      "DurationMilliseconds": 142.3148000000001,
+      "Success": true,
+      "DuelActive": false,
+      "Playback": "Paused",
+      "ErrorType": null
+    },
+    {
+      "Phase": "optimizer",
+      "StartedMilliseconds": 39014.7607,
+      "DurationMilliseconds": 142.70829999999842,
+      "Success": true,
+      "DuelActive": false,
+      "Playback": "Paused",
+      "ErrorType": null
+    },
+    {
+      "Phase": "optimizer",
+      "StartedMilliseconds": 40002.9009,
+      "DurationMilliseconds": 142.27640000000247,
+      "Success": true,
+      "DuelActive": false,
+      "Playback": "Paused",
+      "ErrorType": null
+    },
+    {
+      "Phase": "optimizer",
+      "StartedMilliseconds": 41008.7694,
+      "DurationMilliseconds": 158.3663000000015,
+      "Success": true,
+      "DuelActive": false,
+      "Playback": "Paused",
+      "ErrorType": null
+    },
+    {
+      "Phase": "optimizer",
+      "StartedMilliseconds": 42000.8944,
+      "DurationMilliseconds": 142.27300000000105,
+      "Success": true,
+      "DuelActive": false,
+      "Playback": "Paused",
+      "ErrorType": null
+    },
+    {
+      "Phase": "optimizer",
+      "StartedMilliseconds": 43011.7314,
+      "DurationMilliseconds": 158.94310000000405,
+      "Success": true,
+      "DuelActive": false,
+      "Playback": "Paused",
+      "ErrorType": null
+    },
+    {
+      "Phase": "optimizer",
+      "StartedMilliseconds": 44001.3262,
+      "DurationMilliseconds": 63.32579999999871,
+      "Success": true,
+      "DuelActive": false,
+      "Playback": "Playing",
+      "ErrorType": null
+    },
+    {
+      "Phase": "optimizer",
+      "StartedMilliseconds": 45015.9801,
+      "DurationMilliseconds": 63.77070000000094,
+      "Success": true,
+      "DuelActive": false,
+      "Playback": "Playing",
+      "ErrorType": null
+    },
+    {
+      "Phase": "optimizer",
+      "StartedMilliseconds": 46012.7446,
+      "DurationMilliseconds": 65.25570000000153,
+      "Success": true,
+      "DuelActive": false,
+      "Playback": "Playing",
+      "ErrorType": null
+    },
+    {
+      "Phase": "optimizer",
+      "StartedMilliseconds": 47010.6009,
+      "DurationMilliseconds": 63.32650000000285,
+      "Success": true,
+      "DuelActive": false,
+      "Playback": "Playing",
+      "ErrorType": null
+    },
+    {
+      "Phase": "optimizer",
+      "StartedMilliseconds": 48013.775,
+      "DurationMilliseconds": 62.78589999999531,
+      "Success": true,
+      "DuelActive": false,
+      "Playback": "Playing",
+      "ErrorType": null
+    },
+    {
+      "Phase": "optimizer",
+      "StartedMilliseconds": 49009.8727,
+      "DurationMilliseconds": 64.29450000000361,
+      "Success": true,
+      "DuelActive": false,
+      "Playback": "Playing",
+      "ErrorType": null
+    },
+    {
+      "Phase": "optimizer",
+      "StartedMilliseconds": 50008.1808,
+      "DurationMilliseconds": 63.79690000000119,
+      "Success": true,
+      "DuelActive": false,
+      "Playback": "Playing",
+      "ErrorType": null
+    },
+    {
+      "Phase": "optimizer",
+      "StartedMilliseconds": 51004.4305,
+      "DurationMilliseconds": 62.231800000001385,
+      "Success": true,
+      "DuelActive": false,
+      "Playback": "Playing",
+      "ErrorType": null
+    },
+    {
+      "Phase": "optimizer",
+      "StartedMilliseconds": 52010.672,
+      "DurationMilliseconds": 63.86989999999787,
+      "Success": true,
+      "DuelActive": false,
+      "Playback": "Playing",
+      "ErrorType": null
+    },
+    {
+      "Phase": "optimizer",
+      "StartedMilliseconds": 53004.7349,
+      "DurationMilliseconds": 64.21409999999742,
+      "Success": true,
+      "DuelActive": false,
+      "Playback": "Playing",
+      "ErrorType": null
+    },
+    {
+      "Phase": "optimizer",
+      "StartedMilliseconds": 54004.111,
+      "DurationMilliseconds": 62.44460000000254,
+      "Success": true,
+      "DuelActive": false,
+      "Playback": "Playing",
+      "ErrorType": null
+    },
+    {
+      "Phase": "optimizer",
+      "StartedMilliseconds": 55012.4247,
+      "DurationMilliseconds": 64.83629999999539,
+      "Success": true,
+      "DuelActive": false,
+      "Playback": "Playing",
+      "ErrorType": null
+    },
+    {
+      "Phase": "optimizer",
+      "StartedMilliseconds": 56010.5806,
+      "DurationMilliseconds": 64.829899999997,
+      "Success": true,
+      "DuelActive": false,
+      "Playback": "Playing",
+      "ErrorType": null
+    },
+    {
+      "Phase": "optimizer",
+      "StartedMilliseconds": 57005.9141,
+      "DurationMilliseconds": 64.26219999999739,
+      "Success": true,
+      "DuelActive": false,
+      "Playback": "Playing",
+      "ErrorType": null
+    },
+    {
+      "Phase": "optimizer",
+      "StartedMilliseconds": 58014.7542,
+      "DurationMilliseconds": 64.43359999999666,
+      "Success": true,
+      "DuelActive": false,
+      "Playback": "Playing",
+      "ErrorType": null
+    },
+    {
+      "Phase": "optimizer",
+      "StartedMilliseconds": 59010.0305,
+      "DurationMilliseconds": 64.34990000000107,
+      "Success": true,
+      "DuelActive": false,
+      "Playback": "Playing",
+      "ErrorType": null
+    },
+    {
+      "Phase": "optimizer",
+      "StartedMilliseconds": 60004.1923,
+      "DurationMilliseconds": 78.68119999999908,
+      "Success": true,
+      "DuelActive": false,
+      "Playback": "Playing",
+      "ErrorType": null
+    },
+    {
+      "Phase": "optimizer",
+      "StartedMilliseconds": 61014.8478,
+      "DurationMilliseconds": 62.27409999999509,
+      "Success": true,
+      "DuelActive": false,
+      "Playback": "Playing",
+      "ErrorType": null
+    },
+    {
+      "Phase": "optimizer",
+      "StartedMilliseconds": 62009.5987,
+      "DurationMilliseconds": 64.79789999999775,
+      "Success": true,
+      "DuelActive": false,
+      "Playback": "Playing",
+      "ErrorType": null
+    },
+    {
+      "Phase": "optimizer",
+      "StartedMilliseconds": 63006.2633,
+      "DurationMilliseconds": 64.2864000000045,
+      "Success": true,
+      "DuelActive": false,
+      "Playback": "Playing",
+      "ErrorType": null
+    },
+    {
+      "Phase": "optimizer",
+      "StartedMilliseconds": 64002.3943,
+      "DurationMilliseconds": 64.40370000000257,
+      "Success": true,
+      "DuelActive": false,
+      "Playback": "Playing",
+      "ErrorType": null
+    },
+    {
+      "Phase": "optimizer",
+      "StartedMilliseconds": 65015.6132,
+      "DurationMilliseconds": 64.25970000000234,
+      "Success": true,
+      "DuelActive": false,
+      "Playback": "Playing",
+      "ErrorType": null
+    },
+    {
+      "Phase": "optimizer",
+      "StartedMilliseconds": 66009.6995,
+      "DurationMilliseconds": 79.22499999999127,
+      "Success": true,
+      "DuelActive": false,
+      "Playback": "Playing",
+      "ErrorType": null
+    },
+    {
+      "Phase": "post-optimizer",
+      "StartedMilliseconds": 67003.895,
+      "DurationMilliseconds": 65.29009999999835,
+      "Success": true,
+      "DuelActive": false,
+      "Playback": "Playing",
+      "ErrorType": null
+    },
+    {
+      "Phase": "post-optimizer",
+      "StartedMilliseconds": 68011.0086,
+      "DurationMilliseconds": 79.12369999999646,
+      "Success": true,
+      "DuelActive": false,
+      "Playback": "Playing",
+      "ErrorType": null
+    },
+    {
+      "Phase": "post-optimizer",
+      "StartedMilliseconds": 69009.1016,
+      "DurationMilliseconds": 64.02500000000873,
+      "Success": true,
+      "DuelActive": false,
+      "Playback": "Playing",
+      "ErrorType": null
+    }
+  ],
+  "Progress": [
+    {
+      "Milliseconds": 48.144500000000335,
+      "State": "Preparing",
+      "HasBest": false,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 1463.2062999999998,
+      "State": "Searching",
+      "HasBest": false,
+      "CompletedHands": 0,
+      "TotalHands": 160
+    },
+    {
+      "Milliseconds": 1492.4251000000004,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 1700.6796999999997,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 1911.4804000000004,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 2122.1081999999997,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 2333.4521999999997,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 2540.4952000000003,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 2740.5415999999996,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 0,
+      "TotalHands": 160
+    },
+    {
+      "Milliseconds": 2951.0941999999995,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 3153.9437,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 3364.6902,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 3576.0503,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 3788.0878999999995,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 3997.6264999999994,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 4198.2982999999995,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 4410.388599999999,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 4614.2483999999995,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 4825.461700000001,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 5025.635499999999,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 5236.507500000001,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 5443.6287999999995,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 5655.179499999999,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 5866.684700000001,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 6076.557099999999,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 6277.487099999999,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 6488.340499999999,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 6706.1688,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 6907.127100000001,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 7107.2561,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160
+    },
+    {
+      "Milliseconds": 7319.391699999999,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 7531.5464999999995,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 7731.9037,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 7942.6239,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 8143.148899999999,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 8354.002499999999,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 8559.737799999999,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 8770.569899999999,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 8972.785199999998,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 9184.986499999999,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 9388.555400000001,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 9588.878799999999,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 9790.623500000002,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 9994.408899999999,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 10204.897,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 10409.3985,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 10619.9051,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 10832.292399999998,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 11033.492999999999,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 11234.304100000001,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 11445.570900000002,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 11649.241700000002,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 11849.3322,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160
+    },
+    {
+      "Milliseconds": 12056.0978,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 12268.2363,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 12470.0508,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 12671.506400000002,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 12881.1741,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 13083.223400000003,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 13293.988700000002,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 13494.503100000002,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 13705.083200000001,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 13909.9058,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 14119.6578,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 14319.670600000001,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160
+    },
+    {
+      "Milliseconds": 14531.2941,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 14734.3858,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 14934.482200000002,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 15134.5082,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 0,
+      "TotalHands": 160
+    },
+    {
+      "Milliseconds": 15335.543000000001,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 15537.620200000001,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 15742.996,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 15953.412100000001,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 16153.9274,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 16364.5406,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 16566.2425,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 16766.6608,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 16972.0423,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 17172.089900000003,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 0,
+      "TotalHands": 160
+    },
+    {
+      "Milliseconds": 17378.1894,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 17583.671000000002,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 17793.471100000002,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 17993.6387,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160
+    },
+    {
+      "Milliseconds": 18205.281600000002,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 18405.8656,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 18618.5144,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 18821.9624,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 19031.9383,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 19237.9447,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 19447.6742,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 19656.0887,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 19857.035900000003,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 20058.1143,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160
+    },
+    {
+      "Milliseconds": 20270.4561,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 20481.885000000002,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 20684.6598,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 20896.732500000002,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 21096.853900000002,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 21308.4514,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 21512.9497,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 21712.983,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 21916.4834,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 22126.3426,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 22326.7262,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 22528.369300000002,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 22738.708300000002,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 22943.174,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 23154.2798,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 23357.4281,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 23568.3699,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 23770.322,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 23970.4811,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 24172.856,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 24372.9362,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160
+    },
+    {
+      "Milliseconds": 24582.1662,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 24793.0403,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 24993.1279,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 25195.8607,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 25406.684400000002,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 25610.6545,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 25821.9849,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 26022.5498,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 26225.1829,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 26429.9463,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 26640.1495,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 26843.1788,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 27043.7409,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 27255.6015,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 27459.2653,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 27669.8132,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 27870.587100000004,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 28081.5769,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 28288.726500000004,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 28499.6434,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 28701.475,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 28901.598599999998,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160
+    },
+    {
+      "Milliseconds": 29110.350599999998,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 29320.699200000003,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 29531.485500000003,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 29732.4701,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 29942.371100000004,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 30145.1489,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 30356.1307,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 30557.2644,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 30767.715300000003,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 30972.860500000003,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 31184.5533,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 31386.056300000004,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 31596.692499999997,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 31806.931900000003,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 32008.897100000002,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 32219.4375,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 32420.9525,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 32633.035900000003,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 32838.4223,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 33048.6263,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 33250.8557,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 33462.2745,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 33665.3553,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 33866.1944,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 34067.8461,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160
+    },
+    {
+      "Milliseconds": 34278.5025,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 34490.4487,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 34697.3409,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 34907.5604,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 35109.4967,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 35313.6543,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 35516.4135,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 35727.3555,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 35928.4061,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 36139.601500000004,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 36348.7179,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 36548.851800000004,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160
+    },
+    {
+      "Milliseconds": 36755.4072,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 36962.193100000004,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 37163.1691,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 37369.2825,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 37574.237,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 37775.8467,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 37986.5463,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 38191.867,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 38404.2183,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 38611.9417,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 38815.1821,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 39025.3213,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 39231.7635,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 39436.1625,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 39639.2785,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 39852.1408,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 40056.1867,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 40267.981700000004,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 40469.7115,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 40680.3237,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 40890.8398,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 41096.7331,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 41307.3614,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 41515.428700000004,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 41725.3823,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 41927.818100000004,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 42138.2975,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 42340.2208,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 42551.5002,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 42757.3545,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 42957.4664,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 43170.9973,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 43383.064,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 43583.2874,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160
+    },
+    {
+      "Milliseconds": 43786.9989,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 43988.0213,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 44189.8016,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 44400.5777,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 44603.4418,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 44814.394700000004,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 45018.9041,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 45230.3444,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 45431.176100000004,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 45641.1414,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 45853.2874,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 46054.6743,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 46268.872,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 46479.5438,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 46691.1146,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 46892.0587,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 47093.192,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 47299.9435,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 47505.8401,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 47718.4102,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 47920.5473,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 48121.2781,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 48324.7203,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 48535.3722,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 48736.1227,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 48946.1726,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 49152.6278,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 49363.3979,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 49566.7132,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 49777.4349,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 49977.6235,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 50179.6619,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 50390.6982,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 50594.5702,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 50806.1913,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 51012.3323,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 51222.915,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 51427.1239,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 51629.0721,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 51830.268000000004,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 52033.1024,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 52244.067800000004,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 52452.8792,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 52655.2446,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 52860.7046,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 53071.666,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 53274.6673,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 53477.9305,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 53685.510200000004,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 53896.3282,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 54106.9828,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 54310.2424,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 54510.2801,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 0,
+      "TotalHands": 160
+    },
+    {
+      "Milliseconds": 54714.2308,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 54926.1747,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 55129.5444,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 55334.779200000004,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 55538.1713,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 55739.1912,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 55950.6216,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 56154.7524,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 56366.6842,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 56571.2301,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 56782.0186,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 56982.572,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 57193.5068,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 57405.5127,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 57617.0717,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 57820.4956,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 0,
+      "TotalHands": 160
+    },
+    {
+      "Milliseconds": 58020.7806,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 58225.8072,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 58433.740900000004,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 58634.592300000004,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 58837.2782,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 59037.6388,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 59238.7805,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 59450.2509,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 59655.5099,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 59865.381,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 60065.5578,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 60274.3675,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 60478.633,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 60680.7712,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 60891.1397,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 61093.6918,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 61300.155,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 61326.070900000006,
+      "State": "Verifying",
+      "HasBest": true,
+      "CompletedHands": 0,
+      "TotalHands": 658008
+    },
+    {
+      "Milliseconds": 61463.6562,
+      "State": "Verifying",
+      "HasBest": true,
+      "CompletedHands": 0,
+      "TotalHands": 658008
+    },
+    {
+      "Milliseconds": 61528.3235,
+      "State": "Completed",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    }
+  ]
+}

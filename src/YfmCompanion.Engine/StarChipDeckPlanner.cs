@@ -37,6 +37,23 @@ public sealed class StarChipDeckPlanner(FusionCatalog catalog)
         IProgress<DeckOptimizationProgress>? progress = null,
         CancellationToken cancellationToken = default)
     {
+        options ??= new DeckOptimizationOptions();
+        var comparisonDeck = currentDeckCardIds?.ToArray();
+        // The comparison cannot affect candidate ordering. Analyze it exactly once,
+        // after all purchase alternatives, rather than depending on LRU retention.
+        var plan = PlanCore(ownedCards, starChips, useStarChips, options, null, progress, cancellationToken);
+        return plan with { ResultingDeck = _optimizer.WithComparison(plan.ResultingDeck, comparisonDeck, options, progress, cancellationToken) };
+    }
+
+    private StarChipDeckPlan PlanCore(
+        IEnumerable<OwnedCardQuantity> ownedCards,
+        uint starChips,
+        bool useStarChips,
+        DeckOptimizationOptions? options = null,
+        IEnumerable<int>? currentDeckCardIds = null,
+        IProgress<DeckOptimizationProgress>? progress = null,
+        CancellationToken cancellationToken = default)
+    {
         ArgumentNullException.ThrowIfNull(ownedCards);
         options ??= new DeckOptimizationOptions();
         var owned = NormalizeOwned(ownedCards);
@@ -80,15 +97,26 @@ public sealed class StarChipDeckPlanner(FusionCatalog catalog)
         var feasibilityPurchases = new Dictionary<int, int>(purchased);
         var purchasedNames = purchased.Keys.Select(cardId => _catalog.GetCard(cardId).Name)
             .ToHashSet(StringComparer.OrdinalIgnoreCase);
+        var purchaseProgressClock = System.Diagnostics.Stopwatch.StartNew();
         for (var step = purchased.Count; step < MaximumCandidatePurchases; step++)
         {
             cancellationToken.ThrowIfCancellationRequested();
+            double Score(Card card)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                if (purchaseProgressClock.ElapsedMilliseconds >= 200)
+                {
+                    progress?.Report(new("Evaluating affordable purchases", step, MaximumCandidatePurchases));
+                    purchaseProgressClock.Restart();
+                }
+                return PurchaseCandidateScore(card, virtualOwned, options, cancellationToken);
+            }
             var candidate = eligible
                 .Where(card => !purchasedNames.Contains(card.Name))
                 .Where(card => card.StarchipCost!.Value <= remaining)
                 .Where(card => virtualOwned.GetValueOrDefault(card.Id) <
                     OwnedDeckOptimizer.LegalCopyLimitForCard(card.Id, options.CopyLimit))
-                .Select(card => new { Card = card, Score = PurchaseCandidateScore(card, virtualOwned, options) })
+                .Select(card => new { Card = card, Score = Score(card) })
                 .Where(item => item.Score > 0)
                 .OrderByDescending(item => item.Score)
                 .ThenBy(item => item.Card.StarchipCost)
@@ -106,11 +134,11 @@ public sealed class StarChipDeckPlanner(FusionCatalog catalog)
         var candidateReport = _optimizer.Optimize(
             ToOwnedCards(virtualOwned), options, currentDeckCardIds, progress, cancellationToken);
         var candidatePurchases = RequiredPurchasesForDeck(purchased, candidateReport, owned);
-        var candidateDeck = OptimizeWithPurchases(owned, candidatePurchases, options, currentDeckCardIds, progress, cancellationToken);
-        candidatePurchases = RequiredPurchasesForDeck(candidatePurchases, candidateDeck, owned);
-        candidateDeck = OptimizeWithPurchases(owned, candidatePurchases, options, currentDeckCardIds, progress, cancellationToken);
+        // Removing purchases not present in this already-evaluated deck does not change its legality or score.
+        var candidateDeck = candidateReport;
+        long Spend(IReadOnlyDictionary<int, int> purchases) => purchases.Sum(p => (long)_catalog.GetCard(p.Key).StarchipCost!.Value * p.Value);
 
-        if (baseline is not null && !IsStrictlyBetter(candidateDeck, baseline))
+        if (baseline is not null && !IsStrictlyBetter(candidateDeck, baseline, options, Spend(candidatePurchases), 0))
         {
             return NoSpendPlan(starChips, baseline);
         }
@@ -120,10 +148,10 @@ public sealed class StarChipDeckPlanner(FusionCatalog catalog)
         if (feasibilityPurchases.Count > 0)
         {
             var feasibilityDeck = OptimizeWithPurchases(owned, feasibilityPurchases, options, currentDeckCardIds, progress, cancellationToken);
-            if (!IsStrictlyBetter(candidateDeck, feasibilityDeck))
+            if (!IsStrictlyBetter(candidateDeck, feasibilityDeck, options, Spend(candidatePurchases), Spend(feasibilityPurchases)))
             {
                 candidatePurchases = RequiredPurchasesForDeck(feasibilityPurchases, feasibilityDeck, owned);
-                candidateDeck = OptimizeWithPurchases(owned, candidatePurchases, options, currentDeckCardIds, progress, cancellationToken);
+                candidateDeck = feasibilityDeck;
             }
         }
 
@@ -227,51 +255,11 @@ public sealed class StarChipDeckPlanner(FusionCatalog catalog)
         .OrderByDescending(item => PurchaseCandidateScore(item.Card, owned, options))
         .ThenBy(item => item.Card.Id)];
 
-    private static bool IsStrictlyBetter(DeckOptimizationReport candidate, DeckOptimizationReport incumbent)
+    private static bool IsStrictlyBetter(DeckOptimizationReport candidate, DeckOptimizationReport incumbent,
+        DeckOptimizationOptions options, long candidateSpend, long incumbentSpend)
     {
-        if (candidate.SafetyAssessment is not null && incumbent.SafetyAssessment is not null)
-        {
-            var safeOpponentDifference = candidate.SafetyAssessment.SafeOpponentCount - incumbent.SafetyAssessment.SafeOpponentCount;
-            if (safeOpponentDifference != 0)
-            {
-                return safeOpponentDifference > 0;
-            }
-
-            var worstOpponentDifference = candidate.SafetyAssessment.WorstOpponentScore - incumbent.SafetyAssessment.WorstOpponentScore;
-            if (Math.Abs(worstOpponentDifference) > 0.0001)
-            {
-                return worstOpponentDifference > 0;
-            }
-
-            var coverageDifference = candidate.SafetyAssessment.EstimatedOpeningAnswerCoverage - incumbent.SafetyAssessment.EstimatedOpeningAnswerCoverage;
-            if (Math.Abs(coverageDifference) > 0.0001)
-            {
-                return coverageDifference > 0;
-            }
-
-            var safetyDifference = candidate.SafetyAssessment.HeuristicScore - incumbent.SafetyAssessment.HeuristicScore;
-            if (Math.Abs(safetyDifference) > 0.0001)
-            {
-                return safetyDifference > 0;
-            }
-        }
-
-        var powerDifference = candidate.ExactAnalysis.AtLeast2800Probability - incumbent.ExactAnalysis.AtLeast2800Probability;
-        if (Math.Abs(powerDifference) > 0.0000001) return powerDifference > 0;
-        var strongDifference = candidate.ExactAnalysis.AtLeast2500Probability - incumbent.ExactAnalysis.AtLeast2500Probability;
-        if (Math.Abs(strongDifference) > 0.0000001) return strongDifference > 0;
-        var expectedDifference = candidate.ExactAnalysis.ExpectedBestFusionAttack - incumbent.ExactAnalysis.ExpectedBestFusionAttack;
-        if (Math.Abs(expectedDifference) > 0.0001) return expectedDifference > 0;
-        if (candidate.SecondarySafetyAssessment is not null && incumbent.SecondarySafetyAssessment is not null)
-        {
-            var secondaryDifference = candidate.SecondarySafetyAssessment.HeuristicScore - incumbent.SecondarySafetyAssessment.HeuristicScore;
-            if (Math.Abs(secondaryDifference) > 0.0001)
-            {
-                return secondaryDifference > 0;
-            }
-        }
-
-        return false;
+        return new DeckObjectiveComparer(options.SafetyContext is not null, options.SecondarySafetyContext is not null)
+            .Compare(DeckObjectiveComparer.FromReport(candidate, candidateSpend), DeckObjectiveComparer.FromReport(incumbent, incumbentSpend)) > 0;
     }
 
     private Dictionary<int, int> NormalizeOwned(IEnumerable<OwnedCardQuantity> ownedCards)
@@ -300,13 +288,15 @@ public sealed class StarChipDeckPlanner(FusionCatalog catalog)
     private double PurchaseCandidateScore(
         Card card,
         IReadOnlyDictionary<int, int> virtualOwned,
-        DeckOptimizationOptions options)
+        DeckOptimizationOptions options,
+        CancellationToken cancellationToken = default)
     {
+        var (safety, secondary) = _optimizer.PurchaseCounters(card.Id, options, cancellationToken);
         var score = card.Attack + (card.Defense * 0.15) +
-                    OpponentSafetyScoring.CounterValue(card, options.SafetyContext) +
-                    (OpponentSafetyScoring.CounterValue(card, options.SecondarySafetyContext) * 0.15);
+                    safety + (secondary * 0.15);
         foreach (var partner in virtualOwned)
         {
+            cancellationToken.ThrowIfCancellationRequested();
             if (partner.Value <= 0)
             {
                 continue;

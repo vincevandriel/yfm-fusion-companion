@@ -1,0 +1,4459 @@
+{
+  "SchemaVersion": 1,
+  "CapturedUtc": "2026-09-23T18:28:04.7989002+00:00",
+  "LogicalProcessors": 12,
+  "Runtime": "9.0.18",
+  "OS": "Microsoft Windows NT 10.0.19045.0",
+  "PerCaseCancellationSeconds": 2,
+  "LiveReaderCoverage": "Unverified: no live-reader benchmark in this harness.",
+  "Fixtures": {
+    "starter-duplicates": [
+      {
+        "CardId": 2,
+        "Quantity": 3
+      },
+      {
+        "CardId": 3,
+        "Quantity": 3
+      },
+      {
+        "CardId": 4,
+        "Quantity": 3
+      },
+      {
+        "CardId": 5,
+        "Quantity": 3
+      },
+      {
+        "CardId": 6,
+        "Quantity": 3
+      },
+      {
+        "CardId": 8,
+        "Quantity": 3
+      },
+      {
+        "CardId": 9,
+        "Quantity": 3
+      },
+      {
+        "CardId": 13,
+        "Quantity": 3
+      },
+      {
+        "CardId": 16,
+        "Quantity": 3
+      },
+      {
+        "CardId": 24,
+        "Quantity": 3
+      },
+      {
+        "CardId": 25,
+        "Quantity": 3
+      },
+      {
+        "CardId": 27,
+        "Quantity": 3
+      },
+      {
+        "CardId": 28,
+        "Quantity": 3
+      },
+      {
+        "CardId": 29,
+        "Quantity": 3
+      }
+    ],
+    "starter-diverse": [
+      {
+        "CardId": 2,
+        "Quantity": 1
+      },
+      {
+        "CardId": 3,
+        "Quantity": 1
+      },
+      {
+        "CardId": 4,
+        "Quantity": 1
+      },
+      {
+        "CardId": 5,
+        "Quantity": 1
+      },
+      {
+        "CardId": 6,
+        "Quantity": 1
+      },
+      {
+        "CardId": 8,
+        "Quantity": 1
+      },
+      {
+        "CardId": 9,
+        "Quantity": 1
+      },
+      {
+        "CardId": 13,
+        "Quantity": 1
+      },
+      {
+        "CardId": 16,
+        "Quantity": 1
+      },
+      {
+        "CardId": 24,
+        "Quantity": 1
+      },
+      {
+        "CardId": 25,
+        "Quantity": 1
+      },
+      {
+        "CardId": 27,
+        "Quantity": 1
+      },
+      {
+        "CardId": 28,
+        "Quantity": 1
+      },
+      {
+        "CardId": 29,
+        "Quantity": 1
+      },
+      {
+        "CardId": 30,
+        "Quantity": 1
+      },
+      {
+        "CardId": 34,
+        "Quantity": 1
+      },
+      {
+        "CardId": 40,
+        "Quantity": 1
+      },
+      {
+        "CardId": 42,
+        "Quantity": 1
+      },
+      {
+        "CardId": 45,
+        "Quantity": 1
+      },
+      {
+        "CardId": 46,
+        "Quantity": 1
+      },
+      {
+        "CardId": 47,
+        "Quantity": 1
+      },
+      {
+        "CardId": 48,
+        "Quantity": 1
+      },
+      {
+        "CardId": 49,
+        "Quantity": 1
+      },
+      {
+        "CardId": 50,
+        "Quantity": 1
+      },
+      {
+        "CardId": 53,
+        "Quantity": 1
+      },
+      {
+        "CardId": 54,
+        "Quantity": 1
+      },
+      {
+        "CardId": 56,
+        "Quantity": 1
+      },
+      {
+        "CardId": 58,
+        "Quantity": 1
+      },
+      {
+        "CardId": 59,
+        "Quantity": 1
+      },
+      {
+        "CardId": 61,
+        "Quantity": 1
+      },
+      {
+        "CardId": 62,
+        "Quantity": 1
+      },
+      {
+        "CardId": 64,
+        "Quantity": 1
+      },
+      {
+        "CardId": 65,
+        "Quantity": 1
+      },
+      {
+        "CardId": 70,
+        "Quantity": 1
+      },
+      {
+        "CardId": 71,
+        "Quantity": 1
+      },
+      {
+        "CardId": 74,
+        "Quantity": 1
+      },
+      {
+        "CardId": 75,
+        "Quantity": 1
+      },
+      {
+        "CardId": 76,
+        "Quantity": 1
+      },
+      {
+        "CardId": 77,
+        "Quantity": 1
+      },
+      {
+        "CardId": 83,
+        "Quantity": 1
+      },
+      {
+        "CardId": 84,
+        "Quantity": 1
+      },
+      {
+        "CardId": 86,
+        "Quantity": 1
+      }
+    ],
+    "medium": [
+      {
+        "CardId": 1,
+        "Quantity": 3
+      },
+      {
+        "CardId": 2,
+        "Quantity": 3
+      },
+      {
+        "CardId": 3,
+        "Quantity": 3
+      },
+      {
+        "CardId": 4,
+        "Quantity": 3
+      },
+      {
+        "CardId": 5,
+        "Quantity": 3
+      },
+      {
+        "CardId": 6,
+        "Quantity": 3
+      },
+      {
+        "CardId": 7,
+        "Quantity": 3
+      },
+      {
+        "CardId": 8,
+        "Quantity": 3
+      },
+      {
+        "CardId": 9,
+        "Quantity": 3
+      },
+      {
+        "CardId": 10,
+        "Quantity": 3
+      },
+      {
+        "CardId": 11,
+        "Quantity": 3
+      },
+      {
+        "CardId": 12,
+        "Quantity": 3
+      },
+      {
+        "CardId": 13,
+        "Quantity": 3
+      },
+      {
+        "CardId": 14,
+        "Quantity": 3
+      },
+      {
+        "CardId": 15,
+        "Quantity": 3
+      },
+      {
+        "CardId": 16,
+        "Quantity": 3
+      },
+      {
+        "CardId": 17,
+        "Quantity": 3
+      },
+      {
+        "CardId": 18,
+        "Quantity": 3
+      },
+      {
+        "CardId": 19,
+        "Quantity": 3
+      },
+      {
+        "CardId": 20,
+        "Quantity": 3
+      },
+      {
+        "CardId": 21,
+        "Quantity": 3
+      },
+      {
+        "CardId": 22,
+        "Quantity": 3
+      },
+      {
+        "CardId": 23,
+        "Quantity": 3
+      },
+      {
+        "CardId": 24,
+        "Quantity": 3
+      },
+      {
+        "CardId": 25,
+        "Quantity": 3
+      },
+      {
+        "CardId": 26,
+        "Quantity": 3
+      },
+      {
+        "CardId": 27,
+        "Quantity": 3
+      },
+      {
+        "CardId": 28,
+        "Quantity": 3
+      },
+      {
+        "CardId": 29,
+        "Quantity": 3
+      },
+      {
+        "CardId": 30,
+        "Quantity": 3
+      },
+      {
+        "CardId": 31,
+        "Quantity": 3
+      },
+      {
+        "CardId": 32,
+        "Quantity": 3
+      },
+      {
+        "CardId": 33,
+        "Quantity": 3
+      },
+      {
+        "CardId": 34,
+        "Quantity": 3
+      },
+      {
+        "CardId": 35,
+        "Quantity": 3
+      },
+      {
+        "CardId": 36,
+        "Quantity": 3
+      },
+      {
+        "CardId": 37,
+        "Quantity": 3
+      },
+      {
+        "CardId": 38,
+        "Quantity": 3
+      },
+      {
+        "CardId": 39,
+        "Quantity": 3
+      },
+      {
+        "CardId": 40,
+        "Quantity": 3
+      },
+      {
+        "CardId": 41,
+        "Quantity": 3
+      },
+      {
+        "CardId": 42,
+        "Quantity": 3
+      },
+      {
+        "CardId": 43,
+        "Quantity": 3
+      },
+      {
+        "CardId": 44,
+        "Quantity": 3
+      },
+      {
+        "CardId": 45,
+        "Quantity": 3
+      },
+      {
+        "CardId": 46,
+        "Quantity": 3
+      },
+      {
+        "CardId": 47,
+        "Quantity": 3
+      },
+      {
+        "CardId": 48,
+        "Quantity": 3
+      },
+      {
+        "CardId": 49,
+        "Quantity": 3
+      },
+      {
+        "CardId": 50,
+        "Quantity": 3
+      },
+      {
+        "CardId": 51,
+        "Quantity": 3
+      },
+      {
+        "CardId": 52,
+        "Quantity": 3
+      },
+      {
+        "CardId": 53,
+        "Quantity": 3
+      },
+      {
+        "CardId": 54,
+        "Quantity": 3
+      },
+      {
+        "CardId": 55,
+        "Quantity": 3
+      },
+      {
+        "CardId": 56,
+        "Quantity": 3
+      },
+      {
+        "CardId": 57,
+        "Quantity": 3
+      },
+      {
+        "CardId": 58,
+        "Quantity": 3
+      },
+      {
+        "CardId": 59,
+        "Quantity": 3
+      },
+      {
+        "CardId": 60,
+        "Quantity": 3
+      },
+      {
+        "CardId": 61,
+        "Quantity": 3
+      },
+      {
+        "CardId": 62,
+        "Quantity": 3
+      },
+      {
+        "CardId": 63,
+        "Quantity": 3
+      },
+      {
+        "CardId": 64,
+        "Quantity": 3
+      },
+      {
+        "CardId": 65,
+        "Quantity": 3
+      },
+      {
+        "CardId": 66,
+        "Quantity": 3
+      },
+      {
+        "CardId": 67,
+        "Quantity": 3
+      },
+      {
+        "CardId": 68,
+        "Quantity": 3
+      },
+      {
+        "CardId": 69,
+        "Quantity": 3
+      },
+      {
+        "CardId": 70,
+        "Quantity": 3
+      },
+      {
+        "CardId": 71,
+        "Quantity": 3
+      },
+      {
+        "CardId": 72,
+        "Quantity": 3
+      },
+      {
+        "CardId": 73,
+        "Quantity": 3
+      },
+      {
+        "CardId": 74,
+        "Quantity": 3
+      },
+      {
+        "CardId": 75,
+        "Quantity": 3
+      },
+      {
+        "CardId": 76,
+        "Quantity": 3
+      },
+      {
+        "CardId": 77,
+        "Quantity": 3
+      },
+      {
+        "CardId": 78,
+        "Quantity": 3
+      },
+      {
+        "CardId": 79,
+        "Quantity": 3
+      },
+      {
+        "CardId": 80,
+        "Quantity": 3
+      },
+      {
+        "CardId": 81,
+        "Quantity": 3
+      },
+      {
+        "CardId": 82,
+        "Quantity": 3
+      },
+      {
+        "CardId": 83,
+        "Quantity": 3
+      },
+      {
+        "CardId": 84,
+        "Quantity": 3
+      },
+      {
+        "CardId": 85,
+        "Quantity": 3
+      },
+      {
+        "CardId": 86,
+        "Quantity": 3
+      },
+      {
+        "CardId": 87,
+        "Quantity": 3
+      },
+      {
+        "CardId": 88,
+        "Quantity": 3
+      },
+      {
+        "CardId": 89,
+        "Quantity": 3
+      },
+      {
+        "CardId": 90,
+        "Quantity": 3
+      },
+      {
+        "CardId": 91,
+        "Quantity": 3
+      },
+      {
+        "CardId": 92,
+        "Quantity": 3
+      },
+      {
+        "CardId": 93,
+        "Quantity": 3
+      },
+      {
+        "CardId": 94,
+        "Quantity": 3
+      },
+      {
+        "CardId": 95,
+        "Quantity": 3
+      },
+      {
+        "CardId": 96,
+        "Quantity": 3
+      },
+      {
+        "CardId": 97,
+        "Quantity": 3
+      },
+      {
+        "CardId": 98,
+        "Quantity": 3
+      },
+      {
+        "CardId": 99,
+        "Quantity": 3
+      },
+      {
+        "CardId": 100,
+        "Quantity": 3
+      }
+    ],
+    "near-complete": [
+      {
+        "CardId": 1,
+        "Quantity": 3
+      },
+      {
+        "CardId": 2,
+        "Quantity": 3
+      },
+      {
+        "CardId": 3,
+        "Quantity": 3
+      },
+      {
+        "CardId": 4,
+        "Quantity": 3
+      },
+      {
+        "CardId": 5,
+        "Quantity": 3
+      },
+      {
+        "CardId": 6,
+        "Quantity": 3
+      },
+      {
+        "CardId": 7,
+        "Quantity": 3
+      },
+      {
+        "CardId": 8,
+        "Quantity": 3
+      },
+      {
+        "CardId": 9,
+        "Quantity": 3
+      },
+      {
+        "CardId": 10,
+        "Quantity": 3
+      },
+      {
+        "CardId": 11,
+        "Quantity": 3
+      },
+      {
+        "CardId": 12,
+        "Quantity": 3
+      },
+      {
+        "CardId": 13,
+        "Quantity": 3
+      },
+      {
+        "CardId": 14,
+        "Quantity": 3
+      },
+      {
+        "CardId": 15,
+        "Quantity": 3
+      },
+      {
+        "CardId": 16,
+        "Quantity": 3
+      },
+      {
+        "CardId": 17,
+        "Quantity": 3
+      },
+      {
+        "CardId": 18,
+        "Quantity": 3
+      },
+      {
+        "CardId": 19,
+        "Quantity": 3
+      },
+      {
+        "CardId": 20,
+        "Quantity": 3
+      },
+      {
+        "CardId": 21,
+        "Quantity": 3
+      },
+      {
+        "CardId": 22,
+        "Quantity": 3
+      },
+      {
+        "CardId": 23,
+        "Quantity": 3
+      },
+      {
+        "CardId": 24,
+        "Quantity": 3
+      },
+      {
+        "CardId": 25,
+        "Quantity": 3
+      },
+      {
+        "CardId": 26,
+        "Quantity": 3
+      },
+      {
+        "CardId": 27,
+        "Quantity": 3
+      },
+      {
+        "CardId": 28,
+        "Quantity": 3
+      },
+      {
+        "CardId": 29,
+        "Quantity": 3
+      },
+      {
+        "CardId": 30,
+        "Quantity": 3
+      },
+      {
+        "CardId": 31,
+        "Quantity": 3
+      },
+      {
+        "CardId": 32,
+        "Quantity": 3
+      },
+      {
+        "CardId": 33,
+        "Quantity": 3
+      },
+      {
+        "CardId": 34,
+        "Quantity": 3
+      },
+      {
+        "CardId": 35,
+        "Quantity": 3
+      },
+      {
+        "CardId": 36,
+        "Quantity": 3
+      },
+      {
+        "CardId": 37,
+        "Quantity": 3
+      },
+      {
+        "CardId": 38,
+        "Quantity": 3
+      },
+      {
+        "CardId": 39,
+        "Quantity": 3
+      },
+      {
+        "CardId": 40,
+        "Quantity": 3
+      },
+      {
+        "CardId": 41,
+        "Quantity": 3
+      },
+      {
+        "CardId": 42,
+        "Quantity": 3
+      },
+      {
+        "CardId": 43,
+        "Quantity": 3
+      },
+      {
+        "CardId": 44,
+        "Quantity": 3
+      },
+      {
+        "CardId": 45,
+        "Quantity": 3
+      },
+      {
+        "CardId": 46,
+        "Quantity": 3
+      },
+      {
+        "CardId": 47,
+        "Quantity": 3
+      },
+      {
+        "CardId": 48,
+        "Quantity": 3
+      },
+      {
+        "CardId": 49,
+        "Quantity": 3
+      },
+      {
+        "CardId": 50,
+        "Quantity": 3
+      },
+      {
+        "CardId": 51,
+        "Quantity": 3
+      },
+      {
+        "CardId": 52,
+        "Quantity": 3
+      },
+      {
+        "CardId": 53,
+        "Quantity": 3
+      },
+      {
+        "CardId": 54,
+        "Quantity": 3
+      },
+      {
+        "CardId": 55,
+        "Quantity": 3
+      },
+      {
+        "CardId": 56,
+        "Quantity": 3
+      },
+      {
+        "CardId": 57,
+        "Quantity": 3
+      },
+      {
+        "CardId": 58,
+        "Quantity": 3
+      },
+      {
+        "CardId": 59,
+        "Quantity": 3
+      },
+      {
+        "CardId": 60,
+        "Quantity": 3
+      },
+      {
+        "CardId": 61,
+        "Quantity": 3
+      },
+      {
+        "CardId": 62,
+        "Quantity": 3
+      },
+      {
+        "CardId": 63,
+        "Quantity": 3
+      },
+      {
+        "CardId": 64,
+        "Quantity": 3
+      },
+      {
+        "CardId": 65,
+        "Quantity": 3
+      },
+      {
+        "CardId": 66,
+        "Quantity": 3
+      },
+      {
+        "CardId": 67,
+        "Quantity": 3
+      },
+      {
+        "CardId": 68,
+        "Quantity": 3
+      },
+      {
+        "CardId": 69,
+        "Quantity": 3
+      },
+      {
+        "CardId": 70,
+        "Quantity": 3
+      },
+      {
+        "CardId": 71,
+        "Quantity": 3
+      },
+      {
+        "CardId": 72,
+        "Quantity": 3
+      },
+      {
+        "CardId": 73,
+        "Quantity": 3
+      },
+      {
+        "CardId": 74,
+        "Quantity": 3
+      },
+      {
+        "CardId": 75,
+        "Quantity": 3
+      },
+      {
+        "CardId": 76,
+        "Quantity": 3
+      },
+      {
+        "CardId": 77,
+        "Quantity": 3
+      },
+      {
+        "CardId": 78,
+        "Quantity": 3
+      },
+      {
+        "CardId": 79,
+        "Quantity": 3
+      },
+      {
+        "CardId": 80,
+        "Quantity": 3
+      },
+      {
+        "CardId": 81,
+        "Quantity": 3
+      },
+      {
+        "CardId": 82,
+        "Quantity": 3
+      },
+      {
+        "CardId": 83,
+        "Quantity": 3
+      },
+      {
+        "CardId": 84,
+        "Quantity": 3
+      },
+      {
+        "CardId": 85,
+        "Quantity": 3
+      },
+      {
+        "CardId": 86,
+        "Quantity": 3
+      },
+      {
+        "CardId": 87,
+        "Quantity": 3
+      },
+      {
+        "CardId": 88,
+        "Quantity": 3
+      },
+      {
+        "CardId": 89,
+        "Quantity": 3
+      },
+      {
+        "CardId": 90,
+        "Quantity": 3
+      },
+      {
+        "CardId": 91,
+        "Quantity": 3
+      },
+      {
+        "CardId": 92,
+        "Quantity": 3
+      },
+      {
+        "CardId": 93,
+        "Quantity": 3
+      },
+      {
+        "CardId": 94,
+        "Quantity": 3
+      },
+      {
+        "CardId": 95,
+        "Quantity": 3
+      },
+      {
+        "CardId": 96,
+        "Quantity": 3
+      },
+      {
+        "CardId": 97,
+        "Quantity": 3
+      },
+      {
+        "CardId": 98,
+        "Quantity": 3
+      },
+      {
+        "CardId": 99,
+        "Quantity": 3
+      },
+      {
+        "CardId": 100,
+        "Quantity": 3
+      },
+      {
+        "CardId": 101,
+        "Quantity": 3
+      },
+      {
+        "CardId": 102,
+        "Quantity": 3
+      },
+      {
+        "CardId": 103,
+        "Quantity": 3
+      },
+      {
+        "CardId": 104,
+        "Quantity": 3
+      },
+      {
+        "CardId": 105,
+        "Quantity": 3
+      },
+      {
+        "CardId": 106,
+        "Quantity": 3
+      },
+      {
+        "CardId": 107,
+        "Quantity": 3
+      },
+      {
+        "CardId": 108,
+        "Quantity": 3
+      },
+      {
+        "CardId": 109,
+        "Quantity": 3
+      },
+      {
+        "CardId": 110,
+        "Quantity": 3
+      },
+      {
+        "CardId": 111,
+        "Quantity": 3
+      },
+      {
+        "CardId": 112,
+        "Quantity": 3
+      },
+      {
+        "CardId": 113,
+        "Quantity": 3
+      },
+      {
+        "CardId": 114,
+        "Quantity": 3
+      },
+      {
+        "CardId": 115,
+        "Quantity": 3
+      },
+      {
+        "CardId": 116,
+        "Quantity": 3
+      },
+      {
+        "CardId": 117,
+        "Quantity": 3
+      },
+      {
+        "CardId": 118,
+        "Quantity": 3
+      },
+      {
+        "CardId": 119,
+        "Quantity": 3
+      },
+      {
+        "CardId": 120,
+        "Quantity": 3
+      },
+      {
+        "CardId": 121,
+        "Quantity": 3
+      },
+      {
+        "CardId": 122,
+        "Quantity": 3
+      },
+      {
+        "CardId": 123,
+        "Quantity": 3
+      },
+      {
+        "CardId": 124,
+        "Quantity": 3
+      },
+      {
+        "CardId": 125,
+        "Quantity": 3
+      },
+      {
+        "CardId": 126,
+        "Quantity": 3
+      },
+      {
+        "CardId": 127,
+        "Quantity": 3
+      },
+      {
+        "CardId": 128,
+        "Quantity": 3
+      },
+      {
+        "CardId": 129,
+        "Quantity": 3
+      },
+      {
+        "CardId": 130,
+        "Quantity": 3
+      },
+      {
+        "CardId": 131,
+        "Quantity": 3
+      },
+      {
+        "CardId": 132,
+        "Quantity": 3
+      },
+      {
+        "CardId": 133,
+        "Quantity": 3
+      },
+      {
+        "CardId": 134,
+        "Quantity": 3
+      },
+      {
+        "CardId": 135,
+        "Quantity": 3
+      },
+      {
+        "CardId": 136,
+        "Quantity": 3
+      },
+      {
+        "CardId": 137,
+        "Quantity": 3
+      },
+      {
+        "CardId": 138,
+        "Quantity": 3
+      },
+      {
+        "CardId": 139,
+        "Quantity": 3
+      },
+      {
+        "CardId": 140,
+        "Quantity": 3
+      },
+      {
+        "CardId": 141,
+        "Quantity": 3
+      },
+      {
+        "CardId": 142,
+        "Quantity": 3
+      },
+      {
+        "CardId": 143,
+        "Quantity": 3
+      },
+      {
+        "CardId": 144,
+        "Quantity": 3
+      },
+      {
+        "CardId": 145,
+        "Quantity": 3
+      },
+      {
+        "CardId": 146,
+        "Quantity": 3
+      },
+      {
+        "CardId": 147,
+        "Quantity": 3
+      },
+      {
+        "CardId": 148,
+        "Quantity": 3
+      },
+      {
+        "CardId": 149,
+        "Quantity": 3
+      },
+      {
+        "CardId": 150,
+        "Quantity": 3
+      },
+      {
+        "CardId": 151,
+        "Quantity": 3
+      },
+      {
+        "CardId": 152,
+        "Quantity": 3
+      },
+      {
+        "CardId": 153,
+        "Quantity": 3
+      },
+      {
+        "CardId": 154,
+        "Quantity": 3
+      },
+      {
+        "CardId": 155,
+        "Quantity": 3
+      },
+      {
+        "CardId": 156,
+        "Quantity": 3
+      },
+      {
+        "CardId": 157,
+        "Quantity": 3
+      },
+      {
+        "CardId": 158,
+        "Quantity": 3
+      },
+      {
+        "CardId": 159,
+        "Quantity": 3
+      },
+      {
+        "CardId": 160,
+        "Quantity": 3
+      },
+      {
+        "CardId": 161,
+        "Quantity": 3
+      },
+      {
+        "CardId": 162,
+        "Quantity": 3
+      },
+      {
+        "CardId": 163,
+        "Quantity": 3
+      },
+      {
+        "CardId": 164,
+        "Quantity": 3
+      },
+      {
+        "CardId": 165,
+        "Quantity": 3
+      },
+      {
+        "CardId": 166,
+        "Quantity": 3
+      },
+      {
+        "CardId": 167,
+        "Quantity": 3
+      },
+      {
+        "CardId": 168,
+        "Quantity": 3
+      },
+      {
+        "CardId": 169,
+        "Quantity": 3
+      },
+      {
+        "CardId": 170,
+        "Quantity": 3
+      },
+      {
+        "CardId": 171,
+        "Quantity": 3
+      },
+      {
+        "CardId": 172,
+        "Quantity": 3
+      },
+      {
+        "CardId": 173,
+        "Quantity": 3
+      },
+      {
+        "CardId": 174,
+        "Quantity": 3
+      },
+      {
+        "CardId": 175,
+        "Quantity": 3
+      },
+      {
+        "CardId": 176,
+        "Quantity": 3
+      },
+      {
+        "CardId": 177,
+        "Quantity": 3
+      },
+      {
+        "CardId": 178,
+        "Quantity": 3
+      },
+      {
+        "CardId": 179,
+        "Quantity": 3
+      },
+      {
+        "CardId": 180,
+        "Quantity": 3
+      },
+      {
+        "CardId": 181,
+        "Quantity": 3
+      },
+      {
+        "CardId": 182,
+        "Quantity": 3
+      },
+      {
+        "CardId": 183,
+        "Quantity": 3
+      },
+      {
+        "CardId": 184,
+        "Quantity": 3
+      },
+      {
+        "CardId": 185,
+        "Quantity": 3
+      },
+      {
+        "CardId": 186,
+        "Quantity": 3
+      },
+      {
+        "CardId": 187,
+        "Quantity": 3
+      },
+      {
+        "CardId": 188,
+        "Quantity": 3
+      },
+      {
+        "CardId": 189,
+        "Quantity": 3
+      },
+      {
+        "CardId": 190,
+        "Quantity": 3
+      },
+      {
+        "CardId": 191,
+        "Quantity": 3
+      },
+      {
+        "CardId": 192,
+        "Quantity": 3
+      },
+      {
+        "CardId": 193,
+        "Quantity": 3
+      },
+      {
+        "CardId": 194,
+        "Quantity": 3
+      },
+      {
+        "CardId": 195,
+        "Quantity": 3
+      },
+      {
+        "CardId": 196,
+        "Quantity": 3
+      },
+      {
+        "CardId": 197,
+        "Quantity": 3
+      },
+      {
+        "CardId": 198,
+        "Quantity": 3
+      },
+      {
+        "CardId": 199,
+        "Quantity": 3
+      },
+      {
+        "CardId": 200,
+        "Quantity": 3
+      },
+      {
+        "CardId": 201,
+        "Quantity": 3
+      },
+      {
+        "CardId": 202,
+        "Quantity": 3
+      },
+      {
+        "CardId": 203,
+        "Quantity": 3
+      },
+      {
+        "CardId": 204,
+        "Quantity": 3
+      },
+      {
+        "CardId": 205,
+        "Quantity": 3
+      },
+      {
+        "CardId": 206,
+        "Quantity": 3
+      },
+      {
+        "CardId": 207,
+        "Quantity": 3
+      },
+      {
+        "CardId": 208,
+        "Quantity": 3
+      },
+      {
+        "CardId": 209,
+        "Quantity": 3
+      },
+      {
+        "CardId": 210,
+        "Quantity": 3
+      },
+      {
+        "CardId": 211,
+        "Quantity": 3
+      },
+      {
+        "CardId": 212,
+        "Quantity": 3
+      },
+      {
+        "CardId": 213,
+        "Quantity": 3
+      },
+      {
+        "CardId": 214,
+        "Quantity": 3
+      },
+      {
+        "CardId": 215,
+        "Quantity": 3
+      },
+      {
+        "CardId": 216,
+        "Quantity": 3
+      },
+      {
+        "CardId": 217,
+        "Quantity": 3
+      },
+      {
+        "CardId": 218,
+        "Quantity": 3
+      },
+      {
+        "CardId": 219,
+        "Quantity": 3
+      },
+      {
+        "CardId": 220,
+        "Quantity": 3
+      },
+      {
+        "CardId": 221,
+        "Quantity": 3
+      },
+      {
+        "CardId": 222,
+        "Quantity": 3
+      },
+      {
+        "CardId": 223,
+        "Quantity": 3
+      },
+      {
+        "CardId": 224,
+        "Quantity": 3
+      },
+      {
+        "CardId": 225,
+        "Quantity": 3
+      },
+      {
+        "CardId": 226,
+        "Quantity": 3
+      },
+      {
+        "CardId": 227,
+        "Quantity": 3
+      },
+      {
+        "CardId": 228,
+        "Quantity": 3
+      },
+      {
+        "CardId": 229,
+        "Quantity": 3
+      },
+      {
+        "CardId": 230,
+        "Quantity": 3
+      },
+      {
+        "CardId": 231,
+        "Quantity": 3
+      },
+      {
+        "CardId": 232,
+        "Quantity": 3
+      },
+      {
+        "CardId": 233,
+        "Quantity": 3
+      },
+      {
+        "CardId": 234,
+        "Quantity": 3
+      },
+      {
+        "CardId": 235,
+        "Quantity": 3
+      },
+      {
+        "CardId": 236,
+        "Quantity": 3
+      },
+      {
+        "CardId": 237,
+        "Quantity": 3
+      },
+      {
+        "CardId": 238,
+        "Quantity": 3
+      },
+      {
+        "CardId": 239,
+        "Quantity": 3
+      },
+      {
+        "CardId": 240,
+        "Quantity": 3
+      },
+      {
+        "CardId": 241,
+        "Quantity": 3
+      },
+      {
+        "CardId": 242,
+        "Quantity": 3
+      },
+      {
+        "CardId": 243,
+        "Quantity": 3
+      },
+      {
+        "CardId": 244,
+        "Quantity": 3
+      },
+      {
+        "CardId": 245,
+        "Quantity": 3
+      },
+      {
+        "CardId": 246,
+        "Quantity": 3
+      },
+      {
+        "CardId": 247,
+        "Quantity": 3
+      },
+      {
+        "CardId": 248,
+        "Quantity": 3
+      },
+      {
+        "CardId": 249,
+        "Quantity": 3
+      },
+      {
+        "CardId": 250,
+        "Quantity": 3
+      },
+      {
+        "CardId": 251,
+        "Quantity": 3
+      },
+      {
+        "CardId": 252,
+        "Quantity": 3
+      },
+      {
+        "CardId": 253,
+        "Quantity": 3
+      },
+      {
+        "CardId": 254,
+        "Quantity": 3
+      },
+      {
+        "CardId": 255,
+        "Quantity": 3
+      },
+      {
+        "CardId": 256,
+        "Quantity": 3
+      },
+      {
+        "CardId": 257,
+        "Quantity": 3
+      },
+      {
+        "CardId": 258,
+        "Quantity": 3
+      },
+      {
+        "CardId": 259,
+        "Quantity": 3
+      },
+      {
+        "CardId": 260,
+        "Quantity": 3
+      },
+      {
+        "CardId": 261,
+        "Quantity": 3
+      },
+      {
+        "CardId": 262,
+        "Quantity": 3
+      },
+      {
+        "CardId": 263,
+        "Quantity": 3
+      },
+      {
+        "CardId": 264,
+        "Quantity": 3
+      },
+      {
+        "CardId": 265,
+        "Quantity": 3
+      },
+      {
+        "CardId": 266,
+        "Quantity": 3
+      },
+      {
+        "CardId": 267,
+        "Quantity": 3
+      },
+      {
+        "CardId": 268,
+        "Quantity": 3
+      },
+      {
+        "CardId": 269,
+        "Quantity": 3
+      },
+      {
+        "CardId": 270,
+        "Quantity": 3
+      },
+      {
+        "CardId": 271,
+        "Quantity": 3
+      },
+      {
+        "CardId": 272,
+        "Quantity": 3
+      },
+      {
+        "CardId": 273,
+        "Quantity": 3
+      },
+      {
+        "CardId": 274,
+        "Quantity": 3
+      },
+      {
+        "CardId": 275,
+        "Quantity": 3
+      },
+      {
+        "CardId": 276,
+        "Quantity": 3
+      },
+      {
+        "CardId": 277,
+        "Quantity": 3
+      },
+      {
+        "CardId": 278,
+        "Quantity": 3
+      },
+      {
+        "CardId": 279,
+        "Quantity": 3
+      },
+      {
+        "CardId": 280,
+        "Quantity": 3
+      },
+      {
+        "CardId": 281,
+        "Quantity": 3
+      },
+      {
+        "CardId": 282,
+        "Quantity": 3
+      },
+      {
+        "CardId": 283,
+        "Quantity": 3
+      },
+      {
+        "CardId": 284,
+        "Quantity": 3
+      },
+      {
+        "CardId": 285,
+        "Quantity": 3
+      },
+      {
+        "CardId": 286,
+        "Quantity": 3
+      },
+      {
+        "CardId": 287,
+        "Quantity": 3
+      },
+      {
+        "CardId": 288,
+        "Quantity": 3
+      },
+      {
+        "CardId": 289,
+        "Quantity": 3
+      },
+      {
+        "CardId": 290,
+        "Quantity": 3
+      },
+      {
+        "CardId": 291,
+        "Quantity": 3
+      },
+      {
+        "CardId": 292,
+        "Quantity": 3
+      },
+      {
+        "CardId": 293,
+        "Quantity": 3
+      },
+      {
+        "CardId": 294,
+        "Quantity": 3
+      },
+      {
+        "CardId": 295,
+        "Quantity": 3
+      },
+      {
+        "CardId": 296,
+        "Quantity": 3
+      },
+      {
+        "CardId": 297,
+        "Quantity": 3
+      },
+      {
+        "CardId": 298,
+        "Quantity": 3
+      },
+      {
+        "CardId": 299,
+        "Quantity": 3
+      },
+      {
+        "CardId": 300,
+        "Quantity": 3
+      },
+      {
+        "CardId": 301,
+        "Quantity": 3
+      },
+      {
+        "CardId": 302,
+        "Quantity": 3
+      },
+      {
+        "CardId": 303,
+        "Quantity": 3
+      },
+      {
+        "CardId": 304,
+        "Quantity": 3
+      },
+      {
+        "CardId": 305,
+        "Quantity": 3
+      },
+      {
+        "CardId": 306,
+        "Quantity": 3
+      },
+      {
+        "CardId": 307,
+        "Quantity": 3
+      },
+      {
+        "CardId": 308,
+        "Quantity": 3
+      },
+      {
+        "CardId": 309,
+        "Quantity": 3
+      },
+      {
+        "CardId": 310,
+        "Quantity": 3
+      },
+      {
+        "CardId": 311,
+        "Quantity": 3
+      },
+      {
+        "CardId": 312,
+        "Quantity": 3
+      },
+      {
+        "CardId": 313,
+        "Quantity": 3
+      },
+      {
+        "CardId": 314,
+        "Quantity": 3
+      },
+      {
+        "CardId": 315,
+        "Quantity": 3
+      },
+      {
+        "CardId": 316,
+        "Quantity": 3
+      },
+      {
+        "CardId": 317,
+        "Quantity": 3
+      },
+      {
+        "CardId": 318,
+        "Quantity": 3
+      },
+      {
+        "CardId": 319,
+        "Quantity": 3
+      },
+      {
+        "CardId": 320,
+        "Quantity": 3
+      },
+      {
+        "CardId": 321,
+        "Quantity": 3
+      },
+      {
+        "CardId": 322,
+        "Quantity": 3
+      },
+      {
+        "CardId": 323,
+        "Quantity": 3
+      },
+      {
+        "CardId": 324,
+        "Quantity": 3
+      },
+      {
+        "CardId": 325,
+        "Quantity": 3
+      },
+      {
+        "CardId": 326,
+        "Quantity": 3
+      },
+      {
+        "CardId": 327,
+        "Quantity": 3
+      },
+      {
+        "CardId": 328,
+        "Quantity": 3
+      },
+      {
+        "CardId": 329,
+        "Quantity": 3
+      },
+      {
+        "CardId": 330,
+        "Quantity": 3
+      },
+      {
+        "CardId": 331,
+        "Quantity": 3
+      },
+      {
+        "CardId": 332,
+        "Quantity": 3
+      },
+      {
+        "CardId": 333,
+        "Quantity": 3
+      },
+      {
+        "CardId": 334,
+        "Quantity": 3
+      },
+      {
+        "CardId": 335,
+        "Quantity": 3
+      },
+      {
+        "CardId": 336,
+        "Quantity": 3
+      },
+      {
+        "CardId": 337,
+        "Quantity": 3
+      },
+      {
+        "CardId": 338,
+        "Quantity": 3
+      },
+      {
+        "CardId": 339,
+        "Quantity": 3
+      },
+      {
+        "CardId": 340,
+        "Quantity": 3
+      },
+      {
+        "CardId": 341,
+        "Quantity": 3
+      },
+      {
+        "CardId": 342,
+        "Quantity": 3
+      },
+      {
+        "CardId": 343,
+        "Quantity": 3
+      },
+      {
+        "CardId": 344,
+        "Quantity": 3
+      },
+      {
+        "CardId": 345,
+        "Quantity": 3
+      },
+      {
+        "CardId": 346,
+        "Quantity": 3
+      },
+      {
+        "CardId": 347,
+        "Quantity": 3
+      },
+      {
+        "CardId": 348,
+        "Quantity": 3
+      },
+      {
+        "CardId": 349,
+        "Quantity": 3
+      },
+      {
+        "CardId": 350,
+        "Quantity": 3
+      },
+      {
+        "CardId": 351,
+        "Quantity": 3
+      },
+      {
+        "CardId": 352,
+        "Quantity": 3
+      },
+      {
+        "CardId": 353,
+        "Quantity": 3
+      },
+      {
+        "CardId": 354,
+        "Quantity": 3
+      },
+      {
+        "CardId": 355,
+        "Quantity": 3
+      },
+      {
+        "CardId": 356,
+        "Quantity": 3
+      },
+      {
+        "CardId": 357,
+        "Quantity": 3
+      },
+      {
+        "CardId": 358,
+        "Quantity": 3
+      },
+      {
+        "CardId": 359,
+        "Quantity": 3
+      },
+      {
+        "CardId": 360,
+        "Quantity": 3
+      },
+      {
+        "CardId": 361,
+        "Quantity": 3
+      },
+      {
+        "CardId": 362,
+        "Quantity": 3
+      },
+      {
+        "CardId": 363,
+        "Quantity": 3
+      },
+      {
+        "CardId": 364,
+        "Quantity": 3
+      },
+      {
+        "CardId": 365,
+        "Quantity": 3
+      },
+      {
+        "CardId": 366,
+        "Quantity": 3
+      },
+      {
+        "CardId": 367,
+        "Quantity": 3
+      },
+      {
+        "CardId": 368,
+        "Quantity": 3
+      },
+      {
+        "CardId": 369,
+        "Quantity": 3
+      },
+      {
+        "CardId": 370,
+        "Quantity": 3
+      },
+      {
+        "CardId": 371,
+        "Quantity": 3
+      },
+      {
+        "CardId": 372,
+        "Quantity": 3
+      },
+      {
+        "CardId": 373,
+        "Quantity": 3
+      },
+      {
+        "CardId": 374,
+        "Quantity": 3
+      },
+      {
+        "CardId": 375,
+        "Quantity": 3
+      },
+      {
+        "CardId": 376,
+        "Quantity": 3
+      },
+      {
+        "CardId": 377,
+        "Quantity": 3
+      },
+      {
+        "CardId": 378,
+        "Quantity": 3
+      },
+      {
+        "CardId": 379,
+        "Quantity": 3
+      },
+      {
+        "CardId": 380,
+        "Quantity": 3
+      },
+      {
+        "CardId": 381,
+        "Quantity": 3
+      },
+      {
+        "CardId": 382,
+        "Quantity": 3
+      },
+      {
+        "CardId": 383,
+        "Quantity": 3
+      },
+      {
+        "CardId": 384,
+        "Quantity": 3
+      },
+      {
+        "CardId": 385,
+        "Quantity": 3
+      },
+      {
+        "CardId": 386,
+        "Quantity": 3
+      },
+      {
+        "CardId": 387,
+        "Quantity": 3
+      },
+      {
+        "CardId": 388,
+        "Quantity": 3
+      },
+      {
+        "CardId": 389,
+        "Quantity": 3
+      },
+      {
+        "CardId": 390,
+        "Quantity": 3
+      },
+      {
+        "CardId": 391,
+        "Quantity": 3
+      },
+      {
+        "CardId": 392,
+        "Quantity": 3
+      },
+      {
+        "CardId": 393,
+        "Quantity": 3
+      },
+      {
+        "CardId": 394,
+        "Quantity": 3
+      },
+      {
+        "CardId": 395,
+        "Quantity": 3
+      },
+      {
+        "CardId": 396,
+        "Quantity": 3
+      },
+      {
+        "CardId": 397,
+        "Quantity": 3
+      },
+      {
+        "CardId": 398,
+        "Quantity": 3
+      },
+      {
+        "CardId": 399,
+        "Quantity": 3
+      },
+      {
+        "CardId": 400,
+        "Quantity": 3
+      },
+      {
+        "CardId": 401,
+        "Quantity": 3
+      },
+      {
+        "CardId": 402,
+        "Quantity": 3
+      },
+      {
+        "CardId": 403,
+        "Quantity": 3
+      },
+      {
+        "CardId": 404,
+        "Quantity": 3
+      },
+      {
+        "CardId": 405,
+        "Quantity": 3
+      },
+      {
+        "CardId": 406,
+        "Quantity": 3
+      },
+      {
+        "CardId": 407,
+        "Quantity": 3
+      },
+      {
+        "CardId": 408,
+        "Quantity": 3
+      },
+      {
+        "CardId": 409,
+        "Quantity": 3
+      },
+      {
+        "CardId": 410,
+        "Quantity": 3
+      },
+      {
+        "CardId": 411,
+        "Quantity": 3
+      },
+      {
+        "CardId": 412,
+        "Quantity": 3
+      },
+      {
+        "CardId": 413,
+        "Quantity": 3
+      },
+      {
+        "CardId": 414,
+        "Quantity": 3
+      },
+      {
+        "CardId": 415,
+        "Quantity": 3
+      },
+      {
+        "CardId": 416,
+        "Quantity": 3
+      },
+      {
+        "CardId": 417,
+        "Quantity": 3
+      },
+      {
+        "CardId": 418,
+        "Quantity": 3
+      },
+      {
+        "CardId": 419,
+        "Quantity": 3
+      },
+      {
+        "CardId": 420,
+        "Quantity": 3
+      },
+      {
+        "CardId": 421,
+        "Quantity": 3
+      },
+      {
+        "CardId": 422,
+        "Quantity": 3
+      },
+      {
+        "CardId": 423,
+        "Quantity": 3
+      },
+      {
+        "CardId": 424,
+        "Quantity": 3
+      },
+      {
+        "CardId": 425,
+        "Quantity": 3
+      },
+      {
+        "CardId": 426,
+        "Quantity": 3
+      },
+      {
+        "CardId": 427,
+        "Quantity": 3
+      },
+      {
+        "CardId": 428,
+        "Quantity": 3
+      },
+      {
+        "CardId": 429,
+        "Quantity": 3
+      },
+      {
+        "CardId": 430,
+        "Quantity": 3
+      },
+      {
+        "CardId": 431,
+        "Quantity": 3
+      },
+      {
+        "CardId": 432,
+        "Quantity": 3
+      },
+      {
+        "CardId": 433,
+        "Quantity": 3
+      },
+      {
+        "CardId": 434,
+        "Quantity": 3
+      },
+      {
+        "CardId": 435,
+        "Quantity": 3
+      },
+      {
+        "CardId": 436,
+        "Quantity": 3
+      },
+      {
+        "CardId": 437,
+        "Quantity": 3
+      },
+      {
+        "CardId": 438,
+        "Quantity": 3
+      },
+      {
+        "CardId": 439,
+        "Quantity": 3
+      },
+      {
+        "CardId": 440,
+        "Quantity": 3
+      },
+      {
+        "CardId": 441,
+        "Quantity": 3
+      },
+      {
+        "CardId": 442,
+        "Quantity": 3
+      },
+      {
+        "CardId": 443,
+        "Quantity": 3
+      },
+      {
+        "CardId": 444,
+        "Quantity": 3
+      },
+      {
+        "CardId": 445,
+        "Quantity": 3
+      },
+      {
+        "CardId": 446,
+        "Quantity": 3
+      },
+      {
+        "CardId": 447,
+        "Quantity": 3
+      },
+      {
+        "CardId": 448,
+        "Quantity": 3
+      },
+      {
+        "CardId": 449,
+        "Quantity": 3
+      },
+      {
+        "CardId": 450,
+        "Quantity": 3
+      },
+      {
+        "CardId": 451,
+        "Quantity": 3
+      },
+      {
+        "CardId": 452,
+        "Quantity": 3
+      },
+      {
+        "CardId": 453,
+        "Quantity": 3
+      },
+      {
+        "CardId": 454,
+        "Quantity": 3
+      },
+      {
+        "CardId": 455,
+        "Quantity": 3
+      },
+      {
+        "CardId": 456,
+        "Quantity": 3
+      },
+      {
+        "CardId": 457,
+        "Quantity": 3
+      },
+      {
+        "CardId": 458,
+        "Quantity": 3
+      },
+      {
+        "CardId": 459,
+        "Quantity": 3
+      },
+      {
+        "CardId": 460,
+        "Quantity": 3
+      },
+      {
+        "CardId": 461,
+        "Quantity": 3
+      },
+      {
+        "CardId": 462,
+        "Quantity": 3
+      },
+      {
+        "CardId": 463,
+        "Quantity": 3
+      },
+      {
+        "CardId": 464,
+        "Quantity": 3
+      },
+      {
+        "CardId": 465,
+        "Quantity": 3
+      },
+      {
+        "CardId": 466,
+        "Quantity": 3
+      },
+      {
+        "CardId": 467,
+        "Quantity": 3
+      },
+      {
+        "CardId": 468,
+        "Quantity": 3
+      },
+      {
+        "CardId": 469,
+        "Quantity": 3
+      },
+      {
+        "CardId": 470,
+        "Quantity": 3
+      },
+      {
+        "CardId": 471,
+        "Quantity": 3
+      },
+      {
+        "CardId": 472,
+        "Quantity": 3
+      },
+      {
+        "CardId": 473,
+        "Quantity": 3
+      },
+      {
+        "CardId": 474,
+        "Quantity": 3
+      },
+      {
+        "CardId": 475,
+        "Quantity": 3
+      },
+      {
+        "CardId": 476,
+        "Quantity": 3
+      },
+      {
+        "CardId": 477,
+        "Quantity": 3
+      },
+      {
+        "CardId": 478,
+        "Quantity": 3
+      },
+      {
+        "CardId": 479,
+        "Quantity": 3
+      },
+      {
+        "CardId": 480,
+        "Quantity": 3
+      },
+      {
+        "CardId": 481,
+        "Quantity": 3
+      },
+      {
+        "CardId": 482,
+        "Quantity": 3
+      },
+      {
+        "CardId": 483,
+        "Quantity": 3
+      },
+      {
+        "CardId": 484,
+        "Quantity": 3
+      },
+      {
+        "CardId": 485,
+        "Quantity": 3
+      },
+      {
+        "CardId": 486,
+        "Quantity": 3
+      },
+      {
+        "CardId": 487,
+        "Quantity": 3
+      },
+      {
+        "CardId": 488,
+        "Quantity": 3
+      },
+      {
+        "CardId": 489,
+        "Quantity": 3
+      },
+      {
+        "CardId": 490,
+        "Quantity": 3
+      },
+      {
+        "CardId": 491,
+        "Quantity": 3
+      },
+      {
+        "CardId": 492,
+        "Quantity": 3
+      },
+      {
+        "CardId": 493,
+        "Quantity": 3
+      },
+      {
+        "CardId": 494,
+        "Quantity": 3
+      },
+      {
+        "CardId": 495,
+        "Quantity": 3
+      },
+      {
+        "CardId": 496,
+        "Quantity": 3
+      },
+      {
+        "CardId": 497,
+        "Quantity": 3
+      },
+      {
+        "CardId": 498,
+        "Quantity": 3
+      },
+      {
+        "CardId": 499,
+        "Quantity": 3
+      },
+      {
+        "CardId": 500,
+        "Quantity": 3
+      },
+      {
+        "CardId": 501,
+        "Quantity": 3
+      },
+      {
+        "CardId": 502,
+        "Quantity": 3
+      },
+      {
+        "CardId": 503,
+        "Quantity": 3
+      },
+      {
+        "CardId": 504,
+        "Quantity": 3
+      },
+      {
+        "CardId": 505,
+        "Quantity": 3
+      },
+      {
+        "CardId": 506,
+        "Quantity": 3
+      },
+      {
+        "CardId": 507,
+        "Quantity": 3
+      },
+      {
+        "CardId": 508,
+        "Quantity": 3
+      },
+      {
+        "CardId": 509,
+        "Quantity": 3
+      },
+      {
+        "CardId": 510,
+        "Quantity": 3
+      },
+      {
+        "CardId": 511,
+        "Quantity": 3
+      },
+      {
+        "CardId": 512,
+        "Quantity": 3
+      },
+      {
+        "CardId": 513,
+        "Quantity": 3
+      },
+      {
+        "CardId": 514,
+        "Quantity": 3
+      },
+      {
+        "CardId": 515,
+        "Quantity": 3
+      },
+      {
+        "CardId": 516,
+        "Quantity": 3
+      },
+      {
+        "CardId": 517,
+        "Quantity": 3
+      },
+      {
+        "CardId": 518,
+        "Quantity": 3
+      },
+      {
+        "CardId": 519,
+        "Quantity": 3
+      },
+      {
+        "CardId": 520,
+        "Quantity": 3
+      },
+      {
+        "CardId": 521,
+        "Quantity": 3
+      },
+      {
+        "CardId": 522,
+        "Quantity": 3
+      },
+      {
+        "CardId": 523,
+        "Quantity": 3
+      },
+      {
+        "CardId": 524,
+        "Quantity": 3
+      },
+      {
+        "CardId": 525,
+        "Quantity": 3
+      },
+      {
+        "CardId": 526,
+        "Quantity": 3
+      },
+      {
+        "CardId": 527,
+        "Quantity": 3
+      },
+      {
+        "CardId": 528,
+        "Quantity": 3
+      },
+      {
+        "CardId": 529,
+        "Quantity": 3
+      },
+      {
+        "CardId": 530,
+        "Quantity": 3
+      },
+      {
+        "CardId": 531,
+        "Quantity": 3
+      },
+      {
+        "CardId": 532,
+        "Quantity": 3
+      },
+      {
+        "CardId": 533,
+        "Quantity": 3
+      },
+      {
+        "CardId": 534,
+        "Quantity": 3
+      },
+      {
+        "CardId": 535,
+        "Quantity": 3
+      },
+      {
+        "CardId": 536,
+        "Quantity": 3
+      },
+      {
+        "CardId": 537,
+        "Quantity": 3
+      },
+      {
+        "CardId": 538,
+        "Quantity": 3
+      },
+      {
+        "CardId": 539,
+        "Quantity": 3
+      },
+      {
+        "CardId": 540,
+        "Quantity": 3
+      },
+      {
+        "CardId": 541,
+        "Quantity": 3
+      },
+      {
+        "CardId": 542,
+        "Quantity": 3
+      },
+      {
+        "CardId": 543,
+        "Quantity": 3
+      },
+      {
+        "CardId": 544,
+        "Quantity": 3
+      },
+      {
+        "CardId": 545,
+        "Quantity": 3
+      },
+      {
+        "CardId": 546,
+        "Quantity": 3
+      },
+      {
+        "CardId": 547,
+        "Quantity": 3
+      },
+      {
+        "CardId": 548,
+        "Quantity": 3
+      },
+      {
+        "CardId": 549,
+        "Quantity": 3
+      },
+      {
+        "CardId": 550,
+        "Quantity": 3
+      },
+      {
+        "CardId": 551,
+        "Quantity": 3
+      },
+      {
+        "CardId": 552,
+        "Quantity": 3
+      },
+      {
+        "CardId": 553,
+        "Quantity": 3
+      },
+      {
+        "CardId": 554,
+        "Quantity": 3
+      },
+      {
+        "CardId": 555,
+        "Quantity": 3
+      },
+      {
+        "CardId": 556,
+        "Quantity": 3
+      },
+      {
+        "CardId": 557,
+        "Quantity": 3
+      },
+      {
+        "CardId": 558,
+        "Quantity": 3
+      },
+      {
+        "CardId": 559,
+        "Quantity": 3
+      },
+      {
+        "CardId": 560,
+        "Quantity": 3
+      },
+      {
+        "CardId": 561,
+        "Quantity": 3
+      },
+      {
+        "CardId": 562,
+        "Quantity": 3
+      },
+      {
+        "CardId": 563,
+        "Quantity": 3
+      },
+      {
+        "CardId": 564,
+        "Quantity": 3
+      },
+      {
+        "CardId": 565,
+        "Quantity": 3
+      },
+      {
+        "CardId": 566,
+        "Quantity": 3
+      },
+      {
+        "CardId": 567,
+        "Quantity": 3
+      },
+      {
+        "CardId": 568,
+        "Quantity": 3
+      },
+      {
+        "CardId": 569,
+        "Quantity": 3
+      },
+      {
+        "CardId": 570,
+        "Quantity": 3
+      },
+      {
+        "CardId": 571,
+        "Quantity": 3
+      },
+      {
+        "CardId": 572,
+        "Quantity": 3
+      },
+      {
+        "CardId": 573,
+        "Quantity": 3
+      },
+      {
+        "CardId": 574,
+        "Quantity": 3
+      },
+      {
+        "CardId": 575,
+        "Quantity": 3
+      },
+      {
+        "CardId": 576,
+        "Quantity": 3
+      },
+      {
+        "CardId": 577,
+        "Quantity": 3
+      },
+      {
+        "CardId": 578,
+        "Quantity": 3
+      },
+      {
+        "CardId": 579,
+        "Quantity": 3
+      },
+      {
+        "CardId": 580,
+        "Quantity": 3
+      },
+      {
+        "CardId": 581,
+        "Quantity": 3
+      },
+      {
+        "CardId": 582,
+        "Quantity": 3
+      },
+      {
+        "CardId": 583,
+        "Quantity": 3
+      },
+      {
+        "CardId": 584,
+        "Quantity": 3
+      },
+      {
+        "CardId": 585,
+        "Quantity": 3
+      },
+      {
+        "CardId": 586,
+        "Quantity": 3
+      },
+      {
+        "CardId": 587,
+        "Quantity": 3
+      },
+      {
+        "CardId": 588,
+        "Quantity": 3
+      },
+      {
+        "CardId": 589,
+        "Quantity": 3
+      },
+      {
+        "CardId": 590,
+        "Quantity": 3
+      },
+      {
+        "CardId": 591,
+        "Quantity": 3
+      },
+      {
+        "CardId": 592,
+        "Quantity": 3
+      },
+      {
+        "CardId": 593,
+        "Quantity": 3
+      },
+      {
+        "CardId": 594,
+        "Quantity": 3
+      },
+      {
+        "CardId": 595,
+        "Quantity": 3
+      },
+      {
+        "CardId": 596,
+        "Quantity": 3
+      },
+      {
+        "CardId": 597,
+        "Quantity": 3
+      },
+      {
+        "CardId": 598,
+        "Quantity": 3
+      },
+      {
+        "CardId": 599,
+        "Quantity": 3
+      },
+      {
+        "CardId": 600,
+        "Quantity": 3
+      },
+      {
+        "CardId": 601,
+        "Quantity": 3
+      },
+      {
+        "CardId": 602,
+        "Quantity": 3
+      },
+      {
+        "CardId": 603,
+        "Quantity": 3
+      },
+      {
+        "CardId": 604,
+        "Quantity": 3
+      },
+      {
+        "CardId": 605,
+        "Quantity": 3
+      },
+      {
+        "CardId": 606,
+        "Quantity": 3
+      },
+      {
+        "CardId": 607,
+        "Quantity": 3
+      },
+      {
+        "CardId": 608,
+        "Quantity": 3
+      },
+      {
+        "CardId": 609,
+        "Quantity": 3
+      },
+      {
+        "CardId": 610,
+        "Quantity": 3
+      },
+      {
+        "CardId": 611,
+        "Quantity": 3
+      },
+      {
+        "CardId": 612,
+        "Quantity": 3
+      },
+      {
+        "CardId": 613,
+        "Quantity": 3
+      },
+      {
+        "CardId": 614,
+        "Quantity": 3
+      },
+      {
+        "CardId": 615,
+        "Quantity": 3
+      },
+      {
+        "CardId": 616,
+        "Quantity": 3
+      },
+      {
+        "CardId": 617,
+        "Quantity": 3
+      },
+      {
+        "CardId": 618,
+        "Quantity": 3
+      },
+      {
+        "CardId": 619,
+        "Quantity": 3
+      },
+      {
+        "CardId": 620,
+        "Quantity": 3
+      },
+      {
+        "CardId": 621,
+        "Quantity": 3
+      },
+      {
+        "CardId": 622,
+        "Quantity": 3
+      },
+      {
+        "CardId": 623,
+        "Quantity": 3
+      },
+      {
+        "CardId": 624,
+        "Quantity": 3
+      },
+      {
+        "CardId": 625,
+        "Quantity": 3
+      },
+      {
+        "CardId": 626,
+        "Quantity": 3
+      },
+      {
+        "CardId": 627,
+        "Quantity": 3
+      },
+      {
+        "CardId": 628,
+        "Quantity": 3
+      },
+      {
+        "CardId": 629,
+        "Quantity": 3
+      },
+      {
+        "CardId": 630,
+        "Quantity": 3
+      },
+      {
+        "CardId": 631,
+        "Quantity": 3
+      },
+      {
+        "CardId": 632,
+        "Quantity": 3
+      },
+      {
+        "CardId": 633,
+        "Quantity": 3
+      },
+      {
+        "CardId": 634,
+        "Quantity": 3
+      },
+      {
+        "CardId": 635,
+        "Quantity": 3
+      },
+      {
+        "CardId": 636,
+        "Quantity": 3
+      },
+      {
+        "CardId": 637,
+        "Quantity": 3
+      },
+      {
+        "CardId": 638,
+        "Quantity": 3
+      },
+      {
+        "CardId": 639,
+        "Quantity": 3
+      },
+      {
+        "CardId": 640,
+        "Quantity": 3
+      },
+      {
+        "CardId": 641,
+        "Quantity": 3
+      },
+      {
+        "CardId": 642,
+        "Quantity": 3
+      },
+      {
+        "CardId": 643,
+        "Quantity": 3
+      },
+      {
+        "CardId": 644,
+        "Quantity": 3
+      },
+      {
+        "CardId": 645,
+        "Quantity": 3
+      },
+      {
+        "CardId": 646,
+        "Quantity": 3
+      },
+      {
+        "CardId": 647,
+        "Quantity": 3
+      },
+      {
+        "CardId": 648,
+        "Quantity": 3
+      },
+      {
+        "CardId": 649,
+        "Quantity": 3
+      },
+      {
+        "CardId": 650,
+        "Quantity": 3
+      },
+      {
+        "CardId": 651,
+        "Quantity": 3
+      },
+      {
+        "CardId": 652,
+        "Quantity": 3
+      },
+      {
+        "CardId": 653,
+        "Quantity": 3
+      },
+      {
+        "CardId": 654,
+        "Quantity": 3
+      },
+      {
+        "CardId": 655,
+        "Quantity": 3
+      },
+      {
+        "CardId": 656,
+        "Quantity": 3
+      },
+      {
+        "CardId": 657,
+        "Quantity": 3
+      },
+      {
+        "CardId": 658,
+        "Quantity": 3
+      },
+      {
+        "CardId": 659,
+        "Quantity": 3
+      },
+      {
+        "CardId": 660,
+        "Quantity": 3
+      },
+      {
+        "CardId": 661,
+        "Quantity": 3
+      },
+      {
+        "CardId": 662,
+        "Quantity": 3
+      },
+      {
+        "CardId": 663,
+        "Quantity": 3
+      },
+      {
+        "CardId": 664,
+        "Quantity": 3
+      },
+      {
+        "CardId": 665,
+        "Quantity": 3
+      },
+      {
+        "CardId": 666,
+        "Quantity": 3
+      },
+      {
+        "CardId": 667,
+        "Quantity": 3
+      },
+      {
+        "CardId": 668,
+        "Quantity": 3
+      },
+      {
+        "CardId": 669,
+        "Quantity": 3
+      },
+      {
+        "CardId": 670,
+        "Quantity": 3
+      },
+      {
+        "CardId": 671,
+        "Quantity": 3
+      },
+      {
+        "CardId": 672,
+        "Quantity": 3
+      },
+      {
+        "CardId": 673,
+        "Quantity": 3
+      },
+      {
+        "CardId": 674,
+        "Quantity": 3
+      },
+      {
+        "CardId": 675,
+        "Quantity": 3
+      },
+      {
+        "CardId": 676,
+        "Quantity": 3
+      },
+      {
+        "CardId": 677,
+        "Quantity": 3
+      },
+      {
+        "CardId": 678,
+        "Quantity": 3
+      },
+      {
+        "CardId": 679,
+        "Quantity": 3
+      },
+      {
+        "CardId": 680,
+        "Quantity": 3
+      },
+      {
+        "CardId": 681,
+        "Quantity": 3
+      },
+      {
+        "CardId": 682,
+        "Quantity": 3
+      },
+      {
+        "CardId": 683,
+        "Quantity": 3
+      },
+      {
+        "CardId": 684,
+        "Quantity": 3
+      },
+      {
+        "CardId": 685,
+        "Quantity": 3
+      },
+      {
+        "CardId": 686,
+        "Quantity": 3
+      },
+      {
+        "CardId": 687,
+        "Quantity": 3
+      },
+      {
+        "CardId": 688,
+        "Quantity": 3
+      },
+      {
+        "CardId": 689,
+        "Quantity": 3
+      },
+      {
+        "CardId": 690,
+        "Quantity": 3
+      },
+      {
+        "CardId": 691,
+        "Quantity": 3
+      },
+      {
+        "CardId": 692,
+        "Quantity": 3
+      },
+      {
+        "CardId": 693,
+        "Quantity": 3
+      },
+      {
+        "CardId": 694,
+        "Quantity": 3
+      },
+      {
+        "CardId": 695,
+        "Quantity": 3
+      },
+      {
+        "CardId": 696,
+        "Quantity": 3
+      },
+      {
+        "CardId": 697,
+        "Quantity": 3
+      },
+      {
+        "CardId": 698,
+        "Quantity": 3
+      },
+      {
+        "CardId": 699,
+        "Quantity": 3
+      },
+      {
+        "CardId": 700,
+        "Quantity": 3
+      },
+      {
+        "CardId": 701,
+        "Quantity": 3
+      },
+      {
+        "CardId": 702,
+        "Quantity": 3
+      },
+      {
+        "CardId": 703,
+        "Quantity": 3
+      },
+      {
+        "CardId": 704,
+        "Quantity": 3
+      },
+      {
+        "CardId": 705,
+        "Quantity": 3
+      },
+      {
+        "CardId": 706,
+        "Quantity": 3
+      },
+      {
+        "CardId": 707,
+        "Quantity": 3
+      },
+      {
+        "CardId": 708,
+        "Quantity": 3
+      },
+      {
+        "CardId": 709,
+        "Quantity": 3
+      },
+      {
+        "CardId": 710,
+        "Quantity": 3
+      },
+      {
+        "CardId": 711,
+        "Quantity": 3
+      },
+      {
+        "CardId": 712,
+        "Quantity": 3
+      },
+      {
+        "CardId": 713,
+        "Quantity": 3
+      },
+      {
+        "CardId": 714,
+        "Quantity": 3
+      },
+      {
+        "CardId": 715,
+        "Quantity": 3
+      },
+      {
+        "CardId": 716,
+        "Quantity": 3
+      },
+      {
+        "CardId": 717,
+        "Quantity": 3
+      },
+      {
+        "CardId": 718,
+        "Quantity": 3
+      },
+      {
+        "CardId": 719,
+        "Quantity": 3
+      },
+      {
+        "CardId": 720,
+        "Quantity": 3
+      },
+      {
+        "CardId": 721,
+        "Quantity": 3
+      },
+      {
+        "CardId": 722,
+        "Quantity": 3
+      }
+    ]
+  },
+  "Results": [
+    {
+      "Fixture": "starter-duplicates",
+      "Context": "manual",
+      "Chips": false,
+      "Warm": false,
+      "Status": "completed",
+      "ElapsedMs": 104.8341,
+      "AllocatedBytes": 8769416,
+      "ProcessLifetimePeakWorkingSetBytes": 81641472,
+      "CancellationOverrunMs": null,
+      "FirstUsableDeckMs": 104.8341,
+      "FirstResultLimitation": "Legacy API exposes a usable deck only on return; no incremental result callback.",
+      "ProgressEvents": 6,
+      "MaximumProgressGapMs": 42.1053,
+      "StageEvents": [
+        {
+          "Stage": "Building deterministic candidates",
+          "Milliseconds": 5.2323
+        },
+        {
+          "Stage": "Building deterministic candidates",
+          "Milliseconds": 34.4633
+        },
+        {
+          "Stage": "Sampled candidate analysis",
+          "Milliseconds": 35.0522
+        },
+        {
+          "Stage": "Sampled candidate analysis",
+          "Milliseconds": 51.9238
+        },
+        {
+          "Stage": "Exact finalist analysis",
+          "Milliseconds": 52.143
+        },
+        {
+          "Stage": "Exact finalist analysis",
+          "Milliseconds": 94.2483
+        }
+      ],
+      "Deck": [
+        {
+          "Id": 6,
+          "Copies": 3
+        },
+        {
+          "Id": 25,
+          "Copies": 3
+        },
+        {
+          "Id": 4,
+          "Copies": 3
+        },
+        {
+          "Id": 27,
+          "Copies": 3
+        },
+        {
+          "Id": 3,
+          "Copies": 3
+        },
+        {
+          "Id": 13,
+          "Copies": 3
+        },
+        {
+          "Id": 5,
+          "Copies": 3
+        },
+        {
+          "Id": 8,
+          "Copies": 3
+        },
+        {
+          "Id": 2,
+          "Copies": 3
+        },
+        {
+          "Id": 28,
+          "Copies": 3
+        },
+        {
+          "Id": 9,
+          "Copies": 3
+        },
+        {
+          "Id": 16,
+          "Copies": 3
+        },
+        {
+          "Id": 24,
+          "Copies": 3
+        },
+        {
+          "Id": 29,
+          "Copies": 1
+        }
+      ],
+      "Hands": 658008
+    },
+    {
+      "Fixture": "starter-duplicates",
+      "Context": "manual",
+      "Chips": false,
+      "Warm": true,
+      "Status": "completed",
+      "ElapsedMs": 97.354,
+      "AllocatedBytes": 8746960,
+      "ProcessLifetimePeakWorkingSetBytes": 93454336,
+      "CancellationOverrunMs": null,
+      "FirstUsableDeckMs": 97.354,
+      "FirstResultLimitation": "Legacy API exposes a usable deck only on return; no incremental result callback.",
+      "ProgressEvents": 6,
+      "MaximumProgressGapMs": 40.17679999999999,
+      "StageEvents": [
+        {
+          "Stage": "Building deterministic candidates",
+          "Milliseconds": 0.0781
+        },
+        {
+          "Stage": "Building deterministic candidates",
+          "Milliseconds": 20.7067
+        },
+        {
+          "Stage": "Sampled candidate analysis",
+          "Milliseconds": 20.7791
+        },
+        {
+          "Stage": "Sampled candidate analysis",
+          "Milliseconds": 56.8836
+        },
+        {
+          "Stage": "Exact finalist analysis",
+          "Milliseconds": 56.9168
+        },
+        {
+          "Stage": "Exact finalist analysis",
+          "Milliseconds": 97.0936
+        }
+      ],
+      "Deck": [
+        {
+          "Id": 6,
+          "Copies": 3
+        },
+        {
+          "Id": 25,
+          "Copies": 3
+        },
+        {
+          "Id": 4,
+          "Copies": 3
+        },
+        {
+          "Id": 27,
+          "Copies": 3
+        },
+        {
+          "Id": 3,
+          "Copies": 3
+        },
+        {
+          "Id": 13,
+          "Copies": 3
+        },
+        {
+          "Id": 5,
+          "Copies": 3
+        },
+        {
+          "Id": 8,
+          "Copies": 3
+        },
+        {
+          "Id": 2,
+          "Copies": 3
+        },
+        {
+          "Id": 28,
+          "Copies": 3
+        },
+        {
+          "Id": 9,
+          "Copies": 3
+        },
+        {
+          "Id": 16,
+          "Copies": 3
+        },
+        {
+          "Id": 24,
+          "Copies": 3
+        },
+        {
+          "Id": 29,
+          "Copies": 1
+        }
+      ],
+      "Hands": 658008
+    },
+    {
+      "Fixture": "starter-diverse",
+      "Context": "manual",
+      "Chips": false,
+      "Warm": false,
+      "Status": "completed",
+      "ElapsedMs": 1742.3347,
+      "AllocatedBytes": 17842304,
+      "ProcessLifetimePeakWorkingSetBytes": 93454336,
+      "CancellationOverrunMs": null,
+      "FirstUsableDeckMs": 1742.3347,
+      "FirstResultLimitation": "Legacy API exposes a usable deck only on return; no incremental result callback.",
+      "ProgressEvents": 8,
+      "MaximumProgressGapMs": 918.0391,
+      "StageEvents": [
+        {
+          "Stage": "Building deterministic candidates",
+          "Milliseconds": 0.082
+        },
+        {
+          "Stage": "Building deterministic candidates",
+          "Milliseconds": 38.7473
+        },
+        {
+          "Stage": "Sampled candidate analysis",
+          "Milliseconds": 38.8166
+        },
+        {
+          "Stage": "Sampled candidate analysis",
+          "Milliseconds": 47.9389
+        },
+        {
+          "Stage": "Sampled candidate analysis",
+          "Milliseconds": 56.127
+        },
+        {
+          "Stage": "Exact finalist analysis",
+          "Milliseconds": 56.4382
+        },
+        {
+          "Stage": "Exact finalist analysis",
+          "Milliseconds": 974.4773
+        },
+        {
+          "Stage": "Exact finalist analysis",
+          "Milliseconds": 1740.9276
+        }
+      ],
+      "Deck": [
+        {
+          "Id": 86,
+          "Copies": 1
+        },
+        {
+          "Id": 84,
+          "Copies": 1
+        },
+        {
+          "Id": 6,
+          "Copies": 1
+        },
+        {
+          "Id": 74,
+          "Copies": 1
+        },
+        {
+          "Id": 77,
+          "Copies": 1
+        },
+        {
+          "Id": 62,
+          "Copies": 1
+        },
+        {
+          "Id": 25,
+          "Copies": 1
+        },
+        {
+          "Id": 4,
+          "Copies": 1
+        },
+        {
+          "Id": 27,
+          "Copies": 1
+        },
+        {
+          "Id": 49,
+          "Copies": 1
+        },
+        {
+          "Id": 70,
+          "Copies": 1
+        },
+        {
+          "Id": 54,
+          "Copies": 1
+        },
+        {
+          "Id": 46,
+          "Copies": 1
+        },
+        {
+          "Id": 3,
+          "Copies": 1
+        },
+        {
+          "Id": 42,
+          "Copies": 1
+        },
+        {
+          "Id": 71,
+          "Copies": 1
+        },
+        {
+          "Id": 53,
+          "Copies": 1
+        },
+        {
+          "Id": 59,
+          "Copies": 1
+        },
+        {
+          "Id": 65,
+          "Copies": 1
+        },
+        {
+          "Id": 47,
+          "Copies": 1
+        },
+        {
+          "Id": 13,
+          "Copies": 1
+        },
+        {
+          "Id": 61,
+          "Copies": 1
+        },
+        {
+          "Id": 30,
+          "Copies": 1
+        },
+        {
+          "Id": 76,
+          "Copies": 1
+        },
+        {
+          "Id": 45,
+          "Copies": 1
+        },
+        {
+          "Id": 5,
+          "Copies": 1
+        },
+        {
+          "Id": 48,
+          "Copies": 1
+        },
+        {
+          "Id": 83,
+          "Copies": 1
+        },
+        {
+          "Id": 75,
+          "Copies": 1
+        },
+        {
+          "Id": 8,
+          "Copies": 1
+        },
+        {
+          "Id": 2,
+          "Copies": 1
+        },
+        {
+          "Id": 28,
+          "Copies": 1
+        },
+        {
+          "Id": 34,
+          "Copies": 1
+        },
+        {
+          "Id": 50,
+          "Copies": 1
+        },
+        {
+          "Id": 56,
+          "Copies": 1
+        },
+        {
+          "Id": 9,
+          "Copies": 1
+        },
+        {
+          "Id": 16,
+          "Copies": 1
+        },
+        {
+          "Id": 58,
+          "Copies": 1
+        },
+        {
+          "Id": 24,
+          "Copies": 1
+        },
+        {
+          "Id": 40,
+          "Copies": 1
+        }
+      ],
+      "Hands": 658008
+    },
+    {
+      "Fixture": "starter-diverse",
+      "Context": "manual",
+      "Chips": false,
+      "Warm": true,
+      "Status": "completed",
+      "ElapsedMs": 1580.4942,
+      "AllocatedBytes": 17815984,
+      "ProcessLifetimePeakWorkingSetBytes": 94019584,
+      "CancellationOverrunMs": null,
+      "FirstUsableDeckMs": 1580.4942,
+      "FirstResultLimitation": "Legacy API exposes a usable deck only on return; no incremental result callback.",
+      "ProgressEvents": 8,
+      "MaximumProgressGapMs": 770.5826000000001,
+      "StageEvents": [
+        {
+          "Stage": "Building deterministic candidates",
+          "Milliseconds": 0.0533
+        },
+        {
+          "Stage": "Building deterministic candidates",
+          "Milliseconds": 33.3075
+        },
+        {
+          "Stage": "Sampled candidate analysis",
+          "Milliseconds": 33.4097
+        },
+        {
+          "Stage": "Sampled candidate analysis",
+          "Milliseconds": 44.9341
+        },
+        {
+          "Stage": "Sampled candidate analysis",
+          "Milliseconds": 52.8245
+        },
+        {
+          "Stage": "Exact finalist analysis",
+          "Milliseconds": 52.8493
+        },
+        {
+          "Stage": "Exact finalist analysis",
+          "Milliseconds": 823.4319
+        },
+        {
+          "Stage": "Exact finalist analysis",
+          "Milliseconds": 1579.6362
+        }
+      ],
+      "Deck": [
+        {
+          "Id": 86,
+          "Copies": 1
+        },
+        {
+          "Id": 84,
+          "Copies": 1
+        },
+        {
+          "Id": 6,
+          "Copies": 1
+        },
+        {
+          "Id": 74,
+          "Copies": 1
+        },
+        {
+          "Id": 77,
+          "Copies": 1
+        },
+        {
+          "Id": 62,
+          "Copies": 1
+        },
+        {
+          "Id": 25,
+          "Copies": 1
+        },
+        {
+          "Id": 4,
+          "Copies": 1
+        },
+        {
+          "Id": 27,
+          "Copies": 1
+        },
+        {
+          "Id": 49,
+          "Copies": 1
+        },
+        {
+          "Id": 70,
+          "Copies": 1
+        },
+        {
+          "Id": 54,
+          "Copies": 1
+        },
+        {
+          "Id": 46,
+          "Copies": 1
+        },
+        {
+          "Id": 3,
+          "Copies": 1
+        },
+        {
+          "Id": 42,
+          "Copies": 1
+        },
+        {
+          "Id": 71,
+          "Copies": 1
+        },
+        {
+          "Id": 53,
+          "Copies": 1
+        },
+        {
+          "Id": 59,
+          "Copies": 1
+        },
+        {
+          "Id": 65,
+          "Copies": 1
+        },
+        {
+          "Id": 47,
+          "Copies": 1
+        },
+        {
+          "Id": 13,
+          "Copies": 1
+        },
+        {
+          "Id": 61,
+          "Copies": 1
+        },
+        {
+          "Id": 30,
+          "Copies": 1
+        },
+        {
+          "Id": 76,
+          "Copies": 1
+        },
+        {
+          "Id": 45,
+          "Copies": 1
+        },
+        {
+          "Id": 5,
+          "Copies": 1
+        },
+        {
+          "Id": 48,
+          "Copies": 1
+        },
+        {
+          "Id": 83,
+          "Copies": 1
+        },
+        {
+          "Id": 75,
+          "Copies": 1
+        },
+        {
+          "Id": 8,
+          "Copies": 1
+        },
+        {
+          "Id": 2,
+          "Copies": 1
+        },
+        {
+          "Id": 28,
+          "Copies": 1
+        },
+        {
+          "Id": 34,
+          "Copies": 1
+        },
+        {
+          "Id": 50,
+          "Copies": 1
+        },
+        {
+          "Id": 56,
+          "Copies": 1
+        },
+        {
+          "Id": 9,
+          "Copies": 1
+        },
+        {
+          "Id": 16,
+          "Copies": 1
+        },
+        {
+          "Id": 58,
+          "Copies": 1
+        },
+        {
+          "Id": 24,
+          "Copies": 1
+        },
+        {
+          "Id": 40,
+          "Copies": 1
+        }
+      ],
+      "Hands": 658008
+    },
+    {
+      "Fixture": "medium",
+      "Context": "manual",
+      "Chips": false,
+      "Warm": false,
+      "Status": "completed",
+      "ElapsedMs": 359.6996,
+      "AllocatedBytes": 71244504,
+      "ProcessLifetimePeakWorkingSetBytes": 94273536,
+      "CancellationOverrunMs": null,
+      "FirstUsableDeckMs": 359.6996,
+      "FirstResultLimitation": "Legacy API exposes a usable deck only on return; no incremental result callback.",
+      "ProgressEvents": 12,
+      "MaximumProgressGapMs": 291.1598,
+      "StageEvents": [
+        {
+          "Stage": "Building deterministic candidates",
+          "Milliseconds": 0.0695
+        },
+        {
+          "Stage": "Building deterministic candidates",
+          "Milliseconds": 291.2293
+        },
+        {
+          "Stage": "Sampled candidate analysis",
+          "Milliseconds": 291.2868
+        },
+        {
+          "Stage": "Sampled candidate analysis",
+          "Milliseconds": 293.2651
+        },
+        {
+          "Stage": "Sampled candidate analysis",
+          "Milliseconds": 295.4639
+        },
+        {
+          "Stage": "Sampled candidate analysis",
+          "Milliseconds": 297.2019
+        },
+        {
+          "Stage": "Sampled candidate analysis",
+          "Milliseconds": 303.8171
+        },
+        {
+          "Stage": "Sampled candidate analysis",
+          "Milliseconds": 305.9155
+        },
+        {
+          "Stage": "Sampled candidate analysis",
+          "Milliseconds": 307.8884
+        },
+        {
+          "Stage": "Exact finalist analysis",
+          "Milliseconds": 307.9143
+        },
+        {
+          "Stage": "Exact finalist analysis",
+          "Milliseconds": 336.1772
+        },
+        {
+          "Stage": "Exact finalist analysis",
+          "Milliseconds": 359.4856
+        }
+      ],
+      "Deck": [
+        {
+          "Id": 73,
+          "Copies": 3
+        },
+        {
+          "Id": 11,
+          "Copies": 3
+        },
+        {
+          "Id": 94,
+          "Copies": 3
+        },
+        {
+          "Id": 81,
+          "Copies": 3
+        },
+        {
+          "Id": 97,
+          "Copies": 3
+        },
+        {
+          "Id": 7,
+          "Copies": 3
+        },
+        {
+          "Id": 74,
+          "Copies": 3
+        },
+        {
+          "Id": 62,
+          "Copies": 3
+        },
+        {
+          "Id": 89,
+          "Copies": 3
+        },
+        {
+          "Id": 45,
+          "Copies": 3
+        },
+        {
+          "Id": 28,
+          "Copies": 3
+        },
+        {
+          "Id": 16,
+          "Copies": 3
+        },
+        {
+          "Id": 4,
+          "Copies": 2
+        },
+        {
+          "Id": 75,
+          "Copies": 1
+        },
+        {
+          "Id": 8,
+          "Copies": 1
+        }
+      ],
+      "Hands": 658008
+    },
+    {
+      "Fixture": "medium",
+      "Context": "manual",
+      "Chips": false,
+      "Warm": true,
+      "Status": "completed",
+      "ElapsedMs": 359.0751,
+      "AllocatedBytes": 71243680,
+      "ProcessLifetimePeakWorkingSetBytes": 94273536,
+      "CancellationOverrunMs": null,
+      "FirstUsableDeckMs": 359.0751,
+      "FirstResultLimitation": "Legacy API exposes a usable deck only on return; no incremental result callback.",
+      "ProgressEvents": 12,
+      "MaximumProgressGapMs": 296.9203,
+      "StageEvents": [
+        {
+          "Stage": "Building deterministic candidates",
+          "Milliseconds": 0.0695
+        },
+        {
+          "Stage": "Building deterministic candidates",
+          "Milliseconds": 296.9898
+        },
+        {
+          "Stage": "Sampled candidate analysis",
+          "Milliseconds": 297.0406
+        },
+        {
+          "Stage": "Sampled candidate analysis",
+          "Milliseconds": 299.5614
+        },
+        {
+          "Stage": "Sampled candidate analysis",
+          "Milliseconds": 301.1194
+        },
+        {
+          "Stage": "Sampled candidate analysis",
+          "Milliseconds": 302.9943
+        },
+        {
+          "Stage": "Sampled candidate analysis",
+          "Milliseconds": 305.3642
+        },
+        {
+          "Stage": "Sampled candidate analysis",
+          "Milliseconds": 307.3618
+        },
+        {
+          "Stage": "Sampled candidate analysis",
+          "Milliseconds": 309.2875
+        },
+        {
+          "Stage": "Exact finalist analysis",
+          "Milliseconds": 309.3169
+        },
+        {
+          "Stage": "Exact finalist analysis",
+          "Milliseconds": 337.569
+        },
+        {
+          "Stage": "Exact finalist analysis",
+          "Milliseconds": 358.8877
+        }
+      ],
+      "Deck": [
+        {
+          "Id": 73,
+          "Copies": 3
+        },
+        {
+          "Id": 11,
+          "Copies": 3
+        },
+        {
+          "Id": 94,
+          "Copies": 3
+        },
+        {
+          "Id": 81,
+          "Copies": 3
+        },
+        {
+          "Id": 97,
+          "Copies": 3
+        },
+        {
+          "Id": 7,
+          "Copies": 3
+        },
+        {
+          "Id": 74,
+          "Copies": 3
+        },
+        {
+          "Id": 62,
+          "Copies": 3
+        },
+        {
+          "Id": 89,
+          "Copies": 3
+        },
+        {
+          "Id": 45,
+          "Copies": 3
+        },
+        {
+          "Id": 28,
+          "Copies": 3
+        },
+        {
+          "Id": 16,
+          "Copies": 3
+        },
+        {
+          "Id": 4,
+          "Copies": 2
+        },
+        {
+          "Id": 75,
+          "Copies": 1
+        },
+        {
+          "Id": 8,
+          "Copies": 1
+        }
+      ],
+      "Hands": 658008
+    },
+    {
+      "Fixture": "near-complete",
+      "Context": "manual",
+      "Chips": false,
+      "Warm": false,
+      "Status": "cancelled-at-budget",
+      "ElapsedMs": 2101.055,
+      "AllocatedBytes": 43271424,
+      "ProcessLifetimePeakWorkingSetBytes": 94498816,
+      "CancellationOverrunMs": 101.05499999999984,
+      "FirstUsableDeckMs": null,
+      "FirstResultLimitation": "Legacy API exposes a usable deck only on return; no incremental result callback.",
+      "ProgressEvents": 1,
+      "MaximumProgressGapMs": 2100.8313,
+      "StageEvents": [
+        {
+          "Stage": "Building deterministic candidates",
+          "Milliseconds": 0.2237
+        }
+      ],
+      "Deck": null,
+      "Hands": null
+    },
+    {
+      "Fixture": "near-complete",
+      "Context": "manual",
+      "Chips": false,
+      "Warm": true,
+      "Status": "cancelled-at-budget",
+      "ElapsedMs": 2038.3449,
+      "AllocatedBytes": 43268416,
+      "ProcessLifetimePeakWorkingSetBytes": 95477760,
+      "CancellationOverrunMs": 38.34490000000005,
+      "FirstUsableDeckMs": null,
+      "FirstResultLimitation": "Legacy API exposes a usable deck only on return; no incremental result callback.",
+      "ProgressEvents": 1,
+      "MaximumProgressGapMs": 2038.0388,
+      "StageEvents": [
+        {
+          "Stage": "Building deterministic candidates",
+          "Milliseconds": 0.3061
+        }
+      ],
+      "Deck": null,
+      "Hands": null
+    }
+  ]
+}

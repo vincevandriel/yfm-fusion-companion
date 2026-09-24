@@ -28,7 +28,8 @@ public sealed class OpponentThreatEvaluator(FusionCatalog catalog)
     public OpponentThreatReport Evaluate(
         IEnumerable<OpponentDeckPoolEntry> deckPool,
         bool includeGlitches = false,
-        int maximumFusionThreats = 20)
+        int maximumFusionThreats = 20,
+        CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(deckPool);
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(maximumFusionThreats);
@@ -67,6 +68,7 @@ public sealed class OpponentThreatEvaluator(FusionCatalog catalog)
         var currentChainStates = new Dictionary<int, ChainState>();
         for (var firstIndex = 0; firstIndex < entries.Length; firstIndex++)
         {
+            cancellationToken.ThrowIfCancellationRequested();
             for (var secondIndex = firstIndex; secondIndex < entries.Length; secondIndex++)
             {
                 var first = entries[firstIndex];
@@ -92,6 +94,7 @@ public sealed class OpponentThreatEvaluator(FusionCatalog catalog)
             var nextChainStates = new Dictionary<int, ChainState>();
             foreach (var state in currentChainStates)
             {
+                cancellationToken.ThrowIfCancellationRequested();
                 foreach (var next in entries)
                 {
                     if (!_catalog.TryResolvePair(state.Key, next.CardId, includeGlitches, out var resultCardId, out _))

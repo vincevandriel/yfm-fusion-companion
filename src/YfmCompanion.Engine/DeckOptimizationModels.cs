@@ -66,6 +66,8 @@ public sealed record CardStrategyAssessment(
 
 public sealed record DeckOptimizationProgress(string Stage, int Completed, int Total)
 {
+    public long? CompletedHands { get; init; }
+    public long? TotalHands { get; init; }
     public double Fraction => Total == 0 ? 1 : (double)Completed / Total;
 }
 

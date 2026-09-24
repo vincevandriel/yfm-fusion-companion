@@ -7,10 +7,113 @@ public sealed class OwnedDeckOptimizer(FusionCatalog catalog)
     private const int FirstExodiaPieceId = 17;
     private const int LastExodiaPieceId = 21;
     private readonly FusionCatalog _catalog = catalog;
-    private readonly DeckAnalyzer _analyzer = new(catalog);
+    // One combined 256 MiB retained-search-cache budget, including prepared scores.
+    private readonly DeckAnalyzer _analyzer = new(catalog, 224L * 1024 * 1024);
+    private readonly BoundedAnalysisCache _assessmentCache = new(32L * 1024 * 1024);
     private readonly Dictionary<int, CardHeuristic> _allHeuristics = BuildHeuristics(catalog, includeGlitches: true);
     private readonly Dictionary<int, CardHeuristic> _intendedHeuristics = BuildHeuristics(catalog, includeGlitches: false);
     private readonly ForbiddenMemoriesStrategyEvaluator _strategyEvaluator = new(catalog);
+    private DeckOptimizationOptions? _assessmentOptions;
+    private readonly Dictionary<OpponentSafetyContext, string> _contextKeys = new(ReferenceEqualityComparer.Instance);
+    private CancellationToken _assessmentToken;
+
+    public AnalysisCacheDiagnostics CacheDiagnostics
+    {
+        get
+        {
+            var hands = _analyzer.CacheDiagnostics;
+            var scores = _assessmentCache.Diagnostics;
+            return new(hands.AccountedBytes + scores.AccountedBytes, hands.LimitBytes + scores.LimitBytes,
+                hands.Hits + scores.Hits, hands.Misses + scores.Misses, hands.Entries + scores.Entries);
+        }
+    }
+
+    public int[] CreateSeedDeck(IEnumerable<OwnedCardQuantity> ownedCards, DeckOptimizationOptions options,
+        CancellationToken cancellationToken = default, IProgress<DeckOptimizationProgress>? progress = null)
+    {
+        ValidateOptions(options);
+        PrepareAssessments(options, cancellationToken);
+        var capacities = NormalizeOwnedCards(ownedCards).ToDictionary(p => p.Key,
+            p => Math.Min(p.Value, LegalCopyLimitForCard(p.Key, options.CopyLimit)));
+        if (capacities.Values.Sum() < 40) throw new ArgumentException("At least 40 legal copies are required.", nameof(ownedCards));
+        var clock = System.Diagnostics.Stopwatch.StartNew();
+        return BuildGreedyDeck(capacities, new(1, 1, .35, null), options, cancellationToken, () =>
+        {
+            if (clock.ElapsedMilliseconds < 200) return;
+            progress?.Report(new("Preparing first legal deck", 0, 1));
+            clock.Restart();
+        });
+    }
+
+    private void PrepareAssessments(DeckOptimizationOptions options, CancellationToken token)
+    {
+        _assessmentToken = token;
+        if (!ReferenceEquals(options, _assessmentOptions))
+        {
+            _assessmentCache.Clear();
+            _contextKeys.Clear();
+            _assessmentOptions = options;
+        }
+    }
+
+    private PreparedAssessment Assessment(int cardId, DeckOptimizationOptions options)
+    {
+        if (!ReferenceEquals(options, _assessmentOptions)) PrepareAssessments(options, _assessmentToken);
+        var key = new AnalysisCacheKey((ulong)cardId, "assessment");
+        if (_assessmentCache.TryGet<PreparedAssessment>(key, out var cached)) return cached!;
+        var card = _catalog.GetCard(cardId);
+        var value = new PreparedAssessment(_strategyEvaluator.Assess(card, options),
+            WeightedCounter(card, options.SafetyContext), WeightedCounter(card, options.SecondarySafetyContext));
+        _assessmentCache.Add(key, value, 512 + 2L * (value.Strategy.Role.Length + value.Strategy.Rationale.Length));
+        return value;
+    }
+
+    private (double Strategy, double Safety, double Secondary) Assess(int cardId, DeckOptimizationOptions options)
+    {
+        var value = Assessment(cardId, options);
+        return (value.Strategy.StrategicScore, value.Safety, value.Secondary);
+    }
+
+    internal (double Safety, double Secondary) PurchaseCounters(int cardId, DeckOptimizationOptions options, CancellationToken token)
+    {
+        PrepareAssessments(options, token);
+        var value = Assessment(cardId, options);
+        return (value.Safety, value.Secondary);
+    }
+
+    private double[] CounterValues(Card card, OpponentSafetyContext context)
+    {
+        _assessmentToken.ThrowIfCancellationRequested();
+        if (!_contextKeys.TryGetValue(context, out var contextKey))
+        {
+            contextKey = $"opponent:{_contextKeys.Count}";
+            _contextKeys.Add(context, contextKey);
+        }
+        var key = new AnalysisCacheKey((uint)card.Id | ((ulong)(uint)card.Attack << 10), contextKey);
+        if (_assessmentCache.TryGet<double[]>(key, out var cached)) return cached!;
+        var values = new double[context.Threats.Count];
+        for (var i = 0; i < values.Length; i++)
+        {
+            _assessmentToken.ThrowIfCancellationRequested();
+            values[i] = OpponentSafetyScoring.CounterValueForTarget(card, context.Threats[i], context.ActiveFieldCardId);
+        }
+        _assessmentCache.Add(key, values, 32 + 8L * values.Length);
+        return values;
+    }
+
+    private double WeightedCounter(Card card, OpponentSafetyContext? context)
+    {
+        if (context is null || context.Threats.Count == 0) return 0;
+        var values = CounterValues(card, context);
+        double total = 0, weighted = 0;
+        for (var i = 0; i < values.Length; i++)
+        {
+            var importance = Math.Max(0, context.Threats[i].Importance);
+            total += importance;
+            weighted += values[i] * importance;
+        }
+        return total <= 0 ? 0 : weighted / total;
+    }
 
     public DeckOptimizationReport Optimize(
         IEnumerable<OwnedCardQuantity> ownedCards,
@@ -21,6 +124,7 @@ public sealed class OwnedDeckOptimizer(FusionCatalog catalog)
     {
         options ??= new DeckOptimizationOptions();
         ValidateOptions(options);
+        PrepareAssessments(options, cancellationToken);
         var owned = NormalizeOwnedCards(ownedCards);
         var capacities = owned.ToDictionary(
             item => item.Key,
@@ -32,7 +136,7 @@ public sealed class OwnedDeckOptimizer(FusionCatalog catalog)
 
         cancellationToken.ThrowIfCancellationRequested();
         progress?.Report(new DeckOptimizationProgress("Building deterministic candidates", 0, 1));
-        var candidates = BuildCandidates(capacities, options, cancellationToken);
+        var candidates = BuildCandidates(capacities, options, cancellationToken, progress);
         progress?.Report(new DeckOptimizationProgress("Building deterministic candidates", 1, 1));
 
         var sampled = RankBySampledHands(candidates, options, cancellationToken, progress);
@@ -45,6 +149,7 @@ public sealed class OwnedDeckOptimizer(FusionCatalog catalog)
             var report = _analyzer.Analyze(
                 finalists[index].Deck,
                 options.IncludeGlitches,
+                ForwardHands(progress, "Exact finalist analysis", index, finalists.Length),
                 cancellationToken: cancellationToken);
             exactResults.Add(new ExactCandidate(
                 finalists[index].Deck,
@@ -76,6 +181,57 @@ public sealed class OwnedDeckOptimizer(FusionCatalog catalog)
             winner.SecondarySafety);
     }
 
+    public DeckOptimizationReport EvaluateDeck(IEnumerable<int> cardIds, IEnumerable<OwnedCardQuantity> ownedCards,
+        DeckOptimizationOptions options, bool exact = true, IProgress<DeckOptimizationProgress>? progress = null,
+        CancellationToken cancellationToken = default)
+    {
+        ValidateOptions(options);
+        PrepareAssessments(options, cancellationToken);
+        var owned = NormalizeOwnedCards(ownedCards);
+        var deck = cardIds.Order().ToArray();
+        if (deck.Length != 40 || deck.GroupBy(id => id).Any(g => g.Count() > Math.Min(owned.GetValueOrDefault(g.Key), LegalCopyLimitForCard(g.Key, options.CopyLimit))))
+            throw new ArgumentException("The candidate must contain 40 legally available copies.", nameof(cardIds));
+        return DescribeCandidate(EvaluateCandidate(deck, options, exact, progress, cancellationToken), owned, options);
+    }
+
+    // Internal callers have already validated the deck through DeckQuantitySpace.
+    // A rejected search candidate needs scores, not 722-card ownership copies or prose.
+    internal DeckOptimizationReport EvaluateCandidate(int[] deck, DeckOptimizationOptions options, bool exact,
+        IProgress<DeckOptimizationProgress>? progress, CancellationToken cancellationToken)
+    {
+        ValidateOptions(options);
+        PrepareAssessments(options, cancellationToken);
+        var report = exact
+            ? _analyzer.Analyze(deck, options.IncludeGlitches, ForwardHands(progress, "Exact deck analysis", 0, 1), cancellationToken)
+            : _analyzer.AnalyzeSampled(deck, options.SampleHands, options.RandomSeed, options.IncludeGlitches,
+                ForwardHands(progress, "Sampled deck analysis", 0, 1), cancellationToken);
+        cancellationToken.ThrowIfCancellationRequested();
+        var entries = deck.GroupBy(id => id).Select(g => new OptimizedDeckEntry(_catalog.GetCard(g.Key), g.Count(), "")).ToArray();
+        return new(entries, report, [], [], [], null, options.Profile, options.RandomSeed,
+            BuildSafetyAssessment(deck, report, options.SafetyContext), BuildSafetyAssessment(deck, report, options.SecondarySafetyContext));
+    }
+
+    internal DeckOptimizationReport DescribeCandidate(DeckOptimizationReport report,
+        IEnumerable<OwnedCardQuantity> ownedCards, DeckOptimizationOptions options) =>
+        DescribeCandidate(report, NormalizeOwnedCards(ownedCards), options);
+
+    private DeckOptimizationReport DescribeCandidate(DeckOptimizationReport report,
+        Dictionary<int, int> owned, DeckOptimizationOptions options)
+    {
+        var deck = report.Deck.SelectMany(e => Enumerable.Repeat(e.Card.Id, e.Copies)).ToArray();
+        var capacities = owned.ToDictionary(p => p.Key, p => Math.Min(p.Value, LegalCopyLimitForCard(p.Key, options.CopyLimit)));
+        return report with
+        {
+            Deck = BuildEntries(deck, options), ImportantTargets = BuildTargets(report.ExactAnalysis),
+            LimitedCards = BuildLimitedCards(deck, owned, capacities, options),
+            ExcludedOrLowValueCards = BuildExcludedCards(deck, owned, options)
+        };
+    }
+
+    private static IProgress<DeckAnalysisProgress> ForwardHands(IProgress<DeckOptimizationProgress>? progress,
+        string stage, int index, int total) => new InlineProgress<DeckAnalysisProgress>(p =>
+            progress?.Report(new(stage, index, total) { CompletedHands = p.CompletedHands, TotalHands = p.TotalHands }));
+
     private Dictionary<int, int> NormalizeOwnedCards(IEnumerable<OwnedCardQuantity> ownedCards)
     {
         ArgumentNullException.ThrowIfNull(ownedCards);
@@ -102,7 +258,8 @@ public sealed class OwnedDeckOptimizer(FusionCatalog catalog)
     private int[][] BuildCandidates(
         IReadOnlyDictionary<int, int> capacities,
         DeckOptimizationOptions options,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken,
+        IProgress<DeckOptimizationProgress>? progress)
     {
         var (Synergy, Strength, Flexibility) = options.Profile switch
         {
@@ -137,13 +294,22 @@ public sealed class OwnedDeckOptimizer(FusionCatalog catalog)
         configurations.AddRange(targetIds.Select(targetId => new CandidateConfiguration(1.0, 0.9, 0.15, targetId)));
 
         var candidates = new Dictionary<string, int[]>(StringComparer.Ordinal);
+        var watch = System.Diagnostics.Stopwatch.StartNew();
+        var completed = 0;
+        void Activity()
+        {
+            if (watch.ElapsedMilliseconds < 200) return;
+            progress?.Report(new("Building deterministic candidates", completed, configurations.Count));
+            watch.Restart();
+        }
         foreach (var configuration in configurations)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            var deck = BuildGreedyDeck(capacities, configuration, options);
-            ImproveByLocalSearch(deck, capacities, configuration, options, cancellationToken);
+            var deck = BuildGreedyDeck(capacities, configuration, options, cancellationToken, Activity);
+            ImproveByLocalSearch(deck, capacities, configuration, options, cancellationToken, Activity);
             Array.Sort(deck);
             candidates.TryAdd(DeckKey(deck), deck);
+            completed++;
         }
 
         return [.. candidates.Values];
@@ -152,12 +318,16 @@ public sealed class OwnedDeckOptimizer(FusionCatalog catalog)
     private int[] BuildGreedyDeck(
         IReadOnlyDictionary<int, int> capacities,
         CandidateConfiguration configuration,
-        DeckOptimizationOptions options)
+        DeckOptimizationOptions options,
+        CancellationToken cancellationToken,
+        Action? activity = null)
     {
         var deck = new List<int>(40);
         var counts = new Dictionary<int, int>();
         while (deck.Count < 40)
         {
+            cancellationToken.ThrowIfCancellationRequested();
+            activity?.Invoke();
             var selected = capacities.Keys
                 .Where(cardId => counts.GetValueOrDefault(cardId) < capacities[cardId])
                 .Select(cardId => new
@@ -180,7 +350,8 @@ public sealed class OwnedDeckOptimizer(FusionCatalog catalog)
         IReadOnlyDictionary<int, int> capacities,
         CandidateConfiguration configuration,
         DeckOptimizationOptions options,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken,
+        Action? activity = null)
     {
         var counts = deck.GroupBy(cardId => cardId).ToDictionary(group => group.Key, group => group.Count());
         var alternatives = capacities.Keys
@@ -199,6 +370,8 @@ public sealed class OwnedDeckOptimizer(FusionCatalog catalog)
                 var removed = deck[index];
                 foreach (var candidate in alternatives)
                 {
+                    cancellationToken.ThrowIfCancellationRequested();
+                    activity?.Invoke();
                     if (candidate == removed || counts.GetValueOrDefault(candidate) >= capacities[candidate])
                     {
                         continue;
@@ -243,58 +416,25 @@ public sealed class OwnedDeckOptimizer(FusionCatalog catalog)
         CancellationToken cancellationToken,
         IProgress<DeckOptimizationProgress>? progress)
     {
-        var sampleIndexes = BuildSampleIndexes(options.SampleHands, options.RandomSeed);
         var ranked = new List<SampledCandidate>(candidates.Length);
         for (var candidateIndex = 0; candidateIndex < candidates.Length; candidateIndex++)
         {
             cancellationToken.ThrowIfCancellationRequested();
             progress?.Report(new DeckOptimizationProgress("Sampled candidate analysis", candidateIndex, candidates.Length));
             var deck = candidates[candidateIndex];
-            var score = 0.0;
-            var hand = new int[5];
-            foreach (var indexes in sampleIndexes)
-            {
-                for (var index = 0; index < hand.Length; index++)
-                {
-                    hand[index] = deck[indexes[index]];
-                }
-
-                var report = _analyzer.Analyze(hand, options.IncludeGlitches, cancellationToken: cancellationToken);
-                score += ExactScore(report);
-            }
+            var report = _analyzer.AnalyzeSampled(deck, options.SampleHands, options.RandomSeed, options.IncludeGlitches,
+                ForwardHands(progress, "Sampled candidate analysis", candidateIndex, candidates.Length), cancellationToken);
 
             ranked.Add(new SampledCandidate(
                 deck,
-                score / sampleIndexes.Length,
-                CandidateSafetyPreScore(deck, options.SafetyContext)));
+                new DeckObjective(report, BuildSafetyAssessment(deck, report, options.SafetyContext),
+                    BuildSafetyAssessment(deck, report, options.SecondarySafetyContext), deck)));
         }
 
         progress?.Report(new DeckOptimizationProgress("Sampled candidate analysis", candidates.Length, candidates.Length));
         return [.. ranked
-            .OrderByDescending(item => options.Profile == DeckStrategyProfile.ControlAndSafety ? item.SafetyScore : 0)
-            .ThenByDescending(item => item.Score)
-            .ThenBy(item => DeckKey(item.Deck), StringComparer.Ordinal)];
-    }
-
-    private static int[][] BuildSampleIndexes(int count, int seed)
-    {
-        var samples = new int[count][];
-        var state = unchecked((uint)seed) | 1U;
-        for (var sample = 0; sample < count; sample++)
-        {
-            var selected = new HashSet<int>();
-            while (selected.Count < 5)
-            {
-                state ^= state << 13;
-                state ^= state >> 17;
-                state ^= state << 5;
-                selected.Add((int)(state % 40));
-            }
-
-            samples[sample] = [.. selected.Order()];
-        }
-
-        return samples;
+            .OrderByDescending(item => item.Objective,
+                new DeckObjectiveComparer(options.SafetyContext is not null, options.SecondarySafetyContext is not null))];
     }
 
     private OptimizedDeckEntry[] BuildEntries(IReadOnlyList<int> deck, DeckOptimizationOptions options)
@@ -312,7 +452,7 @@ public sealed class OwnedDeckOptimizer(FusionCatalog catalog)
                     .Where(result => result is not null)
                     .OrderByDescending(result => result!.Result.Attack)
                     .FirstOrDefault();
-                var assessment = _strategyEvaluator.Assess(_catalog.GetCard(item.Key), options);
+                var assessment = Assessment(item.Key, options).Strategy;
                 var fusionReason = bestResult is null
                     ? $"{partners} compatible deck partners; base ATK {_catalog.GetCard(item.Key).Attack:N0}."
                     : $"{partners} compatible deck partners; reaches {bestResult.Result.Name} ({bestResult.Result.Attack:N0} ATK).";
@@ -371,11 +511,15 @@ public sealed class OwnedDeckOptimizer(FusionCatalog catalog)
         var included = deck.ToHashSet();
         return [.. owned.Keys
             .Where(cardId => !included.Contains(cardId))
-            .Select(cardId => _strategyEvaluator.Assess(_catalog.GetCard(cardId), options))
+            .Select(cardId => Assessment(cardId, options).Strategy)
             .Where(assessment => assessment.Tier is CardViabilityTier.LowValue or CardViabilityTier.NonViable)
             .OrderBy(assessment => assessment.Tier)
             .ThenBy(assessment => assessment.Card.Name, StringComparer.OrdinalIgnoreCase)];
     }
+
+    internal DeckOptimizationReport WithComparison(DeckOptimizationReport report, IEnumerable<int>? currentDeck,
+        DeckOptimizationOptions options, IProgress<DeckOptimizationProgress>? progress, CancellationToken cancellationToken) =>
+        report with { Comparison = BuildComparison(currentDeck, report.ExactAnalysis, options, cancellationToken, progress) };
 
     private DeckComparison? BuildComparison(
         IEnumerable<int>? currentDeckCardIds,
@@ -396,7 +540,8 @@ public sealed class OwnedDeckOptimizer(FusionCatalog catalog)
         }
 
         progress?.Report(new DeckOptimizationProgress("Exact current-deck comparison", 0, 1));
-        var report = _analyzer.Analyze(current, options.IncludeGlitches, cancellationToken: cancellationToken);
+        var report = _analyzer.Analyze(current, options.IncludeGlitches,
+            ForwardHands(progress, "Exact current-deck comparison", 0, 1), cancellationToken);
         progress?.Report(new DeckOptimizationProgress("Exact current-deck comparison", 1, 1));
         return new DeckComparison(
             report,
@@ -427,9 +572,7 @@ public sealed class OwnedDeckOptimizer(FusionCatalog catalog)
         var targetBonus = configuration.TargetResultId is null
             ? 0
             : heuristic.ResultCounts.GetValueOrDefault(configuration.TargetResultId.Value) * 1_500;
-        var strategic = _strategyEvaluator.Assess(_catalog.GetCard(cardId), options).StrategicScore;
-        var safety = OpponentSafetyScoring.CounterValue(_catalog.GetCard(cardId), options.SafetyContext);
-        var secondarySafety = OpponentSafetyScoring.CounterValue(_catalog.GetCard(cardId), options.SecondarySafetyContext);
+        var (strategic, safety, secondarySafety) = Assess(cardId, options);
         var controlMultiplier = options.Profile == DeckStrategyProfile.ControlAndSafety ? 1.6 : 1.0;
         return (heuristic.Individual * configuration.SynergyWeight) +
                (heuristic.BaseStrength * configuration.StrengthWeight) +
@@ -446,36 +589,45 @@ public sealed class OwnedDeckOptimizer(FusionCatalog catalog)
         CandidateConfiguration configuration,
         DeckOptimizationOptions options)
     {
+        var key = new AnalysisCacheKey((uint)Math.Min(first, second) | ((ulong)(uint)Math.Max(first, second) << 10), "pair");
+        if (!_assessmentCache.TryGet<PreparedPair>(key, out var prepared))
+        {
+            prepared = PreparePair(first, second, options);
+            _assessmentCache.Add(key, prepared, 64);
+        }
+        return prepared!.Synergy * configuration.SynergyWeight + prepared.Fixed +
+               (prepared.ResultId != 0 && prepared.ResultId == configuration.TargetResultId ? 2000 : 0);
+    }
+
+    private PreparedPair PreparePair(int first, int second, DeckOptimizationOptions options)
+    {
+        _assessmentToken.ThrowIfCancellationRequested();
         if (_catalog.TryResolvePair(first, second, options.IncludeGlitches, out var resultId, out _))
         {
             var result = _catalog.GetCard(resultId);
-            var targetBonus = resultId == configuration.TargetResultId ? 2_000 : 0;
-            var safety = OpponentSafetyScoring.CounterValue(result, options.SafetyContext);
-            var secondarySafety = OpponentSafetyScoring.CounterValue(result, options.SecondarySafetyContext);
-            return ((result.Attack + (result.Defense * 0.15)) * configuration.SynergyWeight) +
-                   (safety * (options.Profile == DeckStrategyProfile.ControlAndSafety ? 1.6 : 1.0)) +
-                   (secondarySafety * 0.15) +
-                   targetBonus;
+            var (_, safety, secondarySafety) = Assess(resultId, options);
+            return new(result.Attack + (result.Defense * 0.15),
+                (safety * (options.Profile == DeckStrategyProfile.ControlAndSafety ? 1.6 : 1.0)) + (secondarySafety * 0.15), resultId);
         }
 
         var equip = _catalog.ResolveEquip(first, second);
         if (equip is not null)
         {
-            return (equip.EquippedCard.Attack + equip.AttackBonus) * configuration.SynergyWeight * 0.8;
+            return new((equip.EquippedCard.Attack + equip.AttackBonus) * 0.8, 0, 0);
         }
 
         var firstCard = _catalog.GetCard(first);
         var secondCard = _catalog.GetCard(second);
         if (ForbiddenMemoriesStrategyEvaluator.IsFieldCard(first))
         {
-            return ForbiddenMemoriesStrategyEvaluator.GetFieldModifier(first, secondCard.PrimaryType) *
-                   (options.Profile == DeckStrategyProfile.FieldAndType ? 6 : 2);
+            return new(0, ForbiddenMemoriesStrategyEvaluator.GetFieldModifier(first, secondCard.PrimaryType) *
+                   (options.Profile == DeckStrategyProfile.FieldAndType ? 6 : 2), 0);
         }
 
-        return ForbiddenMemoriesStrategyEvaluator.IsFieldCard(second)
+        return new(0, ForbiddenMemoriesStrategyEvaluator.IsFieldCard(second)
             ? ForbiddenMemoriesStrategyEvaluator.GetFieldModifier(second, firstCard.PrimaryType) *
               (options.Profile == DeckStrategyProfile.FieldAndType ? 6 : 2)
-            : 0;
+            : 0, 0);
     }
 
     private Dictionary<int, CardHeuristic> Heuristics(DeckOptimizationOptions options) =>
@@ -509,22 +661,6 @@ public sealed class OwnedDeckOptimizer(FusionCatalog catalog)
             });
     }
 
-    private static double ExactScore(DeckAnalysisReport report) =>
-        (report.AtLeast2800Probability * 1_000_000_000_000) +
-        (report.AtLeast2500Probability * 1_000_000_000) +
-        (report.ExpectedBestFusionAttack * 1_000) +
-        report.AnyFusionProbability;
-
-    private double CandidateSafetyPreScore(IReadOnlyList<int> deck, OpponentSafetyContext? context)
-    {
-        if (context is null || context.Threats.Count == 0)
-        {
-            return 0;
-        }
-
-        return deck.Average(cardId => OpponentSafetyScoring.CounterValue(_catalog.GetCard(cardId), context));
-    }
-
     private DeckSafetyAssessment? BuildSafetyAssessment(
         int[] deck,
         DeckAnalysisReport report,
@@ -535,25 +671,27 @@ public sealed class OwnedDeckOptimizer(FusionCatalog catalog)
             return null;
         }
 
-        var deckCards = deck.Select(_catalog.GetCard).ToArray();
+        var deckCards = deck.Distinct().Select(id => (Id: id, Values: CounterValues(_catalog.GetCard(id), context))).ToArray();
+        var fusionCounters = report.FusionResults.Select(result => (result.Probability,
+            Values: CounterValues(result.Result with { Attack = result.EffectiveAttack }, context))).ToArray();
         var opponentScores = new List<double>();
         var safeOpponents = 0;
         var openingCoverages = new List<double>();
-        foreach (var opponent in context.Threats.GroupBy(target => target.OpponentId))
+        foreach (var opponent in context.Threats.Select((target, index) => (target.OpponentId, Index: index)).GroupBy(target => target.OpponentId))
         {
             var targetScores = new List<double>();
             var answerCardIds = new HashSet<int>();
             foreach (var target in opponent)
             {
-                var standalone = deckCards.Max(card => OpponentSafetyScoring.CounterValueForTarget(card, target, context.ActiveFieldCardId));
-                foreach (var card in deckCards.Where(card => OpponentSafetyScoring.CounterValueForTarget(card, target, context.ActiveFieldCardId) > 0))
+                _assessmentToken.ThrowIfCancellationRequested();
+                var standalone = deckCards.Max(card => card.Values[target.Index]);
+                foreach (var card in deckCards.Where(card => card.Values[target.Index] > 0))
                 {
                     answerCardIds.Add(card.Id);
                 }
 
-                var fusionValue = report.FusionResults
-                    .Where(result => OpponentSafetyScoring.CounterValueForTarget(
-                        result.Result with { Attack = result.EffectiveAttack }, target, context.ActiveFieldCardId) > 0)
+                var fusionValue = fusionCounters
+                    .Where(result => result.Values[target.Index] > 0)
                     .Sum(result => result.Probability * 650);
                 targetScores.Add(standalone + fusionValue);
             }
@@ -603,60 +741,9 @@ public sealed class OwnedDeckOptimizer(FusionCatalog catalog)
         ExactCandidate incumbent,
         DeckOptimizationOptions options)
     {
-        if (options.Profile == DeckStrategyProfile.ControlAndSafety &&
-            candidate.Safety is not null &&
-            incumbent.Safety is not null)
-        {
-            var safeOpponentDifference = candidate.Safety.SafeOpponentCount - incumbent.Safety.SafeOpponentCount;
-            if (safeOpponentDifference != 0)
-            {
-                return safeOpponentDifference > 0;
-            }
-
-            var worstOpponentDifference = candidate.Safety.WorstOpponentScore - incumbent.Safety.WorstOpponentScore;
-            if (Math.Abs(worstOpponentDifference) > 0.0001)
-            {
-                return worstOpponentDifference > 0;
-            }
-
-            var coverageDifference = candidate.Safety.EstimatedOpeningAnswerCoverage - incumbent.Safety.EstimatedOpeningAnswerCoverage;
-            if (Math.Abs(coverageDifference) > 0.0001)
-            {
-                return coverageDifference > 0;
-            }
-
-            var safetyDifference = candidate.Safety.HeuristicScore - incumbent.Safety.HeuristicScore;
-            if (Math.Abs(safetyDifference) > 0.0001)
-            {
-                return safetyDifference > 0;
-            }
-        }
-
-        var powerDifference = candidate.Report.AtLeast2800Probability - incumbent.Report.AtLeast2800Probability;
-        var strongDifference = candidate.Report.AtLeast2500Probability - incumbent.Report.AtLeast2500Probability;
-        var expectedDifference = candidate.Report.ExpectedBestFusionAttack - incumbent.Report.ExpectedBestFusionAttack;
-        var anyFusionDifference = candidate.Report.AnyFusionProbability - incumbent.Report.AnyFusionProbability;
-        if (options.Profile == DeckStrategyProfile.ControlAndSafety &&
-            candidate.SecondarySafety is not null &&
-            incumbent.SecondarySafety is not null)
-        {
-            if (Math.Abs(powerDifference) > 0.005) return powerDifference > 0;
-            if (Math.Abs(strongDifference) > 0.005) return strongDifference > 0;
-            if (Math.Abs(expectedDifference) > 25) return expectedDifference > 0;
-            if (Math.Abs(anyFusionDifference) > 0.005) return anyFusionDifference > 0;
-
-            var secondaryDifference = candidate.SecondarySafety.HeuristicScore - incumbent.SecondarySafety.HeuristicScore;
-            if (Math.Abs(secondaryDifference) > 0.0001)
-            {
-                return secondaryDifference > 0;
-            }
-        }
-
-        if (Math.Abs(powerDifference) > double.Epsilon) return powerDifference > 0;
-        if (Math.Abs(strongDifference) > double.Epsilon) return strongDifference > 0;
-        if (Math.Abs(expectedDifference) > double.Epsilon) return expectedDifference > 0;
-        if (Math.Abs(anyFusionDifference) > double.Epsilon) return anyFusionDifference > 0;
-        return string.Compare(DeckKey(candidate.Deck), DeckKey(incumbent.Deck), StringComparison.Ordinal) < 0;
+        var comparer = new DeckObjectiveComparer(options.SafetyContext is not null, options.SecondarySafetyContext is not null);
+        return comparer.Compare(new(candidate.Report, candidate.Safety, candidate.SecondarySafety, candidate.Deck),
+            new(incumbent.Report, incumbent.Safety, incumbent.SecondarySafety, incumbent.Deck)) > 0;
     }
 
     private static string FormatRoute(DeckFusionRoute route)
@@ -686,13 +773,16 @@ public sealed class OwnedDeckOptimizer(FusionCatalog catalog)
         double FlexibilityWeight,
         int? TargetResultId);
 
+    private sealed record PreparedAssessment(CardStrategyAssessment Strategy, double Safety, double Secondary);
+    private sealed record PreparedPair(double Synergy, double Fixed, int ResultId);
+
     private sealed record CardHeuristic(
         double Individual,
         int BaseStrength,
         int Flexibility,
         IReadOnlyDictionary<int, int> ResultCounts);
 
-    private sealed record SampledCandidate(int[] Deck, double Score, double SafetyScore);
+    private sealed record SampledCandidate(int[] Deck, DeckObjective Objective);
 
     private sealed record ExactCandidate(
         int[] Deck,

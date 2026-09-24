@@ -1,0 +1,345 @@
+{
+  "SchemaVersion": 1,
+  "CapturedUtc": "2026-09-23T18:54:39.5892822+00:00",
+  "LogicalProcessors": 12,
+  "Privacy": "Only poll timing, status, success and duel-active booleans; no game cards, save contents, paths or raw memory.",
+  "Inventory": "Synthetic near-complete collection",
+  "Mode": "Quick",
+  "PollIntervalMilliseconds": 1000,
+  "MaximumConcurrentReads": 1,
+  "SuccessfulReads": 14,
+  "FailedReads": 0,
+  "ActiveDuelReads": 14,
+  "FirstUsableDeckMilliseconds": 1494.442,
+  "FirstProgressMilliseconds": 46.772899999999936,
+  "MaximumProgressGapMilliseconds": 728.2851,
+  "ResultState": "Completed",
+  "ExactHands": 160,
+  "ResultStatisticsExact": false,
+  "Polls": [
+    {
+      "Phase": "idle",
+      "StartedMilliseconds": 1005.0247,
+      "DurationMilliseconds": 237.5077,
+      "Success": true,
+      "DuelActive": true,
+      "Playback": "Playing",
+      "ErrorType": null
+    },
+    {
+      "Phase": "idle",
+      "StartedMilliseconds": 2002.7378,
+      "DurationMilliseconds": 223.43779999999992,
+      "Success": true,
+      "DuelActive": true,
+      "Playback": "Playing",
+      "ErrorType": null
+    },
+    {
+      "Phase": "idle",
+      "StartedMilliseconds": 3002.7865,
+      "DurationMilliseconds": 221.75250000000005,
+      "Success": true,
+      "DuelActive": true,
+      "Playback": "Playing",
+      "ErrorType": null
+    },
+    {
+      "Phase": "idle",
+      "StartedMilliseconds": 4012.9044,
+      "DurationMilliseconds": 223.86680000000024,
+      "Success": true,
+      "DuelActive": true,
+      "Playback": "Playing",
+      "ErrorType": null
+    },
+    {
+      "Phase": "idle",
+      "StartedMilliseconds": 5005.4236,
+      "DurationMilliseconds": 225.2402000000002,
+      "Success": true,
+      "DuelActive": true,
+      "Playback": "Playing",
+      "ErrorType": null
+    },
+    {
+      "Phase": "optimizer",
+      "StartedMilliseconds": 6005.4977,
+      "DurationMilliseconds": 223.36629999999968,
+      "Success": true,
+      "DuelActive": true,
+      "Playback": "Playing",
+      "ErrorType": null
+    },
+    {
+      "Phase": "optimizer",
+      "StartedMilliseconds": 7001.5638,
+      "DurationMilliseconds": 224.6769000000004,
+      "Success": true,
+      "DuelActive": true,
+      "Playback": "Playing",
+      "ErrorType": null
+    },
+    {
+      "Phase": "optimizer",
+      "StartedMilliseconds": 8001.6063,
+      "DurationMilliseconds": 221.89540000000034,
+      "Success": true,
+      "DuelActive": true,
+      "Playback": "Playing",
+      "ErrorType": null
+    },
+    {
+      "Phase": "optimizer",
+      "StartedMilliseconds": 9014.631,
+      "DurationMilliseconds": 222.4449999999997,
+      "Success": true,
+      "DuelActive": true,
+      "Playback": "Playing",
+      "ErrorType": null
+    },
+    {
+      "Phase": "optimizer",
+      "StartedMilliseconds": 10012.9155,
+      "DurationMilliseconds": 223.72860000000037,
+      "Success": true,
+      "DuelActive": true,
+      "Playback": "Playing",
+      "ErrorType": null
+    },
+    {
+      "Phase": "optimizer",
+      "StartedMilliseconds": 11008.5578,
+      "DurationMilliseconds": 222.3827000000001,
+      "Success": true,
+      "DuelActive": true,
+      "Playback": "Playing",
+      "ErrorType": null
+    },
+    {
+      "Phase": "post-optimizer",
+      "StartedMilliseconds": 12005.5942,
+      "DurationMilliseconds": 223.4310000000005,
+      "Success": true,
+      "DuelActive": true,
+      "Playback": "Playing",
+      "ErrorType": null
+    },
+    {
+      "Phase": "post-optimizer",
+      "StartedMilliseconds": 13003.6842,
+      "DurationMilliseconds": 221.9258000000009,
+      "Success": true,
+      "DuelActive": true,
+      "Playback": "Playing",
+      "ErrorType": null
+    },
+    {
+      "Phase": "post-optimizer",
+      "StartedMilliseconds": 14012.288,
+      "DurationMilliseconds": 222.10399999999936,
+      "Success": true,
+      "DuelActive": true,
+      "Playback": "Playing",
+      "ErrorType": null
+    }
+  ],
+  "Progress": [
+    {
+      "Milliseconds": 46.772899999999936,
+      "State": "Preparing",
+      "HasBest": false,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 775.058,
+      "State": "Preparing",
+      "HasBest": false,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 1333.3203999999996,
+      "State": "Preparing",
+      "HasBest": false,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 1494.442,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 1703.5043999999998,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 1912.5419999999995,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 2115.7844999999998,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 2324.8084,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 2533.8274,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 2733.9040999999997,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 0,
+      "TotalHands": 160
+    },
+    {
+      "Milliseconds": 2946.0074999999997,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 3155.8633,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 3358.4278999999997,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 3569.3846999999996,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 3775.7447999999995,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 3975.8725000000004,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 4176.065299999999,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 4386.147099999999,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 4597.7275,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 4797.995399999999,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 5000.3625,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 5210.2278,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 5421.7311,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 5632.1855000000005,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 5834.479,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 6045.934,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    },
+    {
+      "Milliseconds": 6246.0083,
+      "State": "Searching",
+      "HasBest": true,
+      "CompletedHands": 160,
+      "TotalHands": 160
+    },
+    {
+      "Milliseconds": 6344.983299999999,
+      "State": "Completed",
+      "HasBest": true,
+      "CompletedHands": null,
+      "TotalHands": null
+    }
+  ]
+}
