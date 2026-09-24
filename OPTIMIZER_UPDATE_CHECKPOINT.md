@@ -2,53 +2,51 @@
 
 ## Status and resume instruction
 
-- **Phase 1 implementation gate PASSED on 2026-09-24. Paused before Phase 2.**
+- **Phase 2 implementation gate PASSED on 2026-09-24. Paused before Phase 3.**
+- Phase 2 implementation commit: `f31f5d5449c2042a31168d13bcd5b81ee8efc593`.
 - Phase 1 implementation commit: `46c71e1c836c7b4b771143a0f1561dc0f3287d88`.
-- Original base: `a967903cb076e3c444383bdbadb400abdc91fd66`. The checkpoint-only commit following the implementation commit does not change tested code.
-- **Resume with GPT-5.6 Sol (`gpt-5.6-sol`), reasoning Medium.**
-- Exact next action: read `OPTIMIZER_UPDATE_PLAN.md` and `docs/benchmarks/PHASE2_ENGINE_CONTRACT.md`, then begin Phase 2's shared collection/snapshot service and automatic-newest-validated-save workflow before wiring the owned gallery and redesigned views.
-- Phases 2, 3 and 4 have **not** started. This gate is not the separate Phase 3 independent audit or a release approval.
-- Local commits only. No push, publication, installed-release replacement, game controls, game-memory writes or save/config edits.
+- **Resume with GPT-6 Astra (`gpt-6-astra`), reasoning xhigh.**
+- Exact next action: read `OPTIMIZER_UPDATE_PLAN.md`, this checkpoint, `docs/audit/PHASE2_GATE.md`, and the Phase 1 benchmark contract; then begin Phase 3 with an independent source/configuration audit before rerunning correctness, performance, save-source, live-integration, accessibility, and UI-state matrices.
+- Phase 3 and Phase 4 have **not** started. Phase 2 passing is not an independent audit or release approval.
+- Local commits only. No push, publication, installed-release replacement, game controls, game-memory writes, or save/config edits were performed.
 
-## Completed Phase 1 work
+## Completed Phase 2 work
 
-- Shared compact exact/sample hand evaluator; correct weighted physical-hand totals, integer total best-ATK numerator, explicit sample count/uncertainty and exactness labels. Scratch buffers are reused under the analyzer lock without mutating earlier reports.
-- Versioned transitive comparator shared by searches, purchase plans and proof. Fixed 0.5-percentage-point / 25-ATK groups, exact rational hand metrics, modeled safety, gauntlet tie-break, lower spending and deterministic numeric card-ID ordering.
-- Request-scoped prepared card, pair, terrain and opponent assessments, including password-purchase scoring. Combined accounted cache budget is 256 MiB (224 MiB hand/deck + 32 MiB assessments). This is not a cap on process RAM or cumulative allocations.
-- Removed redundant purchase re-optimization; comparison deck analyzed once after purchase alternatives. Rejected timed/proof candidates no longer need full inclusion explanations. Published results remain immutable, described reports.
-- Frozen background Quick / Balanced / Thorough jobs with 5 / 60 / 900-second search budgets, early candidate, incremental improvements, up to 2 / 8 exact finalists, compatible verified-incumbent preservation, VerifyBest, Pause/Resume and Stop-and-keep-best.
-- Stage-specific counts, elapsed/search time, credible verification ETA range, structured arbitrary-precision proof progress, time-throttled updates and cancellation within expensive loops. UI must install the result before displaying Ready.
-- Full capacity-vector proof without a heuristic shortlist; budget, eligibility, prior-redemption exclusions, copy limits and one-purchase-per-name checks. Only full enumeration can report proven optimal for the frozen model.
-- Proof preflight capacity count and explicitly qualified measured work extrapolation. Schema-2 atomic/checksummed checkpoints, exclusive lease, input/catalog/objective/rules identity checks, initial-preparation pause, incomplete-leaf replay, and durable preservation of a carried-in verified incumbent.
-- Approved update plan, engine/UI handoff, before/after benchmarks, raw evidence and machine-readable Phase 1 gate record.
+- Added one shared collection/snapshot service for Save Snapshot, optimizer ownership, and current-deck loading. Automatic mode searches configured/active RetroArch locations and prior user locations, validates supported memory-card content instead of filenames, chooses the newest valid save deterministically, and reports rejected newer corrupt candidates.
+- Added pinned-file, automatic-newest, and manual collection modes. Stable reads retry while a save may be changing; stale retained data is explicitly labelled. Chest plus constructed-deck copies define ownership; Library-seen flags do not.
+- The optimizer freezes the selected source identity. A newly detected save becomes pending during a run and is applied only after completion or stop, so a job's inventory cannot silently change.
+- Replaced the 722-row initial catalog with an owned-only, recycled/virtualized card gallery. Tiles show card identity, type, guardian stars, ATK/DEF, total/chest/deck quantities, proposed copies, and optional bounded-cache artwork. Search, type filter, sorting, autocomplete add, quantity edits, artwork folder, and per-card fallback assignment are present.
+- Integrated Quick, Balanced, Thorough, and advanced proof jobs into the desktop. The persistent Prepare → Search → Verify → Ready panel displays actual stage work, elapsed time, search-budget consumption, exact hand counts, proof-space counts, credible ETA, best-so-far deck, pause/resume, stop-and-keep-best, and verify.
+- A legal 40-card preview is displayed before expensive scoring and is explicitly labelled `evaluation pending`. Estimated results include sample count/uncertainty and are not called exact or proven. Shared immutable card heuristics are reused by later jobs for responsive pause/resume.
+- Proposed results include 40-card completeness, owned/purchase quantities, reason for inclusion, purchase plan, modeled safety summary, and threat details. A compatible exactly verified incumbent is retained across longer modes.
+- Applied the modern Egyptian desktop system across the five full tabs: navy surfaces, lapis controls, white text, restrained gold framing, shared card/metric/source/progress components, and adaptive scrolling/stacking at constrained sizes.
+- Save Snapshot now exposes concise source/freshness information and keeps the full path and validation details behind an advanced expander. Deck Analyzer and Save Snapshot can still refresh their own saved data while the optimizer uses a manual collection.
+- Compact Live's contract was preserved: narrow/unrestricted sizing, result name, ATK, numeric/`F(X)` route, and guardian lines only. No material-name routes, gallery, or large controls were added.
+- Added a self-contained WPF UI audit tool using a generated non-personal PS1 save. It restores the user's desktop settings after running and captures every tab plus gallery, progress, results, and required resolution/scaling cases.
 
-## Verification
+## Phase 2 verification
 
-- **190/190 tests pass**, zero failures. Local result: `tests/YfmCompanion.Tests/TestResults/phase1-final.trx` (ignored generated output).
-- **13/13 legacy regression probes pass**. Local evidence: `tmp/optimizer-update-legacy-audit.json`. Its historical phase/baseline/release labels do not refer to this update's Phase 4.
-- Full solution Release build passed with **0 warnings and 0 errors** using `--artifacts-path tmp/phase1-isolated-build`.
-- Normal-output build initially failed because the already running companion held files under `tools/YfmCompanion.UiRender/bin`. It was not killed. The isolated build verified all solution projects without overwriting that active copy.
-- Formatting verification and Git whitespace checks pass.
-- Independent physical-hand and quantity-vector oracles, 105-deck proof enumeration, purchase-budget proof winners, 658008 accounting, comparator transitivity, cached/uncached equivalence, scratch reset, frozen inputs, rejected incompatible/corrupt checkpoints, immediate pause, partial-leaf resume and incumbent restart recovery all pass.
-- Final synthetic 48-case matrix: **42 complete / 6 clean diagnostic cancellations**, versus baseline **14 / 34**. Two-second cutoff; maximum final progress gap **258 ms**, maximum cancellation overrun **21 ms**. Evidence: `docs/benchmarks/optimizer-gate-matrix.json`.
-- Latest 60-second Balanced/live run: **68 successful active-duel reads**, no errors, no overlap; first progress **46.6 ms**, first legal deck **994 ms**, max progress gap **752 ms**, two exact finalists and **658008** hands. Evidence: `optimizer-reuse-live-balanced.json`.
-- Full 900-second Thorough run: **908 successful active-duel reads**, no errors/overlap, eight verification starts and an exact 658008-hand winner. It predates the final cache/report refinements; those are covered by the later Balanced run, gate matrix and final regressions. Evidence: `optimizer-live-thorough.json`.
-- Profiled Balanced allocation decreased from **33.77 GB to 11.43 GB cumulatively**, while candidates examined increased from **145172 to 404580**. This is allocation volume across a minute, not RAM retained. Latest recorded process peak ~213.1 MiB and accounted cache ~228.2 MiB / 256 MiB. Cold diverse-hand allocation remains higher than pristine baseline; do not promise universal speedups or zero memory tradeoffs.
-- Read `docs/benchmarks/README.md` for reproducible commands, all intermediate measurements and limitations; `docs/benchmarks/phase1-gate.json` records the gate and audited source hashes.
+- `dotnet test YfmFusionCompanion.sln --no-restore`: **194 passed, 0 failed, 0 skipped**.
+- `dotnet build YfmFusionCompanion.sln --no-restore -warnaserror`: **0 warnings, 0 errors**.
+- `dotnet format YfmFusionCompanion.sln --no-restore --verify-no-changes`: passed.
+- Final synthetic UI audit: busy state **75 ms**; first legal candidate **1,258 ms**; pause **592 ms**; stop **551 ms**; 40 forward keyboard-focus visits; 15 screenshots.
+- UI evidence covers 1366×768 and 1920×1080 at 125%, 150%, and 200% scaling. Constrained high-DPI layouts expose deliberate scrolling rather than making controls unreachable.
+- Automated save tests cover renamed files, newest-valid selection, newer-corrupt rejection, pinned/manual modes, stale retention, empty-deck chest preservation, and chest-plus-deck ownership.
+- Gate report and machine-readable evidence: `docs/audit/PHASE2_GATE.md` and `docs/audit/phase2-ui/ui-audit.json`.
 
-## Remaining work / boundaries
+## Remaining work / Phase 3 boundaries
 
-- **No known critical Phase 1 gate failure remains.** Independent review still belongs to Phase 3 and may return defects to this phase.
-- Phase 2 must integrate the new job API and actual progress panel, shared newest-save discovery, owned-only virtualized gallery, artwork fallback/cache, manual collection workflows and all-tab redesign.
-- Preserve Compact Live width/unrestricted resizing, result name, ATK, numeric / F(X) routes and compact guardian advice. Do not add material-name routes or galleries there.
-- Timed pause is in-memory on the same job instance; only proof checkpoints support restart across application exits. Explain this explicitly.
-- Estimates, exact statistics and global proof are different. Modeled opponent safety is not a duel-win probability. Large proof spaces can be impractical.
-- No WPF redesign screenshots, multi-DPI review, installed UI progress test, release packaging or public-download validation is claimed by this engine gate.
-- The independent Phase 3 review must use GPT-6 Astra xhigh; release Phase 4 must use GPT-5.6 Luna Medium after that audit passes.
+- Independently inspect the implementation rather than accepting the Phase 1/2 completion claims. Reproduce proof-mode small-case enumeration, comparator transitivity, exact/sample labels, cache equivalence, ownership/copy/purchase/redemption limits, and fusion/field-first/equip regressions.
+- Exercise automatic newest save, manual pinning, renamed/missing/corrupt/partial saves, empty deck, stale data, and save changes during a live optimization. Use real save/live environments where available and identify any unavailable coverage explicitly.
+- Challenge progress and cancellation during preparation, search, purchase work, exact verification, proof pause/resume/restart, failures, and cache reuse. Publish before/after benchmark results without claiming a universal speedup.
+- Review every redesigned tab in empty, populated, loading, error, and completed states; verify keyboard navigation, optional artwork, gallery virtualization, scaling, selection/scroll preservation, and Compact Live behavior.
+- Fix any failure in the phase responsible for it and rerun affected gates. Do not begin release packaging until Phase 3 passes.
+- Phase 4 remains assigned to GPT-5.6 Luna Medium after the independent audit, for documentation, packaging, publication, independent download/checksum/extraction, and clean-package smoke testing.
 
 ## Process and workspace state
 
-- No agent-started optimizer job, proof search, benchmark or live polling loop remains running. Test proof checkpoints were synthetic and cleaned up by the tests.
-- Existing companion/RetroArch windows were not closed or controlled. The user's newly appearing `.vs/` directory is left untouched and untracked, not included in the implementation commit.
-- No new subagents were started. Earlier delegated tasks had been interrupted before editing.
-- Usage-limit telemetry is unavailable through the exposed tools; no quota check is claimed.
+- No agent-started optimizer, proof search, benchmark, UI audit, or live polling process remains running.
+- Existing companion and RetroArch windows were not closed or controlled.
+- The user's `.vs/` directory remains untouched and untracked. A duplicate local `/phase2-ui/` generated during audit development is ignored; the committed synthetic evidence is under `docs/audit/phase2-ui/`.
+- No personal save, artwork, or absolute personal save path is committed in the audit evidence.
+- No subagents were started.
