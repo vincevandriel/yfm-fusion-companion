@@ -20,5 +20,6 @@
     <Compile Include="..\..\src\YfmCompanion.Desktop\CompactLivePresentation.cs" Link="CompactLivePresentation.cs" />
     <Compile Include="..\..\src\YfmCompanion.Desktop\DesktopSettings.cs" Link="DesktopSettings.cs" />
     <Compile Include="..\..\src\YfmCompanion.Desktop\LocalDiagnosticLog.cs" Link="LocalDiagnosticLog.cs" />
+    <Compile Include="..\..\src\YfmCompanion.Desktop\OptimizerProgressPresentation.cs" Link="OptimizerProgressPresentation.cs" />
   </ItemGroup>
 </Project>

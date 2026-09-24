@@ -1,7 +1,9 @@
 using System.ComponentModel;
 using System.Globalization;
 using System.IO;
+using System.Security.Cryptography;
 using System.Text;
+using System.Text.Json;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -23,20 +25,36 @@ public partial class MainWindow : Window
     private readonly List<CardPicker> _spellPickers = [];
     private readonly List<CardPicker> _deckPickers = [];
     private readonly List<OwnedCardRow> _ownedCardRows = [];
+    private CardPicker? _ownedAddPicker;
     private readonly DispatcherTimer _liveTimer = new() { Interval = TimeSpan.FromSeconds(1) };
+    private readonly DispatcherTimer _saveWatchTimer = new() { Interval = TimeSpan.FromSeconds(15) };
+    private readonly DispatcherTimer _saveDebounceTimer = new() { Interval = TimeSpan.FromMilliseconds(400) };
+    private readonly List<FileSystemWatcher> _saveWatchers = [];
     private readonly CancellationTokenSource _windowCancellation = new();
     private readonly LocalDiagnosticLog _diagnostics = new();
+    private readonly CollectionSnapshotService _collectionService = new();
+    private readonly ThumbnailCache _thumbnailCache = new();
+    private readonly List<string> _knownSaveLocations = [];
+    private readonly Dictionary<int, string> _artworkOverrides = [];
     private IReadOnlyList<OwnedCardRow> _visibleOwnedCardRows = [];
     private FusionCatalog? _catalog;
     private TacticalFusionPlanner? _planner;
     private DeckAnalyzer? _deckAnalyzer;
-    private OwnedDeckOptimizer? _ownedDeckOptimizer;
-    private ForbiddenMemoriesStrategyEvaluator? _strategyEvaluator;
     private CampaignResearchData? _campaignResearchData;
-    private CampaignDeckOptimizer? _campaignDeckOptimizer;
+    private CampaignOptimizationContextBuilder? _campaignContextBuilder;
+    private CampaignOptimizationContext? _activeCampaignContext;
     private CancellationTokenSource? _deckAnalysisCancellation;
-    private CancellationTokenSource? _optimizationCancellation;
+    private DeckBuildJob? _deckBuildJob;
+    private DeckBuildResult? _lastDeckBuildResult;
+    private long _deckBuildGeneration;
+    private string? _lastPreviewKey;
     private SaveSnapshot? _saveSnapshot;
+    private CollectionSnapshot? _collectionSnapshot;
+    private CollectionSnapshot? _pendingCollectionSnapshot;
+    private CollectionSourceMode _collectionSourceMode = CollectionSourceMode.AutomaticNewest;
+    private string? _artworkFolder;
+    private bool _collectionRefreshInProgress;
+    private bool _suppressManualCollectionChange;
     private RetroArchNetworkClient? _liveClient;
     private ForbiddenMemoriesLiveReader? _liveReader;
     private bool _liveReadInProgress;
@@ -59,6 +77,8 @@ public partial class MainWindow : Window
         Closing += MainWindow_Closing;
         Closed += MainWindow_Closed;
         _liveTimer.Tick += LiveTimer_Tick;
+        _saveWatchTimer.Tick += SaveWatchTimer_Tick;
+        _saveDebounceTimer.Tick += SaveDebounceTimer_Tick;
     }
 
     private async void MainWindow_Loaded(object sender, RoutedEventArgs e)
@@ -88,12 +108,10 @@ public partial class MainWindow : Window
 
         try
         {
-            if (!await TryLoadRememberedSaveAsync())
-            {
-                await RefreshSaveSnapshotAsync(silentWhenNone: true);
-            }
+            await RefreshCollectionAsync(silentWhenNone: true);
             await RefreshLiveAsync();
             _liveTimer.Start();
+            _saveWatchTimer.Start();
         }
         catch (OperationCanceledException) when (_windowCancellation.IsCancellationRequested)
         {
@@ -129,8 +147,6 @@ public partial class MainWindow : Window
         _catalog = FusionCatalog.Load(databasePath);
         _planner = new TacticalFusionPlanner(_catalog);
         _deckAnalyzer = new DeckAnalyzer(_catalog);
-        _ownedDeckOptimizer = new OwnedDeckOptimizer(_catalog);
-        _strategyEvaluator = new ForbiddenMemoriesStrategyEvaluator(_catalog);
         var search = new CardSearchService(_catalog.Cards);
         AddPickers(HandPickerPanel, _handPickers, "Hand", search);
         AddPickers(MonsterPickerPanel, _monsterPickers, "Monster", search);
@@ -148,7 +164,7 @@ public partial class MainWindow : Window
     private void MainWindow_Closing(object? sender, CancelEventArgs e)
     {
         _deckAnalysisCancellation?.Cancel();
-        _optimizationCancellation?.Cancel();
+        _deckBuildJob?.StopAndKeepBest();
         _windowCancellation.Cancel();
         SaveDesktopSettings();
     }
@@ -156,6 +172,9 @@ public partial class MainWindow : Window
     private void MainWindow_Closed(object? sender, EventArgs e)
     {
         _liveTimer.Stop();
+        _saveWatchTimer.Stop();
+        _saveDebounceTimer.Stop();
+        foreach (var watcher in _saveWatchers) watcher.Dispose();
         _liveClient?.Dispose();
         _windowCancellation.Dispose();
     }
@@ -164,6 +183,10 @@ public partial class MainWindow : Window
     {
         var settings = DesktopSettingsStore.Load();
         _lastSavePath = settings.LastSavePath;
+        _collectionSourceMode = settings.CollectionSourceMode;
+        _knownSaveLocations.AddRange(settings.KnownSaveLocations ?? []);
+        _artworkFolder = settings.ArtworkFolder;
+        foreach (var pair in settings.ArtworkOverrides ?? new Dictionary<int, string>()) _artworkOverrides[pair.Key] = pair.Value;
         AlwaysOnTopCheckBox.IsChecked = settings.AlwaysOnTop;
         CompactTopmostCheckBox.IsChecked = settings.AlwaysOnTop;
         Topmost = settings.AlwaysOnTop;
@@ -210,37 +233,15 @@ public partial class MainWindow : Window
                 WindowState == WindowState.Maximized,
                 Topmost,
                 _compactMode,
-                _lastSavePath));
+                _lastSavePath,
+                _collectionSourceMode,
+                _knownSaveLocations,
+                _artworkFolder,
+                _artworkOverrides));
         }
         catch (Exception exception)
         {
             _diagnostics.Add("Preferences", "Save failed", exception.Message);
-        }
-    }
-
-    private async Task<bool> TryLoadRememberedSaveAsync()
-    {
-        if (string.IsNullOrWhiteSpace(_lastSavePath) || !File.Exists(_lastSavePath))
-        {
-            return false;
-        }
-
-        try
-        {
-            var inspection = await Task.Run(() => Ps1MemoryCardReader.Inspect(_lastSavePath));
-            if (inspection.Snapshot is null)
-            {
-                _diagnostics.Add("Saved snapshot", "Remembered path unavailable", inspection.Error ?? "Validation failed.");
-                return false;
-            }
-
-            ShowSaveSnapshot(inspection.Snapshot);
-            return true;
-        }
-        catch (Exception exception)
-        {
-            _diagnostics.Add("Saved snapshot", "Remembered path failed", exception.Message);
-            return false;
         }
     }
 
@@ -538,9 +539,24 @@ public partial class MainWindow : Window
         };
         PreferredFieldCombo.SelectedIndex = 0;
 
-        _ownedCardRows.AddRange(catalog.Cards.Select(card => new OwnedCardRow(card)));
-        _visibleOwnedCardRows = _ownedCardRows;
-        OwnedCardsGrid.ItemsSource = _visibleOwnedCardRows;
+        OptimizerSpeedCombo.ItemsSource = new[]
+        {
+            new SearchModeChoice(DeckSearchMode.Quick, "Quick • 5 seconds"),
+            new SearchModeChoice(DeckSearchMode.Balanced, "Balanced • 1 minute"),
+            new SearchModeChoice(DeckSearchMode.Thorough, "Thorough • 15 minutes")
+        };
+        OptimizerSpeedCombo.SelectedIndex = 1;
+        OwnedTypeFilterCombo.ItemsSource = new[] { "All types" }.Concat(catalog.Cards.Select(card => card.PrimaryType).Distinct().Order()).ToArray();
+        OwnedTypeFilterCombo.SelectedIndex = 0;
+        OwnedSortCombo.ItemsSource = new[] { "Name", "Quantity", "ATK", "In proposed deck" };
+        OwnedSortCombo.SelectedIndex = 0;
+        _ownedAddPicker = new CardPicker();
+        _ownedAddPicker.Configure("Add owned card", new CardSearchService(catalog.Cards));
+        _ownedAddPicker.AdvanceRequested += (_, _) => AddOwnedCard();
+        OwnedAddPickerPanel.Children.Add(_ownedAddPicker);
+        _ownedCardRows.AddRange(catalog.Cards.Select(card => new OwnedCardRow(card, OwnedQuantityChanged)));
+        foreach (var row in _ownedCardRows) row.RefreshArtwork(_artworkFolder, _thumbnailCache, _artworkOverrides.GetValueOrDefault(row.Card.Id));
+        RefreshOwnedGallery();
     }
 
     private void InitializeCampaignOptimizer(FusionCatalog catalog)
@@ -548,7 +564,7 @@ public partial class MainWindow : Window
         try
         {
             _campaignResearchData = CampaignResearchData.LoadBundled(AppContext.BaseDirectory);
-            _campaignDeckOptimizer = new CampaignDeckOptimizer(catalog, _campaignResearchData);
+            _campaignContextBuilder = new CampaignOptimizationContextBuilder(catalog, _campaignResearchData);
             CampaignScopeCombo.ItemsSource = new[]
             {
                 new CampaignScopeChoice(OptimizerGoal.GeneralCampaign, "General campaign • recommended", "Builds a general-purpose deck for the 33 normal campaign opponents. Near-equal choices favor final-gauntlet viability."),
@@ -564,7 +580,7 @@ public partial class MainWindow : Window
         catch (Exception exception)
         {
             _campaignResearchData = null;
-            _campaignDeckOptimizer = null;
+            _campaignContextBuilder = null;
             CampaignScopeCombo.IsEnabled = false;
             CampaignOpponentCombo.IsEnabled = false;
             UseSavedStarChipsCheckBox.IsEnabled = false;
@@ -610,7 +626,7 @@ public partial class MainWindow : Window
         var goal = CampaignScopeCombo.SelectedValue is OptimizerGoal selectedGoal
             ? selectedGoal
             : OptimizerGoal.GeneralCampaign;
-        var isCampaignGoal = goal != OptimizerGoal.ManualCustom && _campaignDeckOptimizer is not null;
+        var isCampaignGoal = goal != OptimizerGoal.ManualCustom && _campaignContextBuilder is not null;
         var hasSavedBudget = _saveSnapshot?.StarChips is not null;
         var choosingSpecificOpponent = goal == OptimizerGoal.SpecificOpponent && isCampaignGoal;
         CampaignOpponentCombo.Visibility = choosingSpecificOpponent ? Visibility.Visible : Visibility.Collapsed;
@@ -945,42 +961,101 @@ public partial class MainWindow : Window
 
     private async Task<SaveSnapshot?> ReadCurrentSaveSnapshotAsync()
     {
-        if (!string.IsNullOrWhiteSpace(_lastSavePath) && File.Exists(_lastSavePath))
+        if (_collectionSourceMode == CollectionSourceMode.Manual)
         {
-            var rememberedInspection = await Task.Run(() => Ps1MemoryCardReader.Inspect(_lastSavePath));
-            if (rememberedInspection.Snapshot is not null)
-            {
-                return rememberedInspection.Snapshot;
-            }
+            return await ReadNewestSaveWithoutChangingCollectionAsync();
         }
-
-        var discovery = await Task.Run(() => RetroArchSaveLocator.Discover());
-        return discovery.SelectedSnapshot;
+        await RefreshCollectionAsync(silentWhenNone: true);
+        return _collectionSnapshot?.Save;
     }
 
-    private async void RefreshSaveSnapshot_Click(object sender, RoutedEventArgs e) =>
+    private async void RefreshSaveSnapshot_Click(object sender, RoutedEventArgs e)
+    {
+        if (_collectionSourceMode == CollectionSourceMode.Manual)
+        {
+            var snapshot = await ReadNewestSaveWithoutChangingCollectionAsync();
+            if (snapshot is not null) ShowSaveSnapshot(snapshot);
+            return;
+        }
         await RefreshSaveSnapshotAsync(silentWhenNone: false);
+    }
+
+    private async Task<SaveSnapshot?> ReadNewestSaveWithoutChangingCollectionAsync()
+    {
+        var known = _knownSaveLocations.Concat(string.IsNullOrWhiteSpace(_lastSavePath) ? [] : new[] { _lastSavePath! });
+        var result = await _collectionService.RefreshAsync(CollectionSourceMode.AutomaticNewest, null, known, cancellationToken: _windowCancellation.Token);
+        if (result.Snapshot is null)
+        {
+            SaveSnapshotStatus.Text = result.Message;
+            return null;
+        }
+        SaveSnapshotStatus.Text = result.Message;
+        return result.Snapshot.Save;
+    }
 
     private async Task RefreshSaveSnapshotAsync(bool silentWhenNone)
+        => await RefreshCollectionAsync(silentWhenNone);
+
+    private async Task RefreshCollectionAsync(bool silentWhenNone)
     {
+        if (_collectionRefreshInProgress || _collectionSourceMode == CollectionSourceMode.Manual)
+        {
+            return;
+        }
+
+        _collectionRefreshInProgress = true;
         RefreshSaveButton.IsEnabled = false;
-        SaveSnapshotStatus.Text = "Refreshing from RetroArch's configured SwanStation memory-card folder…";
+        SaveSnapshotStatus.Text = _collectionSourceMode == CollectionSourceMode.PinnedFile
+            ? "Refreshing the selected save file…"
+            : "Finding the newest validated Forbidden Memories save…";
         try
         {
-            var discovery = await Task.Run(() => RetroArchSaveLocator.Discover());
-            if (discovery.SelectedSnapshot is not null)
+            var known = _knownSaveLocations
+                .Concat(string.IsNullOrWhiteSpace(_lastSavePath) ? [] : new[] { _lastSavePath! })
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .ToArray();
+            var result = await _collectionService.RefreshAsync(
+                _collectionSourceMode,
+                _collectionSourceMode == CollectionSourceMode.PinnedFile ? _lastSavePath : null,
+                known,
+                _collectionSnapshot,
+                _windowCancellation.Token);
+            if (result.Snapshot is not null)
             {
-                ShowSaveSnapshot(discovery.SelectedSnapshot);
+                if (_collectionSnapshot is { IsStale: false } current &&
+                    current.ContentIdentity == result.Snapshot.ContentIdentity &&
+                    current.Save.FilePath.Equals(result.Snapshot.Save.FilePath, StringComparison.OrdinalIgnoreCase))
+                {
+                    SaveSnapshotStatus.Text = $"Up to date • {Path.GetFileName(current.Save.FilePath)} remains the newest validated save.";
+                    return;
+                }
+                if (_deckBuildJob is { State: DeckBuildState.Preparing or DeckBuildState.Searching or DeckBuildState.Verifying or DeckBuildState.Pausing } &&
+                    _collectionSnapshot is not null && result.Snapshot.ContentIdentity != _collectionSnapshot.ContentIdentity)
+                {
+                    _pendingCollectionSnapshot = result.Snapshot;
+                    OptimizerSourceSummary.Text = "New save available. It will be applied when the current build stops or completes.";
+                    return;
+                }
+
+                ApplyCollectionSnapshot(result.Snapshot);
+                if (result.Message.Contains("Warning:", StringComparison.Ordinal))
+                {
+                    OptimizerSourceSummary.Text += $" • {result.Message[(result.Message.IndexOf("Warning:", StringComparison.Ordinal))..]}";
+                    SaveSnapshotStatus.Text = result.Message;
+                }
+                if (result.Snapshot.IsStale)
+                {
+                    SaveSnapshotStatus.Text = result.Message;
+                }
                 return;
             }
 
-            var failureDetails = discovery.Inspections.Count == 0
-                ? "No Forbidden Memories .srm or .mcr files were found in the configured RetroArch save folder."
-                : string.Join(" • ", discovery.Inspections.Select(result => $"{Path.GetFileName(result.FilePath)}: {result.Error}"));
             SaveSnapshotStatus.Text = silentWhenNone
                 ? "No valid saved snapshot was found in RetroArch's save folder; manual entry and file selection remain available."
-                : failureDetails;
-            _diagnostics.Add("Saved snapshot", "Refresh unavailable", failureDetails);
+                : result.Message;
+            OptimizerSourceTitle.Text = "NO SUPPORTED SAVE FOUND";
+            OptimizerSourceSummary.Text = "Choose a save file or enter owned cards manually.";
+            _diagnostics.Add("Saved snapshot", "Refresh unavailable", result.Message);
         }
         catch (Exception exception)
         {
@@ -990,6 +1065,64 @@ public partial class MainWindow : Window
         finally
         {
             RefreshSaveButton.IsEnabled = true;
+            _collectionRefreshInProgress = false;
+        }
+    }
+
+    private async void SaveWatchTimer_Tick(object? sender, EventArgs e)
+    {
+        if (_collectionSourceMode != CollectionSourceMode.Manual)
+        {
+            await RefreshCollectionAsync(silentWhenNone: true);
+        }
+    }
+
+    private async void SaveDebounceTimer_Tick(object? sender, EventArgs e)
+    {
+        _saveDebounceTimer.Stop();
+        if (_collectionSourceMode != CollectionSourceMode.Manual)
+            await RefreshCollectionAsync(silentWhenNone: true);
+    }
+
+    private void SaveFolderChanged(object sender, FileSystemEventArgs e)
+    {
+        if (!new[] { ".srm", ".mcr" }.Contains(Path.GetExtension(e.FullPath), StringComparer.OrdinalIgnoreCase)) return;
+        Dispatcher.BeginInvoke(() =>
+        {
+            _saveDebounceTimer.Stop();
+            _saveDebounceTimer.Start();
+        });
+    }
+
+    private void ConfigureSaveWatchers(string selectedFile)
+    {
+        foreach (var watcher in _saveWatchers) watcher.Dispose();
+        _saveWatchers.Clear();
+        var directories = _knownSaveLocations
+            .Concat(new[] { Path.GetDirectoryName(selectedFile)! })
+            .Select(path => File.Exists(path) ? Path.GetDirectoryName(path)! : path)
+            .Where(Directory.Exists)
+            .Distinct(StringComparer.OrdinalIgnoreCase);
+        foreach (var directory in directories)
+        {
+            try
+            {
+                var watcher = new FileSystemWatcher(directory)
+                {
+                    IncludeSubdirectories = true,
+                    NotifyFilter = NotifyFilters.FileName | NotifyFilters.LastWrite | NotifyFilters.Size,
+                    EnableRaisingEvents = true
+                };
+                watcher.Changed += SaveFolderChanged;
+                watcher.Created += SaveFolderChanged;
+                watcher.Renamed += SaveFolderChanged;
+                watcher.Deleted += SaveFolderChanged;
+                _saveWatchers.Add(watcher);
+            }
+            catch (Exception error) when (error is IOException or UnauthorizedAccessException)
+            {
+                _diagnostics.Add("Save watcher", "Folder unavailable", $"{directory}: {error.Message}");
+            }
         }
     }
 
@@ -1012,16 +1145,59 @@ public partial class MainWindow : Window
             return;
         }
 
-        SaveSnapshotStatus.Text = "Reading the selected memory-card file…";
-        var inspection = await Task.Run(() => Ps1MemoryCardReader.Inspect(dialog.FileName));
-        if (inspection.Snapshot is null)
+        _collectionSourceMode = CollectionSourceMode.PinnedFile;
+        _lastSavePath = dialog.FileName;
+        var directory = Path.GetDirectoryName(dialog.FileName);
+        if (!string.IsNullOrWhiteSpace(directory) && !_knownSaveLocations.Contains(directory, StringComparer.OrdinalIgnoreCase))
         {
-            SaveSnapshotStatus.Text = $"The selected file was not imported: {inspection.Error}";
-            _diagnostics.Add("Saved snapshot", "Import rejected", inspection.Error ?? "Validation failed.");
-            return;
+            _knownSaveLocations.Add(directory);
         }
+        await RefreshCollectionAsync(silentWhenNone: false);
+    }
 
-        ShowSaveSnapshot(inspection.Snapshot);
+    private async void UseAutomaticSave_Click(object sender, RoutedEventArgs e)
+    {
+        _collectionSourceMode = CollectionSourceMode.AutomaticNewest;
+        await RefreshCollectionAsync(silentWhenNone: false);
+    }
+
+    private void UseManualCollection_Click(object sender, RoutedEventArgs e)
+    {
+        _collectionSourceMode = CollectionSourceMode.Manual;
+        _collectionSnapshot = null;
+        _saveSnapshot = null;
+        OptimizerSourceTitle.Text = "MANUAL COLLECTION";
+        OptimizerSourceSummary.Text = "Automatic saves will not overwrite these quantities. Choose Automatic newest to reconnect.";
+        OptimizationStatus.Text = "Manual collection active. Add cards with autocomplete or edit quantities in the gallery.";
+        RefreshOwnedGallery();
+    }
+
+    private void ApplyCollectionSnapshot(CollectionSnapshot collection)
+    {
+        _collectionSnapshot = collection;
+        ConfigureSaveWatchers(collection.Save.FilePath);
+        ShowSaveSnapshot(collection.Save);
+        _suppressManualCollectionChange = true;
+        try
+        {
+            foreach (var row in _ownedCardRows)
+            {
+                row.ChestCopies = collection.Save.GetChestQuantity(row.Card.Id);
+                row.DeckCopies = collection.Save.GetDeckQuantity(row.Card.Id);
+                row.Quantity = collection.OwnedQuantities[row.Card.Id - 1];
+            }
+        }
+        finally
+        {
+            _suppressManualCollectionChange = false;
+        }
+        OptimizerSourceTitle.Text = collection.IsStale
+            ? "STALE SAVE — RETAINED COLLECTION"
+            : _collectionSourceMode == CollectionSourceMode.PinnedFile ? "SELECTED SAVE FILE" : "AUTOMATIC — NEWEST SAVE";
+        OptimizerSourceSummary.Text = $"{Path.GetFileName(collection.Save.FilePath)} • saved {collection.Save.LastWriteTimeUtc.ToLocalTime():g} • {collection.DistinctOwnedCards:N0} cards / {collection.TotalOwnedCopies:N0} copies • {collection.Save.StarChips?.ToString("N0", CultureInfo.InvariantCulture) ?? "unknown"} Star Chips" +
+            (collection.IsStale ? $" • {collection.StaleReason}" : string.Empty);
+        RefreshOwnedGallery();
+        ResetOptimizerResults();
     }
 
     private void ShowSaveSnapshot(SaveSnapshot snapshot)
@@ -1074,7 +1250,7 @@ public partial class MainWindow : Window
                 snapshot.GetDeckQuantity(card.Id),
                 snapshot.GetTotalOwned(card.Id),
                 snapshot.LibraryCardIds.Contains(card.Id)))
-            .Where(row => row.Total > 0 || row.Seen)
+            .Where(row => row.Total > 0)
             .ToArray();
     }
 
@@ -1085,14 +1261,11 @@ public partial class MainWindow : Window
             return;
         }
 
-        foreach (var row in _ownedCardRows)
+        if (_collectionSnapshot is not null)
         {
-            row.Quantity = _saveSnapshot.GetTotalOwned(row.Card.Id);
+            ApplyCollectionSnapshot(_collectionSnapshot);
         }
-
-        OwnedCardsGrid.Items.Refresh();
-        ResetOptimizerResults();
-        OptimizationStatus.Text = $"Loaded owned quantities from saved snapshot {Path.GetFileName(_saveSnapshot.FilePath)} (chest + constructed deck).";
+        OptimizationStatus.Text = $"Loaded owned quantities from {Path.GetFileName(_saveSnapshot.FilePath)} (chest + constructed deck).";
         WorkspaceTabs.SelectedItem = OwnedOptimizerTab;
     }
 
@@ -1128,13 +1301,20 @@ public partial class MainWindow : Window
 
     private async void OptimizeDeck_Click(object sender, RoutedEventArgs e)
     {
-        if (_ownedDeckOptimizer is null || _optimizationCancellation is not null)
+        if (_catalog is null)
+        {
+            return;
+        }
+        if (_deckBuildJob?.State == DeckBuildState.Paused)
+        {
+            await RunDeckBuildJobAsync(_deckBuildJob, ++_deckBuildGeneration);
+            return;
+        }
+        if (_deckBuildJob is { State: DeckBuildState.Preparing or DeckBuildState.Searching or DeckBuildState.Verifying or DeckBuildState.Pausing })
         {
             return;
         }
 
-        OwnedCardsGrid.CommitEdit(DataGridEditingUnit.Cell, true);
-        OwnedCardsGrid.CommitEdit(DataGridEditingUnit.Row, true);
         var owned = _ownedCardRows
             .Where(row => row.Quantity > 0)
             .Select(row => new OwnedCardQuantity(row.Card.Id, row.Quantity))
@@ -1143,7 +1323,7 @@ public partial class MainWindow : Window
             ? selectedGoal
             : OptimizerGoal.ManualCustom;
         var isCampaignGoal = goal != OptimizerGoal.ManualCustom;
-        if (isCampaignGoal && _campaignDeckOptimizer is null)
+        if (isCampaignGoal && (_campaignResearchData is null || _catalog is null))
         {
             OptimizationStatus.Text = "Campaign research data is unavailable, so this goal cannot be calculated. Choose Manual custom profile or restart with the bundled research data present.";
             return;
@@ -1171,11 +1351,6 @@ public partial class MainWindow : Window
             PreferredFieldCardId: preferredFieldId,
             OpponentMonsterTypes: ParseTypes(OpponentTypesTextBox.Text),
             AlreadyRedeemedCardNames: ParseCardNames(AlreadyRedeemedCardsTextBox.Text));
-        var currentDeck = _deckPickers
-            .Where(picker => picker.SelectedCard is not null)
-            .Select(picker => picker.SelectedCard!.Id)
-            .ToArray();
-        var comparisonDeck = currentDeck.Length == 40 ? currentDeck : null;
         var specificOpponentId = CampaignOpponentCombo.SelectedValue is int selectedOpponentId
             ? selectedOpponentId
             : (int?)null;
@@ -1185,118 +1360,312 @@ public partial class MainWindow : Window
             return;
         }
 
-        SetStateBadge(
-            isCampaignGoal ? "CAMPAIGN PLAN" : "MANUAL",
-            isCampaignGoal ? "#365A86" : "#394B59",
-            isCampaignGoal ? "Campaign-owned-card optimization selected." : "Manual owned-card optimization selected.");
-        var optimizer = _ownedDeckOptimizer;
-        var campaignOptimizer = _campaignDeckOptimizer;
-        _optimizationCancellation = new CancellationTokenSource();
-        var cancellationToken = _optimizationCancellation.Token;
-        OptimizeDeckButton.IsEnabled = false;
-        CancelOptimizationButton.IsEnabled = true;
-        ResetOptimizerResults();
-        var progress = new Progress<DeckOptimizationProgress>(value =>
-        {
-            OptimizationStatus.Text = value.Total == 0
-                ? value.Stage
-                : string.Create(CultureInfo.InvariantCulture, $"{value.Stage} • {value.Completed:N0}/{value.Total:N0} • {value.Fraction:P0}");
-        });
-
         try
         {
+            _activeCampaignContext = null;
             if (isCampaignGoal)
             {
-                var campaignPlan = await Task.Run(
-                    () => campaignOptimizer!.Optimize(
-                        owned,
-                        starChips,
-                        useSavedStarChips,
-                        ToCampaignOpponentScope(goal),
-                        specificOpponentId,
-                        options,
-                        comparisonDeck,
-                        progress,
-                        cancellationToken),
-                    cancellationToken);
-                ShowOptimizationReport(campaignPlan.DeckPlan.ResultingDeck);
-                ShowCampaignPlan(campaignPlan);
+                OptimizationStatus.Text = "Preparing modeled opponent threats…";
+                var builder = _campaignContextBuilder!;
+                var context = await Task.Run(() => builder.Build(ToCampaignOpponentScope(goal), specificOpponentId));
+                _activeCampaignContext = context;
+                var secondary = goal == OptimizerGoal.GeneralCampaign
+                    ? await Task.Run(() => builder.Build(CampaignOpponentScope.FinalGauntlet).Safety)
+                    : null;
+                options = options with
+                {
+                    OpponentMonsterTypes = context.Safety.OpponentMonsterTypes,
+                    SafetyContext = context.Safety with { ActiveFieldCardId = preferredFieldId },
+                    SecondarySafetyContext = secondary is null ? null : secondary with { ActiveFieldCardId = preferredFieldId }
+                };
             }
-            else
+
+            var mode = ProveOptimalCheckBox.IsChecked == true
+                ? DeckSearchMode.ProveOptimal
+                : OptimizerSpeedCombo.SelectedValue is DeckSearchMode selectedMode ? selectedMode : DeckSearchMode.Balanced;
+            var sourceIdentity = _collectionSnapshot?.ContentIdentity ?? ManualCollectionIdentity();
+            var request = new DeckBuildRequest(owned, options, mode, useSavedStarChips, starChips, sourceIdentity);
+            string? checkpoint = mode == DeckSearchMode.ProveOptimal
+                ? Path.Combine(DesktopSettingsStore.SettingsDirectory, "proof-checkpoints", $"{RequestCheckpointIdentity(request)}.json")
+                : null;
+            if (mode == DeckSearchMode.ProveOptimal)
             {
-                var report = await Task.Run(
-                    () => optimizer!.Optimize(owned, options, comparisonDeck, progress, cancellationToken),
-                    cancellationToken);
-                ShowOptimizationReport(report);
+                OptimizationStatus.Text = "Measuring the proof search space…";
+                var preview = await DeckProofPreflight.PreviewAsync(_catalog, request);
+                var estimate = preview.UnprunedWorkLowMilliseconds is null
+                    ? "No reliable duration estimate is available."
+                    : $"Unpruned measured range: {FormatMilliseconds(preview.UnprunedWorkLowMilliseconds.Value)} to {FormatMilliseconds(preview.UnprunedWorkHighMilliseconds!.Value)}; pruning may reduce it.";
+                if (MessageBox.Show(this,
+                    $"Proof mode will enumerate {preview.CapacityVectors:N0} capacity-bounded deck vectors. {estimate}\n\nYou can pause or stop and keep the best completed deck.",
+                    "Start proof search?", MessageBoxButton.OKCancel, MessageBoxImage.Information) != MessageBoxResult.OK)
+                {
+                    OptimizationStatus.Text = "Proof search not started.";
+                    return;
+                }
             }
-        }
-        catch (OperationCanceledException)
-        {
-            OptimizationStatus.Text = "Deck optimization cancelled.";
+
+            var job = new DeckBuildJob(_catalog, request, checkpoint);
+            if (_lastDeckBuildResult is not null)
+            {
+                try { job.AdoptVerifiedIncumbent(_lastDeckBuildResult); }
+                catch (ArgumentException) { /* Inputs or objective changed; do not reuse it. */ }
+            }
+            _deckBuildJob = job;
+            ResetOptimizerResults();
+            await RunDeckBuildJobAsync(job, ++_deckBuildGeneration);
         }
         catch (Exception exception)
         {
             OptimizationStatus.Text = $"Deck optimization failed: {exception.Message}";
+            OptimizationProgressDetail.Text = exception.Message;
+        }
+    }
+
+    private async Task RunDeckBuildJobAsync(DeckBuildJob job, long generation)
+    {
+        SetOptimizerRunning(true);
+        var progress = new Progress<DeckBuildProgress>(value =>
+        {
+            if (generation != _deckBuildGeneration) return;
+            ShowDeckBuildProgress(value);
+            if (value.Best is not null) ShowBestSoFar(value.Best, value.State);
+        });
+        try
+        {
+            var result = await job.RunAsync(progress, _windowCancellation.Token);
+            if (generation != _deckBuildGeneration) return;
+            _lastDeckBuildResult = result;
+            if (result.Best is not null)
+            {
+                ShowOptimizationReport(result.Best.Report);
+                ShowBestSoFar(result.Best, result.State, result.ProvenOptimal);
+                UpdateProposedCopies(result.Best.Report);
+            }
+            OptimizationProgressBar.IsIndeterminate = false;
+            OptimizationProgressBar.Value = result.State == DeckBuildState.Completed ? 1 : OptimizationProgressBar.Value;
+            OptimizationStageText.Text = result.State == DeckBuildState.Completed ? "PREPARE ✓  SEARCH ✓  VERIFY ✓  READY" : result.State.ToString().ToUpperInvariant();
+            VerifyOptimizationButton.IsEnabled = result.State is DeckBuildState.Completed or DeckBuildState.Cancelled &&
+                                                   result.Best?.Report.ExactAnalysis.IsExact != true;
         }
         finally
         {
-            _optimizationCancellation.Dispose();
-            _optimizationCancellation = null;
-            OptimizeDeckButton.IsEnabled = true;
-            CancelOptimizationButton.IsEnabled = false;
+            SetOptimizerRunning(false);
+            ApplyPendingCollection();
         }
     }
 
-    private void CancelOptimization_Click(object sender, RoutedEventArgs e) =>
-        _optimizationCancellation?.Cancel();
+    private void ShowDeckBuildProgress(DeckBuildProgress value)
+    {
+        var presentation = OptimizerProgressPresenter.Present(value);
+        OptimizationStageText.Text = presentation.Stage;
+        OptimizationProgressBar.IsIndeterminate = presentation.IsIndeterminate;
+        OptimizationProgressBar.Value = presentation.Value;
+        OptimizationProgressDetail.Text = presentation.Detail;
+    }
+
+    private void ShowBestSoFar(DeckBuildCandidate best, DeckBuildState state, bool proven = false)
+    {
+        var analysis = best.Report.ExactAnalysis;
+        var statistics = analysis.TotalHands == 0
+            ? "legal 40-card preview; evaluation pending"
+            : analysis.IsExact
+                ? $"exact {analysis.TotalHands:N0}-hand statistics"
+                : $"estimated from {analysis.TotalHands:N0} sampled hands; sampling uncertainty applies";
+        OptimizationStatus.Text = $"{(proven ? "Proven optimal for this model and inputs" : "Best found")} • {statistics} • {best.Report.TotalCards}/40 cards" +
+            (best.RequiredStarChips > 0 ? $" • {best.RequiredStarChips:N0} Star Chips" : string.Empty) +
+            (state == DeckBuildState.Paused ? " • paused" : string.Empty);
+        var previewKey = string.Join(',', best.Report.Deck.Select(entry => $"{entry.Card.Id}:{entry.Copies}"));
+        if (_lastPreviewKey != previewKey)
+        {
+            _lastPreviewKey = previewKey;
+            OptimizedDeckGrid.ItemsSource = BuildDeckDisplay(best.Report);
+            UpdateProposedCopies(best.Report);
+        }
+    }
+
+    private void SetOptimizerRunning(bool running)
+    {
+        OptimizeDeckButton.IsEnabled = !running;
+        OptimizeDeckButton.Content = _deckBuildJob?.State == DeckBuildState.Paused ? "RESUME" : "IMPROVE DECK";
+        PauseOptimizationButton.IsEnabled = running;
+        StopOptimizationButton.IsEnabled = running;
+        OptimizerSpeedCombo.IsEnabled = !running;
+        ProveOptimalCheckBox.IsEnabled = !running;
+    }
+
+    private void PauseOptimization_Click(object sender, RoutedEventArgs e) => _deckBuildJob?.Pause();
+    private void StopOptimization_Click(object sender, RoutedEventArgs e) => _deckBuildJob?.StopAndKeepBest();
+
+    private async void VerifyOptimization_Click(object sender, RoutedEventArgs e)
+    {
+        if (_deckBuildJob is null) return;
+        SetOptimizerRunning(true);
+        try
+        {
+            var generation = ++_deckBuildGeneration;
+            var result = await _deckBuildJob.VerifyBestAsync(new Progress<DeckBuildProgress>(value =>
+            {
+                if (generation == _deckBuildGeneration) ShowDeckBuildProgress(value);
+            }), _windowCancellation.Token);
+            _lastDeckBuildResult = result;
+            if (result.Best is not null)
+            {
+                ShowOptimizationReport(result.Best.Report);
+                ShowBestSoFar(result.Best, result.State, result.ProvenOptimal);
+                UpdateProposedCopies(result.Best.Report);
+            }
+        }
+        catch (Exception exception) { OptimizationStatus.Text = $"Verification failed: {exception.Message}"; }
+        finally { SetOptimizerRunning(false); ApplyPendingCollection(); }
+    }
 
     private void ClearOwned_Click(object sender, RoutedEventArgs e)
     {
-        _optimizationCancellation?.Cancel();
-        foreach (var row in _ownedCardRows)
-        {
-            row.Quantity = 0;
-        }
-
-        OwnedCardsGrid.Items.Refresh();
+        _deckBuildJob?.StopAndKeepBest();
+        _suppressManualCollectionChange = true;
+        try { foreach (var row in _ownedCardRows) row.Quantity = 0; }
+        finally { _suppressManualCollectionChange = false; }
+        _collectionSourceMode = CollectionSourceMode.Manual;
+        _collectionSnapshot = null;
+        RefreshOwnedGallery();
         ResetOptimizerResults();
-        OptimizationStatus.Text = "Owned quantities cleared.";
-    }
-
-    private void SetVisibleOwned_Click(object sender, RoutedEventArgs e)
-    {
-        foreach (var row in _visibleOwnedCardRows)
-        {
-            row.Quantity = 3;
-        }
-
-        OwnedCardsGrid.Items.Refresh();
-        OptimizationStatus.Text = string.Create(CultureInfo.InvariantCulture, $"Set {_visibleOwnedCardRows.Count:N0} visible cards to three owned copies.");
+        OptimizationStatus.Text = "Owned quantities cleared; manual collection mode is active.";
     }
 
     private void OwnedSearch_TextChanged(object sender, TextChangedEventArgs e)
     {
-        if (OwnedCardsGrid is null)
+        if (OwnedCardsGallery is null)
         {
             return;
         }
+        RefreshOwnedGallery();
+    }
 
-        var query = OwnedSearchBox.Text.Trim();
-        _visibleOwnedCardRows = string.IsNullOrEmpty(query)
-            ? _ownedCardRows
-            : _ownedCardRows
-                .Where(row => row.Card.Name.Contains(query, StringComparison.OrdinalIgnoreCase) ||
-                              row.Card.Id.ToString(CultureInfo.InvariantCulture).StartsWith(query, StringComparison.OrdinalIgnoreCase))
-                .ToArray();
-        OwnedCardsGrid.ItemsSource = _visibleOwnedCardRows;
+    private void OwnedFilter_Changed(object sender, SelectionChangedEventArgs e)
+    {
+        if (IsInitialized) RefreshOwnedGallery();
+    }
+
+    private void OptimizerBody_SizeChanged(object sender, SizeChangedEventArgs e)
+    {
+        var stacked = e.NewSize.Width < 980;
+        OptimizerOwnedColumn.Width = stacked ? new GridLength(1, GridUnitType.Star) : new GridLength(.8, GridUnitType.Star);
+        OptimizerResultColumn.Width = stacked ? new GridLength(0) : new GridLength(1.6, GridUnitType.Star);
+        OptimizerOwnedRow.Height = stacked ? new GridLength(1, GridUnitType.Star) : new GridLength(1, GridUnitType.Star);
+        OptimizerResultRow.Height = stacked ? new GridLength(1.4, GridUnitType.Star) : new GridLength(0);
+        Grid.SetColumn(OptimizerResultPane, stacked ? 0 : 1);
+        Grid.SetRow(OptimizerResultPane, stacked ? 1 : 0);
+    }
+
+    private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
+    {
+        if (FullWorkspaceScroll is null) return;
+        FullWorkspaceScroll.HorizontalScrollBarVisibility = e.NewSize.Width < 1000
+            ? ScrollBarVisibility.Auto
+            : ScrollBarVisibility.Disabled;
     }
 
     private void OwnedCards_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
-        if (OwnedCardsGrid.SelectedItem is OwnedCardRow row)
+        if (OwnedCardsGallery.SelectedItem is OwnedCardRow row)
         {
             ShowInspector(row.Card);
         }
+    }
+
+    private void OwnedQuantityChanged(OwnedCardRow row)
+    {
+        if (_suppressManualCollectionChange) return;
+        _collectionSourceMode = CollectionSourceMode.Manual;
+        _collectionSnapshot = null;
+        OptimizerSourceTitle.Text = "MANUAL COLLECTION";
+        OptimizerSourceSummary.Text = "Edited quantities are protected from automatic save refresh until Automatic newest is selected.";
+        ResetOptimizerResults();
+        RefreshOwnedGallery();
+    }
+
+    private void AddOwnedCard_Click(object sender, RoutedEventArgs e) => AddOwnedCard();
+    private void AddOwnedCard()
+    {
+        if (_ownedAddPicker?.SelectedCard is not { } card) return;
+        var row = _ownedCardRows[card.Id - 1];
+        row.Quantity = Math.Min(99, row.Quantity + 1);
+        _ownedAddPicker.Clear();
+        RefreshOwnedGallery();
+    }
+
+    private void ChooseArtworkFolder_Click(object sender, RoutedEventArgs e)
+    {
+        var dialog = new OpenFolderDialog { Title = "Choose optional card artwork folder", Multiselect = false };
+        if (dialog.ShowDialog(this) != true) return;
+        _artworkFolder = dialog.FolderName;
+        foreach (var row in _ownedCardRows) row.RefreshArtwork(_artworkFolder, _thumbnailCache, _artworkOverrides.GetValueOrDefault(row.Card.Id));
+        OwnedCardsGallery.Items.Refresh();
+    }
+
+    private void AssignSelectedArtwork_Click(object sender, RoutedEventArgs e)
+    {
+        if (OwnedCardsGallery.SelectedItem is not OwnedCardRow row)
+        {
+            OptimizationStatus.Text = "Select an owned card tile before assigning individual artwork.";
+            return;
+        }
+        var dialog = new OpenFileDialog
+        {
+            Title = $"Choose artwork for {row.Card.Name}",
+            Filter = "Card images (*.png;*.jpg;*.jpeg)|*.png;*.jpg;*.jpeg",
+            CheckFileExists = true,
+            Multiselect = false
+        };
+        if (dialog.ShowDialog(this) != true) return;
+        _artworkOverrides[row.Card.Id] = dialog.FileName;
+        row.RefreshArtwork(_artworkFolder, _thumbnailCache, dialog.FileName);
+        OptimizationStatus.Text = $"Assigned local artwork for {row.Card.Name}. The image remains outside the companion and release package.";
+    }
+
+    private void RefreshOwnedGallery()
+    {
+        if (OwnedCardsGallery is null) return;
+        var query = OwnedSearchBox?.Text.Trim() ?? string.Empty;
+        var type = OwnedTypeFilterCombo?.SelectedItem as string;
+        IEnumerable<OwnedCardRow> rows = _ownedCardRows.Where(row => row.Quantity > 0);
+        if (!string.IsNullOrEmpty(query)) rows = rows.Where(row => row.Card.Name.Contains(query, StringComparison.OrdinalIgnoreCase) || row.Card.Id.ToString(CultureInfo.InvariantCulture).StartsWith(query, StringComparison.Ordinal));
+        if (!string.IsNullOrEmpty(type) && type != "All types") rows = rows.Where(row => row.Card.PrimaryType == type);
+        rows = (OwnedSortCombo?.SelectedItem as string) switch
+        {
+            "Quantity" => rows.OrderByDescending(row => row.Quantity).ThenBy(row => row.Card.Name),
+            "ATK" => rows.OrderByDescending(row => row.Card.Attack).ThenBy(row => row.Card.Name),
+            "In proposed deck" => rows.OrderByDescending(row => row.ProposedCopies).ThenBy(row => row.Card.Name),
+            _ => rows.OrderBy(row => row.Card.Name)
+        };
+        _visibleOwnedCardRows = rows.ToArray();
+        OwnedCardsGallery.ItemsSource = _visibleOwnedCardRows;
+        OwnedCollectionCount.Text = $"{_visibleOwnedCardRows.Count:N0} shown • {_ownedCardRows.Count(row => row.Quantity > 0):N0} distinct • {_ownedCardRows.Sum(row => row.Quantity):N0} copies";
+    }
+
+    private void UpdateProposedCopies(DeckOptimizationReport report)
+    {
+        var quantities = report.Deck.ToDictionary(entry => entry.Card.Id, entry => entry.Copies);
+        foreach (var row in _ownedCardRows) row.ProposedCopies = quantities.GetValueOrDefault(row.Card.Id);
+        RefreshOwnedGallery();
+    }
+
+    private string ManualCollectionIdentity()
+    {
+        var text = string.Join(';', _ownedCardRows.Where(row => row.Quantity > 0).Select(row => $"{row.Card.Id}:{row.Quantity}"));
+        return Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(text)));
+    }
+
+    private static string RequestCheckpointIdentity(DeckBuildRequest request) =>
+        Convert.ToHexString(SHA256.HashData(JsonSerializer.SerializeToUtf8Bytes(request)))[..24];
+
+    private void ApplyPendingCollection()
+    {
+        if (_pendingCollectionSnapshot is null) return;
+        var pending = _pendingCollectionSnapshot;
+        _pendingCollectionSnapshot = null;
+        ApplyCollectionSnapshot(pending);
+        OptimizationStatus.Text = "The newer save was applied after the completed/stopped run. Build again to use it.";
     }
 
     private void OptimizerProfile_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -1313,7 +1682,18 @@ public partial class MainWindow : Window
         Optimizer2500Metric.Text = FormatProbability(report.ExactAnalysis.AtLeast2500Probability);
         OptimizerExpectedMetric.Text = report.ExactAnalysis.ExpectedBestFusionAttack.ToString("N0", CultureInfo.InvariantCulture);
         OptimizerDeadMetric.Text = FormatProbability(report.ExactAnalysis.DeadHandProbability);
-        OptimizedDeckGrid.ItemsSource = report.Deck;
+        var displayDeck = BuildDeckDisplay(report);
+        OptimizedDeckGrid.ItemsSource = displayDeck;
+        long cumulative = 0;
+        var startingChips = _saveSnapshot?.StarChips ?? 0;
+        PurchasePlanGrid.ItemsSource = displayDeck.Where(row => row.Purchase > 0).Select(row =>
+        {
+            var unit = row.Card.StarchipCost ?? 0;
+            var total = (long)unit * row.Purchase;
+            cumulative += total;
+            return new CampaignPurchaseRow(row.Card.Name, row.Card.Password ?? "—", row.Purchase, unit, total,
+                cumulative, Math.Max(0, (long)startingChips - cumulative), "Required to supply the proposed copies; nothing is written to the save.");
+        }).ToArray();
         OptimizationTargetsGrid.ItemsSource = report.ImportantTargets.Select(target => new OptimizationTargetRow(
             target.Result,
             target.EffectiveAttack,
@@ -1325,45 +1705,40 @@ public partial class MainWindow : Window
             ? string.Empty
             : string.Create(CultureInfo.InvariantCulture,
                 $" • vs entered 40-card deck: ≥2800 {report.Comparison.AtLeast2800ProbabilityChange:+0.00%;-0.00%;0.00%}, expected ATK {report.Comparison.ExpectedBestAttackChange:+0;-0;0}");
+        var analysisLabel = report.ExactAnalysis.IsExact
+            ? $"exact analysis of {report.ExactAnalysis.TotalHands:N0} hands"
+            : $"estimated from {report.ExactAnalysis.TotalHands:N0} sampled hands; sampling uncertainty applies";
         OptimizationStatus.Text = string.Create(
             CultureInfo.InvariantCulture,
-            $"Complete • exact analysis of {report.ExactAnalysis.TotalHands:N0} hands • {report.TotalCards} cards • seed {report.RandomSeed}{comparison}");
+            $"{analysisLabel} • {report.TotalCards}/40 cards • seed {report.RandomSeed}{comparison}");
+        if (report.SafetyAssessment is not null)
+        {
+            CampaignPlanPanel.Visibility = Visibility.Visible;
+            CampaignScopeSummary.Text = $"{report.SafetyAssessment.Label} • best found unless proof status explicitly says otherwise.";
+            CampaignSafetySummary.Text = $"Modeled answers for {report.SafetyAssessment.SafeOpponentCount:N0}/{report.SafetyAssessment.OpponentCount:N0} opponents • weakest modeled matchup {report.SafetyAssessment.WorstOpponentScore:N0} • opening answer coverage {report.SafetyAssessment.EstimatedOpeningAnswerCoverage:P2}. These are modeled safety scores, not duel-win probabilities.";
+            CampaignPurchaseSummary.Text = displayDeck.Any(row => row.Purchase > 0)
+                ? $"Virtual purchase plan uses {cumulative:N0} of {startingChips:N0} Star Chips. Password redemption history is not stored by the game."
+                : "No purchases required; all proposed copies are owned.";
+            CampaignThreatsGrid.ItemsSource = _activeCampaignContext?.Safety.Threats
+                .OrderByDescending(threat => threat.Attack)
+                .Select(threat => new CampaignThreatRow(threat.OpponentName, threat.ThreatCardName, threat.Attack,
+                    FormatGuardianStars(threat.PossibleGuardianStars), threat.IsFusionThreat ? "Reachable fusion" : "Strongest base monster"))
+                .ToArray();
+        }
     }
 
-    private void ShowCampaignPlan(CampaignDeckPlan campaignPlan)
+    private OptimizedDeckDisplayRow[] BuildDeckDisplay(DeckOptimizationReport report)
     {
-        var report = campaignPlan.DeckPlan.ResultingDeck;
-        CampaignPlanPanel.Visibility = Visibility.Visible;
-        CampaignScopeSummary.Text = $"{campaignPlan.Context.Safety.Label} • Best found; not a proof of global optimality.";
-        var safety = report.SafetyAssessment is null
-            ? "No campaign safety assessment was available."
-            : string.Create(
-                CultureInfo.InvariantCulture,
-                $"Counter coverage score: {report.SafetyAssessment.HeuristicScore:N0} across {report.SafetyAssessment.ThreatCount:N0} concrete threats. This is a heuristic, not a duel-win probability.");
-        var finalGauntlet = report.SecondarySafetyAssessment is null
-            ? string.Empty
-            : string.Create(
-                CultureInfo.InvariantCulture,
-                $" Final-gauntlet tie-break score: {report.SecondarySafetyAssessment.HeuristicScore:N0}.");
-        CampaignSafetySummary.Text = safety + finalGauntlet;
-        CampaignPurchaseSummary.Text = campaignPlan.DeckPlan.StarChipsEnabled
-            ? string.Create(
-                CultureInfo.InvariantCulture,
-                $"Virtual purchase plan: spend {campaignPlan.DeckPlan.SpentStarChips:N0} of {campaignPlan.DeckPlan.StartingStarChips:N0} saved Star Chips; {campaignPlan.DeckPlan.RemainingStarChips:N0} remain. Nothing was written to the save. Password-redemption history is not stored by the game; any names entered above were excluded from this plan.")
-            : "No Star Chips used. This deck was built only from the owned quantities entered or loaded above.";
-        PurchasePlanGrid.ItemsSource = BuildPurchaseRows(campaignPlan.DeckPlan);
-        CampaignThreatsGrid.ItemsSource = campaignPlan.Context.Safety.Threats
-            .OrderByDescending(threat => threat.Attack)
-            .ThenByDescending(threat => threat.Importance)
-            .ThenBy(threat => threat.OpponentName, StringComparer.OrdinalIgnoreCase)
-            .Select(threat => new CampaignThreatRow(
-                threat.OpponentName,
-                threat.ThreatCardName,
-                threat.Attack,
-                FormatGuardianStars(threat.PossibleGuardianStars),
-                threat.IsFusionThreat ? "Reachable fusion" : "Strongest base monster"))
-            .ToArray();
-        OptimizationStatus.Text += " • campaign plan complete; threat ordering and counter scores are guidance, not a guaranteed win rate.";
+        var ownedById = _ownedCardRows.ToDictionary(row => row.Card.Id, row => row.Quantity);
+        return report.Deck.Select(entry =>
+        {
+            var owned = ownedById.GetValueOrDefault(entry.Card.Id);
+            var purchase = Math.Max(0, entry.Copies - owned);
+            var purchaseNote = purchase > 0
+                ? $" Purchase {purchase} for {(long)purchase * (entry.Card.StarchipCost ?? 0):N0} Star Chips."
+                : string.Empty;
+            return new OptimizedDeckDisplayRow(entry.Card, entry.Copies, owned, purchase, entry.ContributionReason + purchaseNote);
+        }).ToArray();
     }
 
     private void ResetOptimizerResults()
@@ -1382,6 +1757,7 @@ public partial class MainWindow : Window
         CampaignScopeSummary.Text = string.Empty;
         CampaignSafetySummary.Text = string.Empty;
         CampaignPurchaseSummary.Text = string.Empty;
+        _lastPreviewKey = null;
     }
 
     private static CampaignOpponentScope ToCampaignOpponentScope(OptimizerGoal goal) => goal switch
@@ -1391,24 +1767,6 @@ public partial class MainWindow : Window
         OptimizerGoal.FinalGauntlet => CampaignOpponentScope.FinalGauntlet,
         _ => throw new ArgumentOutOfRangeException(nameof(goal), "Manual custom mode has no campaign opponent scope.")
     };
-
-    private static CampaignPurchaseRow[] BuildPurchaseRows(StarChipDeckPlan plan)
-    {
-        long cumulativeSpend = 0;
-        return [.. plan.Purchases.Select(purchase =>
-        {
-            cumulativeSpend += purchase.TotalCost;
-            return new CampaignPurchaseRow(
-                purchase.Card.Name,
-                purchase.Card.Password ?? "—",
-                purchase.Copies,
-                purchase.UnitCost,
-                purchase.TotalCost,
-                cumulativeSpend,
-                Math.Max(0, (long)plan.StartingStarChips - cumulativeSpend),
-                purchase.Rationale);
-        })];
-    }
 
     private static string FormatGuardianStars(IReadOnlyList<string> stars) =>
         stars.Count == 0
@@ -1475,6 +1833,12 @@ public partial class MainWindow : Window
     private static string FormatProbability(double probability) =>
         probability.ToString("P2", CultureInfo.InvariantCulture);
 
+    private static string FormatMilliseconds(System.Numerics.BigInteger milliseconds)
+    {
+        var days = (double)System.Numerics.BigInteger.Min(milliseconds, new System.Numerics.BigInteger(long.MaxValue)) / 86_400_000d;
+        return days < 1 ? TimeSpan.FromMilliseconds(Math.Min((double)milliseconds, int.MaxValue)).ToString("g", CultureInfo.InvariantCulture) : $"{days:N1} days";
+    }
+
     private void AlwaysOnTop_Changed(object sender, RoutedEventArgs e)
     {
         if (_synchronizingTopmost || sender is not System.Windows.Controls.CheckBox checkBox)
@@ -1525,8 +1889,8 @@ public partial class MainWindow : Window
         AppHeader.Visibility = compact ? Visibility.Collapsed : Visibility.Visible;
         DatabaseStatus.Visibility = compact ? Visibility.Collapsed : Visibility.Visible;
         RootLayout.Margin = compact ? new Thickness(5) : new Thickness(20);
-        MinWidth = compact ? 0 : 1080;
-        MinHeight = compact ? 0 : 700;
+        MinWidth = compact ? 0 : 620;
+        MinHeight = compact ? 0 : 360;
         if (compact)
         {
             SetStateBadge(_liveBadge, _liveBadgeColor, "Compact live adviser selected.");
@@ -1607,6 +1971,11 @@ public partial class MainWindow : Window
         {
             UpdateBadgeForSelectedWorkspace();
         }
+
+        if (IsLoaded && WorkspaceTabs.SelectedItem == OwnedOptimizerTab && _collectionSourceMode != CollectionSourceMode.Manual)
+        {
+            _ = RefreshCollectionAsync(silentWhenNone: true);
+        }
     }
 
     private void UpdateBadgeForSelectedWorkspace()
@@ -1618,6 +1987,10 @@ public partial class MainWindow : Window
         else if (WorkspaceTabs.SelectedItem == SaveSyncTab)
         {
             SetStateBadge("SAVED SNAPSHOT", "#365A86", "Saved-snapshot workspace selected.");
+        }
+        else if (WorkspaceTabs.SelectedItem == OwnedOptimizerTab)
+        {
+            SetStateBadge(_collectionSourceMode == CollectionSourceMode.Manual ? "MANUAL COLLECTION" : "SAVE COLLECTION", "#365A86", "Owned-card optimizer selected.");
         }
         else
         {
@@ -1757,14 +2130,9 @@ public partial class MainWindow : Window
         string Route,
         bool IsGlitch);
 
-    private sealed class OwnedCardRow(Card card)
-    {
-        public Card Card { get; } = card;
-
-        public int Quantity { get; set; }
-    }
-
     private sealed record ProfileChoice(DeckStrategyProfile Profile, string Label, string Description);
+
+    private sealed record SearchModeChoice(DeckSearchMode Mode, string Label);
 
     private sealed record FieldChoice(int? CardId, string Label);
 
@@ -1785,6 +2153,8 @@ public partial class MainWindow : Window
         int EffectiveAttack,
         string FormattedProbability,
         string Route);
+
+    private sealed record OptimizedDeckDisplayRow(Card Card, int Copies, int Owned, int Purchase, string Reason);
 
     private sealed record CampaignThreatRow(
         string Opponent,

@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Numerics;
+using System.Runtime.CompilerServices;
 using YfmCompanion.Data;
 
 namespace YfmCompanion.Engine;
@@ -27,6 +28,8 @@ public sealed record DeckBuildResult(DeckBuildState State, DeckBuildCandidate? B
 /// <summary>Single-worker frozen job; Pause/Resume retains timed-search state in this instance.</summary>
 public sealed class DeckBuildJob
 {
+    private static readonly ConditionalWeakTable<FusionCatalog, CatalogIdentityBox> CatalogIdentities = new();
+    private static readonly object CatalogIdentityLock = new();
     private readonly FusionCatalog _catalog;
     private readonly DeckBuildRequest _request;
     private readonly DeckObjectiveComparer _comparer;
@@ -150,7 +153,8 @@ public sealed class DeckBuildJob
             progress?.Report(new(_state, stage, _elapsed + elapsed.Elapsed, _searchTime, budget, _candidates,
                 Best(), _verified is null ? null : _estimated, hands, total, remaining)
             {
-                ProofResolvedSpace = proofProgress?.ResolvedSpace, ProofTotalSpace = proofProgress?.TotalSpace,
+                ProofResolvedSpace = proofProgress?.ResolvedSpace,
+                ProofTotalSpace = proofProgress?.TotalSpace,
                 ProofLegalDecksEvaluated = proofProgress?.LegalDecksEvaluated
             });
             lastReport.Restart();
@@ -185,19 +189,25 @@ public sealed class DeckBuildJob
             token.ThrowIfCancellationRequested();
             _space ??= new(_catalog, _request.OwnedCards, _request.Options, _request.UseStarChips, _request.StarChips, token);
             _available = _space.Capacities.Select(c => new OwnedCardQuantity(c.CardId, c.Capacity)).ToArray();
-            _optimizer ??= new(_catalog);
             Report("Inventory and scoring prepared", force: true);
             if (_estimated is null)
             {
                 var seedClock = Stopwatch.StartNew();
                 var seed = _verified is null ? FeasibleSeed(token, p => Report(p.Stage, force: false)) : Expand(_verified);
                 _state = DeckBuildState.Searching;
-                _estimated = Describe(Evaluate(seed, exact: false, token, p => Report(p.Stage, p.CompletedHands, p.TotalHands)));
+                // Make the legal 40-card result visible immediately. Its zero-sample
+                // report is explicitly an unevaluated preview and is replaced before
+                // it can participate in comparisons or finalist selection.
+                _estimated = Preview(seed);
                 _shortlist.Add(_estimated);
                 _candidates++;
                 _searchTime += seedClock.Elapsed;
-                Report("First legal deck found", force: true);
+                Report("First legal deck found; evaluation pending", force: true);
+                _optimizer ??= new(_catalog);
+                _estimated = Describe(Evaluate(seed, exact: false, token, p => Report(p.Stage, p.CompletedHands, p.TotalHands)));
+                _shortlist[0] = _estimated;
             }
+            _optimizer ??= new(_catalog);
 
             _state = DeckBuildState.Searching;
             var search = Stopwatch.StartNew();
@@ -284,16 +294,92 @@ public sealed class DeckBuildJob
             capacity++;
         }
         if (capacity < 40) throw new InvalidOperationException("This collection and eligible affordable purchases cannot supply 40 legal copies.");
-        return _optimizer!.CreateSeedDeck(allowed.Select(p => new OwnedCardQuantity(p.Key, p.Value)), _request.Options, token,
-            new InlineProgress<DeckOptimizationProgress>(progress));
+        progress(new("Preparing first legal deck", 0, 1));
+        // Publish a usable incumbent before the more expensive strategy and
+        // opponent assessments. Search immediately improves this deterministic
+        // connectivity/strength seed under the full shared objective.
+        var fusionDegree = new Dictionary<int, int>();
+        foreach (var pair in _catalog.FusionPairs)
+        {
+            fusionDegree[pair.MaterialLowId] = fusionDegree.GetValueOrDefault(pair.MaterialLowId) + 1;
+            fusionDegree[pair.MaterialHighId] = fusionDegree.GetValueOrDefault(pair.MaterialHighId) + 1;
+        }
+        var seed = allowed
+            .Where(item => item.Value > 0)
+            .OrderByDescending(item => fusionDegree.GetValueOrDefault(item.Key))
+            .ThenByDescending(item => Math.Max(_catalog.GetCard(item.Key).Attack, _catalog.GetCard(item.Key).Defense))
+            .ThenBy(item => item.Key)
+            .SelectMany(item => Enumerable.Repeat(item.Key, item.Value))
+            .Take(40)
+            .Order()
+            .ToArray();
+        if (seed.Length != 40 || !_space.IsLegal(seed, out _))
+            throw new InvalidDataException("The deterministic early deck did not satisfy the frozen legal deck space.");
+        progress(new("Preparing first legal deck", 1, 1));
+        return seed;
     }
 
     private void EnsureCatalogIdentity(CancellationToken token)
     {
         if (_catalogIdentityKnown) return;
-        _identity += $":{DeckProofSearch.CatalogIdentity(_catalog, token)}";
+        if (!CatalogIdentities.TryGetValue(_catalog, out var box))
+        {
+            var computed = DeckProofSearch.CatalogIdentity(_catalog, token);
+            lock (CatalogIdentityLock)
+            {
+                if (!CatalogIdentities.TryGetValue(_catalog, out box))
+                {
+                    box = new CatalogIdentityBox(computed);
+                    CatalogIdentities.Add(_catalog, box);
+                }
+            }
+        }
+        _identity += $":{box.Value}";
         _catalogIdentityKnown = true;
     }
+
+    private sealed record CatalogIdentityBox(string Value);
+
+    private DeckBuildCandidate Preview(int[] deck)
+    {
+        if (!_space!.IsLegal(deck, out var spent)) throw new InvalidDataException("Search produced an illegal deck.");
+        var entries = deck.GroupBy(id => id)
+            .Select(group => new OptimizedDeckEntry(_catalog.GetCard(group.Key), group.Count(), "Evaluation pending"))
+            .ToArray();
+        var analysis = new DeckAnalysisReport(deck.Length, Math.Min(5, deck.Length), 0, 0, 0, 0, 0, 0, 0, [])
+        {
+            IsExact = false,
+            SampleCount = 0
+        };
+        var counts = deck.GroupBy(id => id).ToDictionary(group => group.Key, group => group.Count());
+        var previewTarget = _catalog.FusionPairs
+            .Where(pair => counts.ContainsKey(pair.MaterialLowId) && counts.ContainsKey(pair.MaterialHighId) &&
+                           (pair.MaterialLowId != pair.MaterialHighId || counts[pair.MaterialLowId] >= 2))
+            .Select(pair => new
+            {
+                Pair = pair,
+                Result = _catalog.GetCard(pair.ResultCardId)
+            })
+            .OrderByDescending(item => item.Result.Attack)
+            .ThenByDescending(item => item.Result.Defense)
+            .ThenBy(item => item.Result.Id)
+            .FirstOrDefault();
+        var targets = previewTarget is null
+            ? Array.Empty<OptimizationTarget>()
+            : new[]
+            {
+                new OptimizationTarget(previewTarget.Result, 0, previewTarget.Result.Attack, false,
+                    $"{_catalog.GetCard(previewTarget.Pair.MaterialLowId).Name} + {_catalog.GetCard(previewTarget.Pair.MaterialHighId).Name}")
+            };
+        return new(new(entries, analysis, targets, [], [], null, _request.Options.Profile,
+            _request.Options.RandomSeed, PreviewSafety(_request.Options.SafetyContext),
+            PreviewSafety(_request.Options.SecondarySafetyContext)), spent);
+    }
+
+    private static DeckSafetyAssessment? PreviewSafety(OpponentSafetyContext? context) => context is null
+        ? null
+        : new(context.Label, 0, context.Threats.Count, context.Methodology,
+            OpponentCount: context.OpponentIds.Count);
 
     private DeckBuildCandidate Evaluate(int[] deck, bool exact, CancellationToken token, Action<DeckOptimizationProgress> progress)
     {

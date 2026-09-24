@@ -6,9 +6,10 @@ public static class RetroArchSaveLocator
 {
     private static readonly string[] SupportedExtensions = [".srm", ".mcr"];
 
-    public static SaveDiscoveryResult Discover(string? explicitConfigPath = null)
+    public static SaveDiscoveryResult Discover(string? explicitConfigPath = null,
+        IEnumerable<string>? additionalLocations = null)
     {
-        var paths = FindCandidatePaths(explicitConfigPath);
+        var paths = FindCandidatePaths(explicitConfigPath, additionalLocations);
         var inspections = paths.Select(Ps1MemoryCardReader.Inspect).ToArray();
         var selected = inspections
             .Where(result => result.IsValid)
@@ -19,7 +20,8 @@ public static class RetroArchSaveLocator
         return new SaveDiscoveryResult(inspections, selected);
     }
 
-    public static IReadOnlyList<string> FindCandidatePaths(string? explicitConfigPath = null)
+    public static IReadOnlyList<string> FindCandidatePaths(string? explicitConfigPath = null,
+        IEnumerable<string>? additionalLocations = null)
     {
         var configPaths = FindConfigPaths(explicitConfigPath);
         var saveDirectories = configPaths
@@ -30,13 +32,27 @@ public static class RetroArchSaveLocator
             .Where(Directory.Exists)
             .ToArray();
 
-        return [.. saveDirectories
-            .SelectMany(Directory.EnumerateFiles)
+        var allDirectories = saveDirectories.Concat((additionalLocations ?? [])
+            .Where(path => !string.IsNullOrWhiteSpace(path))
+            .Select(path => File.Exists(path) ? Path.GetDirectoryName(Path.GetFullPath(path))! : Path.GetFullPath(path))
+            .Where(Directory.Exists)).Distinct(StringComparer.OrdinalIgnoreCase).ToArray();
+        var explicitFiles = (additionalLocations ?? []).Where(File.Exists).Select(Path.GetFullPath);
+        return [.. allDirectories
+            .SelectMany(EnumerateSaveFiles)
+            .Concat(explicitFiles)
             .Where(path => SupportedExtensions.Contains(Path.GetExtension(path), StringComparer.OrdinalIgnoreCase))
-            .Where(path => Path.GetFileNameWithoutExtension(path).Contains("Forbidden Memories", StringComparison.OrdinalIgnoreCase))
             .Select(Path.GetFullPath)
             .Distinct(StringComparer.OrdinalIgnoreCase)
             .Order(StringComparer.OrdinalIgnoreCase)];
+    }
+
+    private static IEnumerable<string> EnumerateSaveFiles(string directory)
+    {
+        foreach (var file in Directory.EnumerateFiles(directory)) yield return file;
+        // RetroArch can sort saves by core or content directory. One level covers
+        // those layouts without recursively walking an arbitrary drive.
+        foreach (var child in Directory.EnumerateDirectories(directory))
+            foreach (var file in Directory.EnumerateFiles(child)) yield return file;
     }
 
     public static string? ResolveSaveDirectory(string configPath)

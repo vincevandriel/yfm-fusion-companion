@@ -1,0 +1,11 @@
+{
+  "SyntheticSave": true,
+  "BusyStateMilliseconds": 75.3254,
+  "FirstCandidateMilliseconds": 1258.4686,
+  "PauseResponseMilliseconds": 591.7384,
+  "StopResponseMilliseconds": 551.2383,
+  "KeyboardFocusVisits": 40,
+  "ScreenshotCount": 15,
+  "OptimizerStatus": "Best found \u2022 estimated from 160 sampled hands; sampling uncertainty applies \u2022 40/40 cards",
+  "ProgressDetail": "Stopped; best completed deck retained \u2022 elapsed 0:00:03.2903827 \u2022 4,325 candidates"
+}

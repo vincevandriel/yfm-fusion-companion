@@ -1,21 +1,46 @@
+using System.Runtime.CompilerServices;
 using YfmCompanion.Data;
 
 namespace YfmCompanion.Engine;
 
-public sealed class OwnedDeckOptimizer(FusionCatalog catalog)
+public sealed class OwnedDeckOptimizer
 {
     private const int FirstExodiaPieceId = 17;
     private const int LastExodiaPieceId = 21;
-    private readonly FusionCatalog _catalog = catalog;
+    private static readonly ConditionalWeakTable<FusionCatalog, PreparedHeuristics> SharedHeuristics = new();
+    private static readonly object HeuristicsLock = new();
+    private readonly FusionCatalog _catalog;
     // One combined 256 MiB retained-search-cache budget, including prepared scores.
-    private readonly DeckAnalyzer _analyzer = new(catalog, 224L * 1024 * 1024);
+    private readonly DeckAnalyzer _analyzer;
     private readonly BoundedAnalysisCache _assessmentCache = new(32L * 1024 * 1024);
-    private readonly Dictionary<int, CardHeuristic> _allHeuristics = BuildHeuristics(catalog, includeGlitches: true);
-    private readonly Dictionary<int, CardHeuristic> _intendedHeuristics = BuildHeuristics(catalog, includeGlitches: false);
-    private readonly ForbiddenMemoriesStrategyEvaluator _strategyEvaluator = new(catalog);
+    private readonly Dictionary<int, CardHeuristic> _allHeuristics;
+    private readonly Dictionary<int, CardHeuristic> _intendedHeuristics;
+    private readonly ForbiddenMemoriesStrategyEvaluator _strategyEvaluator;
     private DeckOptimizationOptions? _assessmentOptions;
     private readonly Dictionary<OpponentSafetyContext, string> _contextKeys = new(ReferenceEqualityComparer.Instance);
     private CancellationToken _assessmentToken;
+
+    public OwnedDeckOptimizer(FusionCatalog catalog)
+    {
+        _catalog = catalog;
+        _analyzer = new(catalog, 224L * 1024 * 1024);
+        _strategyEvaluator = new(catalog);
+        if (!SharedHeuristics.TryGetValue(catalog, out var prepared))
+        {
+            var computed = new PreparedHeuristics(BuildHeuristics(catalog, includeGlitches: true),
+                BuildHeuristics(catalog, includeGlitches: false));
+            lock (HeuristicsLock)
+            {
+                if (!SharedHeuristics.TryGetValue(catalog, out prepared))
+                {
+                    prepared = computed;
+                    SharedHeuristics.Add(catalog, prepared);
+                }
+            }
+        }
+        _allHeuristics = prepared.All;
+        _intendedHeuristics = prepared.Intended;
+    }
 
     public AnalysisCacheDiagnostics CacheDiagnostics
     {
@@ -222,7 +247,8 @@ public sealed class OwnedDeckOptimizer(FusionCatalog catalog)
         var capacities = owned.ToDictionary(p => p.Key, p => Math.Min(p.Value, LegalCopyLimitForCard(p.Key, options.CopyLimit)));
         return report with
         {
-            Deck = BuildEntries(deck, options), ImportantTargets = BuildTargets(report.ExactAnalysis),
+            Deck = BuildEntries(deck, options),
+            ImportantTargets = BuildTargets(report.ExactAnalysis),
             LimitedCards = BuildLimitedCards(deck, owned, capacities, options),
             ExcludedOrLowValueCards = BuildExcludedCards(deck, owned, options)
         };
@@ -781,6 +807,10 @@ public sealed class OwnedDeckOptimizer(FusionCatalog catalog)
         int BaseStrength,
         int Flexibility,
         IReadOnlyDictionary<int, int> ResultCounts);
+
+    private sealed record PreparedHeuristics(
+        Dictionary<int, CardHeuristic> All,
+        Dictionary<int, CardHeuristic> Intended);
 
     private sealed record SampledCandidate(int[] Deck, DeckObjective Objective);
 

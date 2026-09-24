@@ -11,12 +11,24 @@ public sealed class DesktopShellSupportTests
         var path = Path.Combine(directory, "settings.json");
         try
         {
-            var expected = new DesktopSettings(120, 80, 760, 560, true, true, true, @"X:\Example\save.srm");
+            var expected = new DesktopSettings(120, 80, 760, 560, true, true, true, @"X:\Example\save.srm",
+                YfmCompanion.RetroArch.CollectionSourceMode.PinnedFile, [@"X:\Example"], @"D:\Card Art", new Dictionary<int, string> { [1] = @"D:\BlueEyes.png" });
 
             DesktopSettingsStore.Save(expected, path);
             var actual = DesktopSettingsStore.Load(path);
 
-            Assert.Equal(expected, actual);
+            Assert.Equal(expected.Left, actual.Left);
+            Assert.Equal(expected.Top, actual.Top);
+            Assert.Equal(expected.Width, actual.Width);
+            Assert.Equal(expected.Height, actual.Height);
+            Assert.Equal(expected.IsMaximized, actual.IsMaximized);
+            Assert.Equal(expected.AlwaysOnTop, actual.AlwaysOnTop);
+            Assert.Equal(expected.CompactMode, actual.CompactMode);
+            Assert.Equal(expected.LastSavePath, actual.LastSavePath);
+            Assert.Equal(expected.CollectionSourceMode, actual.CollectionSourceMode);
+            Assert.Equal(expected.KnownSaveLocations, actual.KnownSaveLocations);
+            Assert.Equal(expected.ArtworkFolder, actual.ArtworkFolder);
+            Assert.Equal(expected.ArtworkOverrides, actual.ArtworkOverrides);
             Assert.False(File.Exists(path + ".tmp"));
         }
         finally
@@ -26,6 +38,28 @@ public sealed class DesktopShellSupportTests
                 Directory.Delete(directory, recursive: true);
             }
         }
+    }
+
+    [Fact]
+    public void OptimizerProgressPresentationUsesRealWorkAndNeverInventsVerificationProgress()
+    {
+        var search = OptimizerProgressPresenter.Present(new(
+            YfmCompanion.Engine.DeckBuildState.Searching, "Search budget consumed", TimeSpan.FromSeconds(2),
+            TimeSpan.FromSeconds(2), TimeSpan.FromSeconds(5), 123, null, null));
+        Assert.Equal(.4, search.Value, 3);
+        Assert.False(search.IsIndeterminate);
+        Assert.Contains("123 candidates", search.Detail);
+
+        var verify = OptimizerProgressPresenter.Present(new(
+            YfmCompanion.Engine.DeckBuildState.Verifying, "Evaluating hands", TimeSpan.FromSeconds(3),
+            TimeSpan.FromSeconds(2), TimeSpan.FromSeconds(5), 123, null, null, 213472, 658008));
+        Assert.Equal(213472d / 658008d, verify.Value, 6);
+        Assert.Contains("213,472 / 658,008 hands", verify.Detail);
+
+        var unknown = OptimizerProgressPresenter.Present(new(
+            YfmCompanion.Engine.DeckBuildState.Preparing, "Preparing", TimeSpan.Zero, TimeSpan.Zero, null, 0, null, null));
+        Assert.True(unknown.IsIndeterminate);
+        Assert.Equal(0, unknown.Value);
     }
 
     [Fact]

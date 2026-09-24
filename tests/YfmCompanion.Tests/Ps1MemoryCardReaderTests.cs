@@ -172,6 +172,74 @@ public sealed class Ps1MemoryCardReaderTests
     }
 
     [Fact]
+    public async Task CollectionServiceChoosesNewestValidatedContentEvenWhenRenamed()
+    {
+        var directory = CreateTemporaryDirectory();
+        try
+        {
+            var older = Path.Combine(directory, "anything.mcr");
+            var newer = Path.Combine(directory, "renamed-slot.srm");
+            File.WriteAllBytes(older, CreateMemoryCard(1));
+            File.WriteAllBytes(newer, CreateMemoryCard(2));
+            File.SetLastWriteTimeUtc(older, DateTime.UtcNow.AddMinutes(-2));
+            File.SetLastWriteTimeUtc(newer, DateTime.UtcNow.AddMinutes(-1));
+            var result = await new CollectionSnapshotService().RefreshAsync(
+                CollectionSourceMode.AutomaticNewest, null, [directory]);
+            Assert.NotNull(result.Snapshot);
+            Assert.Equal(Path.GetFullPath(newer), result.Snapshot.Save.FilePath);
+            Assert.Equal(41, result.Snapshot.DistinctOwnedCards);
+            Assert.Equal(42, result.Snapshot.TotalOwnedCopies);
+            Assert.Equal(64, result.Snapshot.ContentIdentity.Length);
+            Assert.False(result.Snapshot.IsStale);
+        }
+        finally { Directory.Delete(directory, true); }
+    }
+
+    [Fact]
+    public async Task CollectionServiceReportsNewerRejectedFileWhileUsingLastValidSave()
+    {
+        var directory = CreateTemporaryDirectory();
+        try
+        {
+            var valid = Path.Combine(directory, "valid-slot.srm");
+            var corrupt = Path.Combine(directory, "newer-slot.mcr");
+            File.WriteAllBytes(valid, CreateMemoryCard(1));
+            File.WriteAllBytes(corrupt, new byte[256]);
+            File.SetLastWriteTimeUtc(valid, DateTime.UtcNow.AddMinutes(-2));
+            File.SetLastWriteTimeUtc(corrupt, DateTime.UtcNow.AddMinutes(-1));
+            var result = await new CollectionSnapshotService().RefreshAsync(
+                CollectionSourceMode.AutomaticNewest, null, [directory]);
+            Assert.Equal(Path.GetFullPath(valid), result.Snapshot!.Save.FilePath);
+            Assert.Contains("newer but rejected", result.Message, StringComparison.OrdinalIgnoreCase);
+            Assert.Contains("newer-slot.mcr", result.Message, StringComparison.OrdinalIgnoreCase);
+        }
+        finally { Directory.Delete(directory, true); }
+    }
+
+    [Fact]
+    public async Task PinnedManualAndStaleSourceTransitionsAreExplicit()
+    {
+        var directory = CreateTemporaryDirectory();
+        try
+        {
+            var pinned = Path.Combine(directory, "chosen.srm");
+            File.WriteAllBytes(pinned, CreateMemoryCard(3));
+            var service = new CollectionSnapshotService();
+            var selected = await service.RefreshAsync(CollectionSourceMode.PinnedFile, pinned, []);
+            Assert.NotNull(selected.Snapshot);
+            File.Delete(pinned);
+            var stale = await service.RefreshAsync(CollectionSourceMode.PinnedFile, pinned, [], selected.Snapshot);
+            Assert.True(stale.RetainedPrevious);
+            Assert.True(stale.Snapshot!.IsStale);
+            Assert.Contains("missing", stale.Message, StringComparison.OrdinalIgnoreCase);
+            var manual = await service.RefreshAsync(CollectionSourceMode.Manual, null, [], stale.Snapshot);
+            Assert.Same(stale.Snapshot, manual.Snapshot);
+            Assert.Contains("Manual", manual.Message);
+        }
+        finally { Directory.Delete(directory, true); }
+    }
+
+    [Fact]
     public void CurrentSwanStationSaveParsesWhenPresent()
     {
         var path = Environment.GetEnvironmentVariable("YFM_INTEGRATION_SAVE_PATH");

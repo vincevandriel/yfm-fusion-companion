@@ -4,12 +4,12 @@
              StartupUri="MainWindow.xaml">
     <Application.Resources>
         <SolidColorBrush x:Key="WindowBrush" Color="#08131E" />
-        <SolidColorBrush x:Key="PanelBrush" Color="#102130" />
-        <SolidColorBrush x:Key="RaisedBrush" Color="#172C3D" />
-        <SolidColorBrush x:Key="BorderBrush" Color="#2D485E" />
+        <SolidColorBrush x:Key="PanelBrush" Color="#101F38" />
+        <SolidColorBrush x:Key="RaisedBrush" Color="#162E50" />
+        <SolidColorBrush x:Key="BorderBrush" Color="#9C792A" />
         <SolidColorBrush x:Key="TextBrush" Color="#ECF4FA" />
         <SolidColorBrush x:Key="MutedBrush" Color="#9EB2C2" />
-        <SolidColorBrush x:Key="AccentBrush" Color="#55C5E8" />
+        <SolidColorBrush x:Key="AccentBrush" Color="#55BDE8" />
         <SolidColorBrush x:Key="GoldBrush" Color="#E5B94A" />
         <SolidColorBrush x:Key="SuccessBrush" Color="#70D8B2" />
         <SolidColorBrush x:Key="ErrorBrush" Color="#FF8B96" />
@@ -258,6 +258,21 @@
                 <Trigger Property="IsSelected" Value="True">
                     <Setter Property="Background" Value="#24506B" />
                     <Setter Property="Foreground" Value="#FFFFFF" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+        <Style x:Key="CardTileStyle" TargetType="ListBoxItem">
+            <Setter Property="Background" Value="{StaticResource RaisedBrush}" />
+            <Setter Property="Foreground" Value="{StaticResource TextBrush}" />
+            <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Padding" Value="10" />
+            <Setter Property="Margin" Value="0,0,0,7" />
+            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+            <Style.Triggers>
+                <Trigger Property="IsSelected" Value="True">
+                    <Setter Property="Background" Value="#204F78" />
+                    <Setter Property="BorderBrush" Value="{StaticResource GoldBrush}" />
                 </Trigger>
             </Style.Triggers>
         </Style>

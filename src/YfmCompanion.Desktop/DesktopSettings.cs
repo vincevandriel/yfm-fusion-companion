@@ -1,5 +1,6 @@
 using System.Text.Json;
 using System.IO;
+using YfmCompanion.RetroArch;
 
 namespace YfmCompanion.Desktop;
 
@@ -11,7 +12,11 @@ internal sealed record DesktopSettings(
     bool IsMaximized = false,
     bool AlwaysOnTop = false,
     bool CompactMode = false,
-    string? LastSavePath = null);
+    string? LastSavePath = null,
+    CollectionSourceMode CollectionSourceMode = CollectionSourceMode.AutomaticNewest,
+    IReadOnlyList<string>? KnownSaveLocations = null,
+    string? ArtworkFolder = null,
+    IReadOnlyDictionary<int, string>? ArtworkOverrides = null);
 
 internal static class DesktopSettingsStore
 {
