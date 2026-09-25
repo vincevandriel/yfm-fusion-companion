@@ -1,6 +1,20 @@
 # Optimizer update checkpoint
 
-## Status and resume instruction
+## Current status — Phase 3 interrupted within the audit
+
+- **Phase 3 is IN PROGRESS. Its gate has NOT passed. Phase 4 has not started.**
+- Current tested repair commit: `2a94570444d7294eba46c60d409b648e1f9e2c80` (2026-09-25). This checkpoint-only commit follows it.
+- **Resume with GPT-6 Astra (`gpt-6-astra`), reasoning xhigh.**
+- Audit base: `3705fde977224a7529365c4699499d5358374213`. The earlier Phase 2 gate was reopened; see `docs/audit/PHASE3_AUDIT.md` for findings and repair status.
+- Last completed subgate: engine preview/resume regressions, stable parsed-save identity, nested/torn save recovery, and isolated desktop source-transition/responsiveness smoke. Full solution tests: **197 passed / 0 failed / 0 skipped**. Build `-warnaserror`: **0 warnings / 0 errors**. Formatting completed; whitespace checks passed.
+- Latest isolated UI smoke: busy **11 ms**, first legal candidate **1,010 ms**, pause **139 ms**, stop **102 ms**. Real paused/resumed/cancelled states were asserted, as were missing → stale → recovered saves and manual mode protecting itself from an in-flight refresh. Evidence: `docs/audit/phase3-ui-smoke.json`; screenshots remain in ignored `tmp/phase3-ui/` pending independent visual review.
+- Repairs committed: unscored preview excluded from comparisons until evaluated; initial evaluation within search budget; catalog detail precomputation/lazy cancellable heuristics; parse and hash the same stable bytes; off-dispatcher discovery; serialized/generation-guarded source reads; pending saves held during pause; frozen quantities and chip budget used to display results; preparation busy/cancel support; late progress suppression; genuine gallery virtualization and stable item lists; lazy artwork and oversize cache rejection; isolated UI audit settings/finally cleanup and actual timing/state assertions.
+- **Exact next action:** read the current audit findings, repair and test standalone **Verify deck** terminal UI state (Ready only after installation, pause/resume, failed/cancelled verification and delayed callbacks), then complete the remaining lifecycle/comparator/visual/cache/live requirements listed in `docs/audit/PHASE3_AUDIT.md`. Do not treat the UI smoke as the all-tab gate.
+- Remaining known gaps: full visual trays/slots and high-DPI layout; all-tab keyboard and empty/error/loading screenshots; replaced-art cache invalidation and measured limits; proof desktop resume; source/watch/manual persistence edge cases; fixed-bin campaign-comparator review; current before/after benchmarks and active-duel coexistence for this repaired build.
+- Usage guard: the five-hour window was **89% used / 11% remaining** at the last check before writing this checkpoint, approaching the user's required pause at 10% remaining. Recheck usage on resume and every 60 seconds/after the current function finishes. Do not redeem a usage-reset credit without explicit authorization.
+- No agent-started audit/search/test/polling process is left running. Existing RetroArch process 29256 was observed; it was not controlled or closed. `.vs/` remains untouched and untracked. No public push, release, installed-app replacement, game-memory write or personal save modification occurred.
+
+## Previous Phase 2 handoff (historical; superseded by the status above)
 
 - **Phase 2 implementation gate PASSED on 2026-09-24. Paused before Phase 3.**
 - Phase 2 implementation commit: `f31f5d5449c2042a31168d13bcd5b81ee8efc593`.
