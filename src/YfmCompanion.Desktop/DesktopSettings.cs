@@ -17,7 +17,8 @@ internal sealed record DesktopSettings(
     IReadOnlyList<string>? KnownSaveLocations = null,
     string? ArtworkFolder = null,
     IReadOnlyDictionary<int, string>? ArtworkOverrides = null,
-    IReadOnlyDictionary<int, int>? ManualQuantities = null);
+    IReadOnlyDictionary<int, int>? ManualQuantities = null,
+    string? PinnedSavePath = null);
 
 internal static class DesktopSettingsStore
 {

@@ -1,0 +1,17 @@
+<Window x:Class="YfmCompanion.Desktop.Views.ProofConfirmationWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Start proof search?" Width="560" SizeToContent="Height" ResizeMode="NoResize"
+        WindowStartupLocation="CenterOwner" ShowInTaskbar="False">
+    <StackPanel Margin="22">
+        <TextBlock Text="PROVE OPTIMAL" FontSize="22" FontWeight="Bold" Foreground="{StaticResource GoldBrush}" />
+        <TextBlock x:Name="SpaceText" TextWrapping="Wrap" Margin="0,14,0,8" />
+        <TextBlock x:Name="EstimateText" TextWrapping="Wrap" Foreground="{StaticResource MutedBrush}" Margin="0,0,0,8" />
+        <TextBlock x:Name="CheckpointText" TextWrapping="Wrap" Margin="0,0,0,8" />
+        <TextBlock Text="Large collections may take an impractical amount of time. Pause writes a checkpoint to disk; Stop keeps the best completed deck. Only completed enumeration proves optimality for this scoring model, not a duel-win guarantee." TextWrapping="Wrap" Foreground="{StaticResource MutedBrush}" />
+        <WrapPanel Margin="0,18,0,0" HorizontalAlignment="Right">
+            <Button x:Name="CancelProofButton" Content="CANCEL" IsCancel="True" />
+            <Button x:Name="ConfirmProofButton" Content="START / RESUME PROOF" IsDefault="True" Click="Confirm_Click" />
+        </WrapPanel>
+    </StackPanel>
+</Window>

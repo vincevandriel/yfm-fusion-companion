@@ -24,6 +24,8 @@ public partial class MainWindow : Window
     private readonly List<CardPicker> _monsterPickers = [];
     private readonly List<CardPicker> _spellPickers = [];
     private readonly List<CardPicker> _deckPickers = [];
+    private readonly DeckTrayViewModel _deckTray = new();
+    private CardPicker? _deckAddPicker;
     private readonly List<OwnedCardRow> _ownedCardRows = [];
     private CardPicker? _ownedAddPicker;
     private readonly DispatcherTimer _liveTimer = new() { Interval = TimeSpan.FromSeconds(1) };
@@ -31,6 +33,10 @@ public partial class MainWindow : Window
     private readonly DispatcherTimer _saveDebounceTimer = new() { Interval = TimeSpan.FromMilliseconds(400) };
     private readonly List<FileSystemWatcher> _saveWatchers = [];
     private readonly CancellationTokenSource _windowCancellation = new();
+    private readonly WindowActivityTracker _activities = new();
+    private readonly bool _backgroundServicesEnabled;
+    private readonly bool _livePollingEnabled;
+    private bool _closeRequested, _closeReady;
     private readonly LocalDiagnosticLog _diagnostics = new();
     private readonly CollectionSnapshotService _collectionService = new();
     private readonly ThumbnailCache _thumbnailCache = new();
@@ -69,6 +75,7 @@ public partial class MainWindow : Window
     private int _livePort;
     private Rect _normalModeBounds;
     private string? _lastSavePath;
+    private string? _pinnedSavePath;
     private string _lastBadge = string.Empty;
     private string _lastLoggedLiveBadge = string.Empty;
     private string _liveBadge = "DISCONNECTED";
@@ -78,9 +85,14 @@ public partial class MainWindow : Window
     private bool _synchronizingTopmost;
     private bool _startupStarted;
 
-    public MainWindow()
+    public MainWindow() : this(true) { }
+
+    internal MainWindow(bool backgroundServicesEnabled, bool? livePollingEnabled = null)
     {
+        _backgroundServicesEnabled = backgroundServicesEnabled;
+        _livePollingEnabled = livePollingEnabled ?? backgroundServicesEnabled;
         InitializeComponent();
+        RegisterTabControls();
         Loaded += MainWindow_Loaded;
         Closing += MainWindow_Closing;
         Closed += MainWindow_Closed;
@@ -91,6 +103,7 @@ public partial class MainWindow : Window
 
     private async void MainWindow_Loaded(object sender, RoutedEventArgs e)
     {
+        using var activity = _activities.Begin();
         if (_startupStarted)
         {
             return;
@@ -117,8 +130,10 @@ public partial class MainWindow : Window
         try
         {
             await RefreshCollectionAsync(silentWhenNone: true);
-            await RefreshLiveAsync();
-            _liveTimer.Start();
+            if (!_backgroundServicesEnabled || _closeRequested) return;
+            if (_livePollingEnabled) await RefreshLiveAsync();
+            if (_closeRequested) return;
+            if (_livePollingEnabled) _liveTimer.Start();
             _saveWatchTimer.Start();
         }
         catch (OperationCanceledException) when (_windowCancellation.IsCancellationRequested)
@@ -133,7 +148,7 @@ public partial class MainWindow : Window
                 "The offline adviser, analyzer, and optimizer remain ready. Live Duel will retry automatically every second.",
                 "UNAVAILABLE",
                 "#7B3B45");
-            _liveTimer.Start();
+            if (_livePollingEnabled && !_closeRequested) _liveTimer.Start();
         }
     }
 
@@ -179,12 +194,27 @@ public partial class MainWindow : Window
         _handPickers[0].FocusInput();
     }
 
-    private void MainWindow_Closing(object? sender, CancelEventArgs e)
+    private async void MainWindow_Closing(object? sender, CancelEventArgs e)
     {
+        if (_closeReady) return;
+        e.Cancel = true;
+        if (_closeRequested) return;
+        _closeRequested = true;
+        RootLayout.IsEnabled = false;
+        _liveTimer.Stop();
+        _saveWatchTimer.Stop();
+        _saveDebounceTimer.Stop();
+        foreach (var watcher in _saveWatchers) watcher.EnableRaisingEvents = false;
+        _preparationCancellation?.Cancel();
         _deckAnalysisCancellation?.Cancel();
-        _deckBuildJob?.StopAndKeepBest();
+        _deckBuildJob?.Pause();
         _windowCancellation.Cancel();
         SaveDesktopSettings();
+        OptimizationStatus.Text = "Closing safely; waiting for cancelled work and proof checkpoint writes…";
+        await _activities.WhenIdle();
+        _closeReady = true;
+        // Closing cannot synchronously re-enter Close when no work was active.
+        await Dispatcher.InvokeAsync(Close, DispatcherPriority.Background);
     }
 
     private void MainWindow_Closed(object? sender, EventArgs e)
@@ -202,6 +232,7 @@ public partial class MainWindow : Window
         var settings = DesktopSettingsStore.Load();
         _lastSavePath = settings.LastSavePath;
         _collectionSourceMode = settings.CollectionSourceMode;
+        _pinnedSavePath = settings.PinnedSavePath ?? (settings.CollectionSourceMode == CollectionSourceMode.PinnedFile ? settings.LastSavePath : null);
         _restoredManualQuantities = settings.ManualQuantities ?? new Dictionary<int, int>();
         _knownSaveLocations.AddRange(settings.KnownSaveLocations ?? []);
         _artworkFolder = settings.ArtworkFolder;
@@ -258,7 +289,8 @@ public partial class MainWindow : Window
                 _artworkFolder,
                 _artworkOverrides,
                 _collectionSourceMode == CollectionSourceMode.Manual
-                    ? _ownedCardRows.Where(row => row.Quantity > 0).ToDictionary(row => row.Card.Id, row => row.Quantity) : null));
+                    ? _ownedCardRows.Where(row => row.Quantity > 0).ToDictionary(row => row.Card.Id, row => row.Quantity) : null,
+                _pinnedSavePath));
         }
         catch (Exception exception)
         {
@@ -273,12 +305,13 @@ public partial class MainWindow : Window
 
     private async Task RefreshLiveAsync()
     {
-        if (_liveReadInProgress || _catalog is null)
+        if (_closeRequested || !_livePollingEnabled || _liveReadInProgress || _catalog is null)
         {
             return;
         }
 
         _liveReadInProgress = true;
+        using var activity = _activities.Begin();
         try
         {
             if (!RetroArchConfigInspector.IsRetroArchRunning())
@@ -677,6 +710,12 @@ public partial class MainWindow : Window
 
     private void AddDeckPickers(CardSearchService search)
     {
+        _deckAddPicker = new CardPicker();
+        _deckAddPicker.Configure("Add a card • name or number", search);
+        _deckAddPicker.AdvanceRequested += (_, _) => DeckAnalyzerPaneView.AddDeckCardButton.Focus();
+        DeckAnalyzerPaneView.DeckAddPickerPanel.Children.Add(_deckAddPicker);
+        DeckAnalyzerPaneView.DeckTrayGallery.ItemsSource = _deckTray.Cards;
+        DeckAnalyzerPaneView.DeckTraySummary.SetBinding(TextBlock.TextProperty, new System.Windows.Data.Binding(nameof(DeckTrayViewModel.Summary)) { Source = _deckTray });
         for (var slot = 1; slot <= 40; slot++)
         {
             var picker = new CardPicker { Width = 225, Margin = new Thickness(0, 0, 10, 8) };
@@ -704,6 +743,8 @@ public partial class MainWindow : Window
 
     private void Picker_CardChanged(object? sender, Card? card)
     {
+        if (sender is CardPicker edited && _deckPickers.Contains(edited))
+            _deckTray.Update(_deckPickers.Select(p => p.SelectedCard).OfType<Card>());
         if (sender is CardPicker picker && _deckPickers.Contains(picker) && _deckAnalysisCancellation is not null)
         {
             _deckAnalysisGeneration++;
@@ -747,6 +788,7 @@ public partial class MainWindow : Window
         var card = grid.SelectedItem switch
         {
             LiveCardRow row => _catalog.GetCard(row.CardId),
+            LiveAdviceRow row => _catalog.GetCard(row.Result),
             SaveDeckRow row => row.Card,
             SaveCollectionRow row => row.Card,
             TurnResultRow row => _catalog.GetCard(row.Result),
@@ -867,7 +909,7 @@ public partial class MainWindow : Window
         TurnResultsGrid.ItemsSource = rows;
         TurnResultSummary.Text = rows.Length == 0
             ? "No valid fusion or equip route was found for the supplied cards."
-            : string.Create(CultureInfo.InvariantCulture, $"{rows.Length:N0} legal routes, ranked by final ATK then DEF. Field interaction is terminal.");
+            : string.Create(CultureInfo.InvariantCulture, $"{rows.Length:N0} legal routes, ranked by final ATK then DEF. A field card combines first; selected hand cards follow in order. Equips are applied last. Select a route to inspect its intermediate results.");
     }
 
     private void ClearTurn_Click(object sender, RoutedEventArgs e)
@@ -886,6 +928,8 @@ public partial class MainWindow : Window
 
     private async void AnalyzeDeck_Click(object sender, RoutedEventArgs e)
     {
+        if (_closeRequested) return;
+        using var activity = _activities.Begin();
         if (_deckAnalyzer is null || _deckAnalysisCancellation is not null)
         {
             return;
@@ -968,6 +1012,8 @@ public partial class MainWindow : Window
 
     private async void LoadCurrentDeckFromSave_Click(object sender, RoutedEventArgs e)
     {
+        if (_closeRequested) return;
+        using var activity = _activities.Begin();
         if (_catalog is null)
         {
             return;
@@ -986,8 +1032,10 @@ public partial class MainWindow : Window
 
             ShowSaveSnapshot(snapshot);
             LoadDeckAnalyzerFromSnapshot(snapshot);
-            DeckResultSummary.Text = $"Loaded the current 40-card saved deck from {Path.GetFileName(snapshot.FilePath)}. Ready for exact hand analysis.";
-            _diagnostics.Add("Deck analyzer", "Current saved deck loaded", "Re-read and validated the saved memory-card file before filling all 40 deck slots.");
+            DeckResultSummary.Text = snapshot.HasCompleteDeck
+                ? $"Loaded the current 40-card saved deck from {Path.GetFileName(snapshot.FilePath)}. Ready for exact hand analysis."
+                : $"This save has an empty or incomplete constructed deck. Analyzer slots cleared; owned chest cards remain available in the optimizer.";
+            _diagnostics.Add("Deck analyzer", "Saved deck read", snapshot.HasCompleteDeck ? "Validated and loaded 40 cards." : "Incomplete deck; cleared obsolete analyzer inputs.");
         }
         catch (Exception exception)
         {
@@ -1012,6 +1060,8 @@ public partial class MainWindow : Window
 
     private async void RefreshSaveSnapshot_Click(object sender, RoutedEventArgs e)
     {
+        if (_closeRequested) return;
+        using var activity = _activities.Begin();
         if (_collectionSourceMode == CollectionSourceMode.Manual)
         {
             var snapshot = await ReadNewestSaveWithoutChangingCollectionAsync();
@@ -1023,8 +1073,12 @@ public partial class MainWindow : Window
 
     private async Task<SaveSnapshot?> ReadNewestSaveWithoutChangingCollectionAsync()
     {
+        if (_closeRequested) return null;
+        using var activity = _activities.Begin();
         var known = _knownSaveLocations.Concat(string.IsNullOrWhiteSpace(_lastSavePath) ? [] : new[] { _lastSavePath! });
-        var result = await _collectionService.RefreshAsync(CollectionSourceMode.AutomaticNewest, null, known, cancellationToken: _windowCancellation.Token);
+        CollectionRefreshResult result;
+        try { result = await _collectionService.RefreshAsync(CollectionSourceMode.AutomaticNewest, null, known, cancellationToken: _windowCancellation.Token); }
+        catch (OperationCanceledException) when (_closeRequested) { return null; }
         if (result.Snapshot is null)
         {
             SaveSnapshotStatus.Text = result.Message;
@@ -1039,6 +1093,8 @@ public partial class MainWindow : Window
 
     private async Task RefreshCollectionAsync(bool silentWhenNone)
     {
+        if (_closeRequested) return;
+        using var activity = _activities.Begin();
         while (_collectionRefreshTask is { } active)
         {
             await active;
@@ -1066,7 +1122,7 @@ public partial class MainWindow : Window
                 .ToArray();
             var result = await _collectionService.RefreshAsync(
                 _collectionSourceMode,
-                _collectionSourceMode == CollectionSourceMode.PinnedFile ? _lastSavePath : null,
+                _collectionSourceMode == CollectionSourceMode.PinnedFile ? _pinnedSavePath : null,
                 known,
                 _collectionSnapshot,
                 _windowCancellation.Token);
@@ -1078,6 +1134,9 @@ public partial class MainWindow : Window
                     current.Save.FilePath.Equals(result.Snapshot.Save.FilePath, StringComparison.OrdinalIgnoreCase))
                 {
                     _collectionSnapshot = result.Snapshot;
+                    _saveSnapshot = result.Snapshot.Save;
+                    SaveTimestampText.Text = string.Create(CultureInfo.InvariantCulture,
+                        $"{result.Snapshot.Save.LastWriteTimeUtc.ToLocalTime():yyyy-MM-dd HH:mm:ss zzz} local • {result.Snapshot.Save.LastWriteTimeUtc:yyyy-MM-dd HH:mm:ss} UTC");
                     ShowCollectionSource(result.Snapshot);
                     SaveSnapshotStatus.Text = result.Message;
                     if (result.Message.Contains("Warning:", StringComparison.Ordinal)) OptimizerSourceSummary.Text += $" • {result.Message}";
@@ -1138,9 +1197,11 @@ public partial class MainWindow : Window
 
     private void SaveFolderChanged(object sender, FileSystemEventArgs e)
     {
+        if (_closeRequested) return;
         if (!new[] { ".srm", ".mcr" }.Contains(Path.GetExtension(e.FullPath), StringComparer.OrdinalIgnoreCase)) return;
         Dispatcher.BeginInvoke(() =>
         {
+            if (_closeRequested) return;
             _saveDebounceTimer.Stop();
             _saveDebounceTimer.Start();
         });
@@ -1148,6 +1209,7 @@ public partial class MainWindow : Window
 
     private void ConfigureSaveWatchers(string selectedFile)
     {
+        if (!_backgroundServicesEnabled || _closeRequested) return;
         foreach (var watcher in _saveWatchers) watcher.Dispose();
         _saveWatchers.Clear();
         var directories = _knownSaveLocations
@@ -1180,6 +1242,8 @@ public partial class MainWindow : Window
 
     private async void SelectSave_Click(object sender, RoutedEventArgs e)
     {
+        if (_closeRequested) return;
+        using var activity = _activities.Begin();
         var dialog = new OpenFileDialog
         {
             Title = "Select a Forbidden Memories memory-card image",
@@ -1197,18 +1261,28 @@ public partial class MainWindow : Window
             return;
         }
 
+        await SelectPinnedSaveAsync(dialog.FileName);
+    }
+
+    private async Task SelectPinnedSaveAsync(string path)
+    {
+        if (_closeRequested) return;
+        using var activity = _activities.Begin();
         ChangeCollectionSource(CollectionSourceMode.PinnedFile);
-        _lastSavePath = dialog.FileName;
-        var directory = Path.GetDirectoryName(dialog.FileName);
+        _pinnedSavePath = Path.GetFullPath(path);
+        var directory = Path.GetDirectoryName(_pinnedSavePath);
         if (!string.IsNullOrWhiteSpace(directory) && !_knownSaveLocations.Contains(directory, StringComparer.OrdinalIgnoreCase))
         {
             _knownSaveLocations.Add(directory);
         }
         await RefreshCollectionAsync(silentWhenNone: false);
+        SaveDesktopSettings();
     }
 
     private async void UseAutomaticSave_Click(object sender, RoutedEventArgs e)
     {
+        if (_closeRequested) return;
+        using var activity = _activities.Begin();
         ChangeCollectionSource(CollectionSourceMode.AutomaticNewest);
         await RefreshCollectionAsync(silentWhenNone: false);
     }
@@ -1265,7 +1339,9 @@ public partial class MainWindow : Window
             ? "STALE SAVE — RETAINED COLLECTION"
             : _collectionSourceMode == CollectionSourceMode.PinnedFile ? "SELECTED SAVE FILE" : "AUTOMATIC — NEWEST SAVE";
         OptimizerSourceSummary.Text = $"{Path.GetFileName(collection.Save.FilePath)} • saved {collection.Save.LastWriteTimeUtc.ToLocalTime():g} • {collection.DistinctOwnedCards:N0} cards / {collection.TotalOwnedCopies:N0} copies • {collection.Save.StarChips?.ToString("N0", CultureInfo.InvariantCulture) ?? "unknown"} Star Chips" +
-            (collection.IsStale ? $" • {collection.StaleReason}" : string.Empty);
+            (collection.IsStale ? $" • {collection.StaleReason}" : string.Empty) +
+            (_collectionSourceMode == CollectionSourceMode.PinnedFile && _pinnedSavePath != collection.Save.FilePath
+                ? $" • Selected source: {Path.GetFileName(_pinnedSavePath)} (retaining earlier data)" : string.Empty);
     }
 
     private void ShowSaveSnapshot(SaveSnapshot snapshot)
@@ -1324,14 +1400,14 @@ public partial class MainWindow : Window
 
     private async void ApplyOwnedSnapshot_Click(object sender, RoutedEventArgs e)
     {
+        if (_closeRequested) return;
+        using var activity = _activities.Begin();
         if (_saveSnapshot is null)
         {
             return;
         }
 
-        ChangeCollectionSource(CollectionSourceMode.PinnedFile);
-        _lastSavePath = _saveSnapshot.FilePath;
-        await RefreshCollectionAsync(silentWhenNone: false);
+        await SelectPinnedSaveAsync(_saveSnapshot.FilePath);
         WorkspaceTabs.SelectedItem = OwnedOptimizerTab;
     }
 
@@ -1352,6 +1428,7 @@ public partial class MainWindow : Window
     {
         if (!snapshot.HasCompleteDeck)
         {
+            ClearDeck_Click(this, new RoutedEventArgs());
             return;
         }
 
@@ -1367,6 +1444,8 @@ public partial class MainWindow : Window
 
     private async void OptimizeDeck_Click(object sender, RoutedEventArgs e)
     {
+        if (_closeRequested) return;
+        using var activity = _activities.Begin();
         if (_catalog is null || _optimizerBusy)
         {
             return;
@@ -1487,18 +1566,24 @@ public partial class MainWindow : Window
                 if (!preview.HasFeasibleDeck)
                 {
                     OptimizationStatus.Text = "The frozen collection and affordable eligible purchases cannot supply a legal 40-card deck.";
+                    OptimizationStageText.Text = "NO LEGAL DECK • preparation complete";
+                    OptimizationProgressBar.IsIndeterminate = false;
+                    OptimizationProgressBar.Value = 0;
                     return;
                 }
                 var estimate = preview.UnprunedWorkLowMilliseconds is null
                     ? "No reliable duration estimate is available."
                     : $"Unpruned measured range: {FormatMilliseconds(preview.UnprunedWorkLowMilliseconds.Value)} to {FormatMilliseconds(preview.UnprunedWorkHighMilliseconds!.Value)}; pruning may reduce it.";
-                if (MessageBox.Show(this,
-                    $"Proof mode will enumerate {preview.CapacityVectors:N0} capacity-bounded deck vectors. {estimate}\n\nYou can pause or stop and keep the best completed deck.",
-                    "Start proof search?", MessageBoxButton.OKCancel, MessageBoxImage.Information) != MessageBoxResult.OK)
+                if (new Views.ProofConfirmationWindow(this, preview.CapacityVectors, estimate,
+                    File.Exists(checkpoint), NewProofCheckpointCheckBox.IsChecked == true).ShowDialog() != true)
                 {
                     OptimizationStatus.Text = "Proof search not started.";
+                    OptimizationStageText.Text = "CANCELLED • proof not started";
+                    OptimizationProgressBar.IsIndeterminate = false;
+                    OptimizationProgressBar.Value = 0;
                     return;
                 }
+                preparation.Token.ThrowIfCancellationRequested();
             }
 
             if (checkpoint is not null && NewProofCheckpointCheckBox.IsChecked == true)
@@ -1543,6 +1628,8 @@ public partial class MainWindow : Window
 
     private async Task RunDeckBuildJobAsync(DeckBuildJob job, long generation, bool verify = false)
     {
+        if (_closeRequested) return;
+        using var activity = _activities.Begin();
         SetOptimizerRunning(true);
         var acceptingProgress = true;
         var progress = new Progress<DeckBuildProgress>(value =>
@@ -1678,6 +1765,8 @@ public partial class MainWindow : Window
 
     private async void VerifyOptimization_Click(object sender, RoutedEventArgs e)
     {
+        if (_closeRequested) return;
+        using var activity = _activities.Begin();
         if (_optimizerBusy || _deckBuildJob?.State is not (DeckBuildState.Completed or DeckBuildState.Cancelled) ||
             _lastDeckBuildResult?.Best is not { Report.ExactAnalysis.IsExact: false }) return;
         try
@@ -2165,7 +2254,7 @@ public partial class MainWindow : Window
             UpdateBadgeForSelectedWorkspace();
         }
 
-        if (IsLoaded && WorkspaceTabs.SelectedItem == OwnedOptimizerTab && _collectionSourceMode != CollectionSourceMode.Manual)
+        if (_backgroundServicesEnabled && IsLoaded && WorkspaceTabs.SelectedItem == OwnedOptimizerTab && _collectionSourceMode != CollectionSourceMode.Manual)
         {
             _ = RefreshCollectionAsync(silentWhenNone: true);
         }

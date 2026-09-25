@@ -1,0 +1,15 @@
+{
+  "SyntheticSave": true,
+  "IsolatedSettings": true,
+  "SourceTransitionChecks": "missing -\u003E stale -\u003E recovered; in-flight refresh -\u003E protected manual edit",
+  "VerificationChecks": "pause -\u003E resume -\u003E exact Ready; late callbacks do not overwrite terminal state",
+  "DesktopContracts": "progress labels; thumbnail LRU, replacement pixels, corruption, deletion, oversize; manual persistence; pending save during pause; stable live selection; adaptive layout; autocomplete clearing; analysis cancellation; deck tray add/remove/copy counts; gallery virtualization; proof desktop restart and incompatibility; pinned missing/recovery/race; real folder watcher; proof confirmation; close during proof and durable resume",
+  "BusyStateMilliseconds": 10.2576,
+  "FirstCandidateMilliseconds": 897.1062,
+  "PauseResponseMilliseconds": 162.5695,
+  "StopResponseMilliseconds": 176.352,
+  "KeyboardFocusVisits": 152,
+  "ScreenshotCount": 15,
+  "OptimizerStatus": "Failed: no completed deck is available for this request.",
+  "ProgressDetail": "Build a deck from the selected collection."
+}

@@ -1,5 +1,19 @@
 # Phase 3 independent audit
 
+## Third repair checkpoint — 2026-09-25 (gate remains open)
+
+- Extracted all five tab layouts into tab-specific views with forwarded commands and a shared application workflow. Added a grouped Deck Analyzer tray, add/remove-copy controls, and selected-row route/intermediate details. No duplicate catalog or connector was introduced.
+- Separated the pinned source from the last successfully loaded file. Missing/recovered files and racing pin selections are tested. Same-content saves refresh timestamps without resetting collection identity. Empty saved decks clear obsolete analyzer inputs instead of claiming 40 cards loaded; chest ownership is retained.
+- Closing now cancels background work, waits for tracked activities and durable proof checkpoint completion, then disposes services. Automated close-during-proof/restart, real folder watcher updates/deletion/recovery, native proof confirmation approval/cancellation, copy-count/add/remove/40-slot tray tests pass. The confirmation window and proof job are exercised independently; the entire preflight/dialog/restart click sequence remains to review.
+- Offline UI audits disable live networking and automatic source changes. All fixtures, artwork and settings are synthetic and isolated; temporary fixture directories are cleaned on exit.
+- Visual review found and fixed pale selected DataGrid cells behind white text. Compact columns now fit a 260-DIP window without changing window limits or adding material names. Selected route details remain readable, but narrow table headers/results still truncate and need further UX review.
+- `phase3-desktop-lifecycle.json`: busy 10.26 ms, first deck 897.11 ms, pause 162.57 ms, stop 176.35 ms, 152 forward/backward keyboard focus visits. Its terminal failure label is the intentionally incompatible proof request.
+- `phase3-visual-states.json`: 150 cases / 304 images covering five states, five tabs, 1366x768 and 1920x1080 at 125/150/200%, plus Compact. Images remain in ignored `tmp/phase3-states-final/`. This is logical WPF rendering, not actual OS-DPI switching. Zero automated unwrapped-text warnings does NOT establish visual acceptance: the detector excludes table cells and misses some offscreen content. Representative images were reviewed, not every pixel of every capture.
+- `../benchmarks/phase3-live-quick.json`: 12 successful active-duel reads, zero failures, maximum concurrency one. Playback was Paused throughout: changing-board behavior is unverified. Quick first preview 103.21 ms, maximum progress gap 221.71 ms, 160 sampled hands, NOT exact or proven optimal. Visual audit ran concurrently; timings are machine/run-specific.
+- Full solution: 200 tests passed, no skips/failures; warning-as-error build clean. Solution and UI-audit formatting checks and whitespace check passed before the final fixture-only extension, which passed its rerun.
+
+Remaining: inspect intermediate scroll positions/metric panels/dropdowns/disabled and error states, improve narrow table readability and progress visibility while browsing the collection, confirm final visual acceptance including real DPI where available, exercise complete proof-start/restart/preflight lifecycle, and test changing duel snapshots/scroll plus cold campaign preparation responsiveness. The main workflow still owns significant logic although presentation is separated. Phase 4 is not authorized by these partial gates.
+
 Started 2026-09-25 from `3705fde977224a7529365c4699499d5358374213`.
 
 Status: **in progress; release gate NOT passed**. Earlier Phase 2 acceptance claims are reopened by the findings below.

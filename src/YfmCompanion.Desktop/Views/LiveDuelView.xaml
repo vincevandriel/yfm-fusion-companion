@@ -1,0 +1,117 @@
+<UserControl x:Class="YfmCompanion.Desktop.Views.LiveDuelView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="clr-namespace:YfmCompanion.Desktop.Controls">
+<Grid Margin="0,14,0,0">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+                        <GroupBox Header="RETROARCH + SWANSTATION • READ ONLY" Margin="0">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="2*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="Automatic read-only update every second" Foreground="{StaticResource MutedBrush}" VerticalAlignment="Center" />
+                                <TextBlock x:Name="LiveStatusText" Grid.Column="1" Text="Checking RetroArch…" TextWrapping="Wrap" Foreground="{StaticResource MutedBrush}" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="12,0" />
+                                <Button x:Name="InspectorToggleButton" Grid.Column="2" Content="INSPECT CARDS" Click="ToggleInspector_Click" Background="#245475" Foreground="{StaticResource TextBrush}" Padding="12,7" Margin="0" />
+                            </Grid>
+                        </GroupBox>
+                        <Border Grid.Row="1" Background="{StaticResource PanelBrush}" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" Padding="12" Margin="0,12,0,12">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="2*" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <StackPanel>
+                                    <TextBlock Text="CONNECTION" Foreground="{StaticResource MutedBrush}" FontSize="11" />
+                                    <TextBlock x:Name="LiveConnectionText" Text="Not connected" FontWeight="SemiBold" TextWrapping="Wrap" />
+                                </StackPanel>
+                                <StackPanel Grid.Column="1">
+                                    <TextBlock Text="PLAYER LP" Foreground="{StaticResource MutedBrush}" FontSize="11" />
+                                    <TextBlock x:Name="LivePlayerLpText" Text="—" FontSize="18" FontWeight="Bold" />
+                                </StackPanel>
+                                <StackPanel Grid.Column="2">
+                                    <TextBlock Text="OPPONENT LP" Foreground="{StaticResource MutedBrush}" FontSize="11" />
+                                    <TextBlock x:Name="LiveOpponentLpText" Text="—" FontSize="18" FontWeight="Bold" />
+                                </StackPanel>
+                                <StackPanel Grid.Column="3">
+                                    <TextBlock Text="TERRAIN" Foreground="{StaticResource MutedBrush}" FontSize="11" />
+                                    <TextBlock x:Name="LiveTerrainText" Text="—" FontSize="18" FontWeight="Bold" />
+                                </StackPanel>
+                                <StackPanel Grid.Column="4">
+                                    <TextBlock Text="UPDATE STATUS" Foreground="{StaticResource MutedBrush}" FontSize="11" />
+                                    <TextBlock x:Name="LiveUpdateHealthText" Text="ERROR" Foreground="{StaticResource ErrorBrush}" FontWeight="Bold" />
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+                        <controls:AdaptiveColumnsPanel Grid.Row="2" MinimumColumnWidth="225" MaximumColumns="4">
+                            <GroupBox Header="HAND • current order" Margin="0,0,10,0">
+                                <ListBox x:Name="LiveHandGrid" Style="{StaticResource CardPanelList}" SelectionChanged="LiveCard_SelectionChanged" />
+                            </GroupBox>
+                            <GroupBox Grid.Column="1" Header="YOUR MONSTERS" Margin="0,0,10,0">
+                                <ListBox x:Name="LivePlayerFieldGrid" Style="{StaticResource CardPanelList}" SelectionChanged="LiveCard_SelectionChanged" />
+                            </GroupBox>
+                            <GroupBox Grid.Column="2" Header="YOUR SPELLS / TRAPS" Margin="0,0,10,0">
+                                <ListBox x:Name="LivePlayerSpellTrapGrid" Style="{StaticResource CardPanelList}" SelectionChanged="LiveCard_SelectionChanged" />
+                            </GroupBox>
+                            <GroupBox Grid.Column="3" Header="OPPONENT FIELD" Margin="0">
+                                <ListBox x:Name="LiveOpponentFieldGrid" Style="{StaticResource CardPanelList}" SelectionChanged="LiveCard_SelectionChanged" />
+                            </GroupBox>
+                        </controls:AdaptiveColumnsPanel>
+                        <TabControl Grid.Row="3" Margin="0,12,0,0">
+                            <TabItem Header="LIVE ADVICE">
+                                <Grid Margin="8">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="*" />
+                                    </Grid.RowDefinitions>
+                                    <TextBlock x:Name="LiveAdviceSummary" Text="Live fusion advice will appear after a validated duel snapshot." Foreground="{StaticResource MutedBrush}" Margin="2,0,0,8" />
+                                    <DataGrid x:Name="LiveAdviceGrid" Grid.Row="1" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True" AlternationCount="2" SelectionChanged="LiveCard_SelectionChanged">
+                                        <DataGrid.Columns>
+                                            <DataGridTextColumn Header="RESULT" Binding="{Binding Result}" Width="2*" />
+                                            <DataGridTextColumn Header="ATK" Binding="{Binding Attack}" Width="70" />
+                                            <DataGridTextColumn Header="DEF" Binding="{Binding Defense}" Width="70" />
+                                            <DataGridTextColumn Header="HAND ORDER" Binding="{Binding HandOrder}" Width="1.6*" />
+                                            <DataGridTextColumn Header="ROUTE" Binding="{Binding Route}" Width="4*" />
+                                            <DataGridTextColumn Header="FIELD" Binding="{Binding Field}" Width="1.2*" />
+                                            <DataGridTextColumn Header="STAR 1" Binding="{Binding GuardianStar1}" Width="105" />
+                                            <DataGridTextColumn Header="STAR 2" Binding="{Binding GuardianStar2}" Width="105" />
+                                            <DataGridTextColumn Header="VS FIELD" Binding="{Binding GuardianOutcomes}" Width="120" />
+                                        </DataGrid.Columns>
+                                    </DataGrid>
+                                </Grid>
+                            </TabItem>
+                            <TabItem Header="CONSTRUCTED DECK">
+                                <DataGrid x:Name="LiveDeckGrid" Margin="8" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True" AlternationCount="2" SelectionChanged="LiveCard_SelectionChanged">
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Header="SLOT" Binding="{Binding Slot}" Width="55" />
+                                        <DataGridTextColumn Header="#" Binding="{Binding Card.Id}" Width="50" />
+                                        <DataGridTextColumn Header="CARD" Binding="{Binding Card.Name}" Width="*" />
+                                        <DataGridTextColumn Header="TYPE" Binding="{Binding Card.PrimaryType}" Width="100" />
+                                        <DataGridTextColumn Header="ATK" Binding="{Binding Card.Attack}" Width="70" />
+                                        <DataGridTextColumn Header="DEF" Binding="{Binding Card.Defense}" Width="70" />
+                                    </DataGrid.Columns>
+                                </DataGrid>
+                            </TabItem>
+                            <TabItem Header="OWNED COLLECTION">
+                                <DataGrid x:Name="LiveCollectionGrid" Margin="8" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True" AlternationCount="2" SelectionChanged="LiveCard_SelectionChanged">
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Header="#" Binding="{Binding Card.Id}" Width="50" />
+                                        <DataGridTextColumn Header="CARD" Binding="{Binding Card.Name}" Width="*" />
+                                        <DataGridTextColumn Header="CHEST" Binding="{Binding Chest}" Width="70" />
+                                        <DataGridTextColumn Header="DECK" Binding="{Binding Deck}" Width="70" />
+                                        <DataGridTextColumn Header="TOTAL OWNED" Binding="{Binding Total}" Width="100" />
+                                    </DataGrid.Columns>
+                                </DataGrid>
+                            </TabItem>
+                        </TabControl>
+                    </Grid>
+</UserControl>

@@ -58,7 +58,7 @@ internal static class Program
         var app = new App { ShutdownMode = ShutdownMode.OnExplicitShutdown };
         app.InitializeComponent();
         SynchronizationContext.SetSynchronizationContext(new DispatcherSynchronizationContext());
-        var window = new MainWindow
+        var window = new MainWindow(backgroundServicesEnabled: false)
         {
             ShowActivated = false,
             ShowInTaskbar = false,
@@ -68,6 +68,7 @@ internal static class Program
         };
         window.Show();
         Pump(TimeSpan.FromSeconds(3));
+        if (args.Contains("--states", StringComparer.Ordinal)) return VisualStateAudit.Run(window, fixtureSave, output);
         var fullWorkspace = (FrameworkElement)window.FindName("FullWorkspace");
         if (fullWorkspace.Visibility != Visibility.Visible)
         {
@@ -157,6 +158,7 @@ internal static class Program
         AuditCardEntryAndAnalysis(window);
         AuditGallery(window);
         AuditProofRecovery(window, fixtureDirectory);
+        DesktopLifecycleAudit.Run(window, fixtureDirectory, fixtureSave);
         var focusVisits = AuditKeyboardNavigation(window);
         File.WriteAllText(Path.Combine(output, "keyboard-navigation.txt"), $"Forward focus visits: {focusVisits}{Environment.NewLine}");
         File.WriteAllText(Path.Combine(output, "ui-audit.json"), JsonSerializer.Serialize(new
@@ -165,7 +167,7 @@ internal static class Program
             IsolatedSettings = true,
             SourceTransitionChecks = "missing -> stale -> recovered; in-flight refresh -> protected manual edit",
             VerificationChecks = "pause -> resume -> exact Ready; late callbacks do not overwrite terminal state",
-            DesktopContracts = "progress labels; thumbnail LRU, replacement pixels, corruption, deletion, oversize; manual persistence; pending save during pause; stable live selection; adaptive layout; autocomplete clearing; analysis cancellation; gallery virtualization; proof desktop restart and incompatibility",
+            DesktopContracts = "progress labels; thumbnail LRU, replacement pixels, corruption, deletion, oversize; manual persistence; pending save during pause; stable live selection; adaptive layout; autocomplete clearing; analysis cancellation; deck tray add/remove/copy counts; gallery virtualization; proof desktop restart and incompatibility; pinned missing/recovery/race; real folder watcher; proof confirmation; close during proof and durable resume",
             BusyStateMilliseconds = busyMilliseconds,
             FirstCandidateMilliseconds = firstCandidateMilliseconds,
             PauseResponseMilliseconds = pauseMilliseconds,
@@ -177,12 +179,13 @@ internal static class Program
         }, new JsonSerializerOptions { WriteIndented = true }));
 
         window.Close();
+        WaitUntil(() => !window.IsVisible, TimeSpan.FromSeconds(5), "Main audit shutdown");
         app.Shutdown();
         Console.WriteLine($"Captured {Directory.GetFiles(output, "*.png").Length} UI audit images; busy {busyMilliseconds:N0} ms; first deck {firstCandidateMilliseconds:N0} ms; pause {pauseMilliseconds:N0} ms; stop {stopMilliseconds:N0} ms; keyboard focus visits {focusVisits}; output {output}");
         return 0;
     }
 
-    private static void Capture(Window window, string path, double widthDip, double heightDip, double scale)
+    internal static void Capture(Window window, string path, double widthDip, double heightDip, double scale)
     {
         window.Width = Math.Max(window.MinWidth, widthDip);
         window.Height = Math.Max(window.MinHeight, heightDip);
@@ -198,16 +201,22 @@ internal static class Program
         encoder.Save(stream);
     }
 
-    private static object? Invoke(MainWindow window, string method, params object?[] arguments) =>
-        typeof(MainWindow).GetMethod(method, BindingFlags.Instance | BindingFlags.NonPublic)!.Invoke(window, arguments);
+    internal static object? Invoke(MainWindow window, string method, params object?[] arguments)
+    {
+        var target = typeof(MainWindow).GetMethod(method, BindingFlags.Instance | BindingFlags.NonPublic)!;
+        var parameters = target.GetParameters();
+        var supplied = arguments.Concat(parameters.Skip(arguments.Length).Select(parameter => parameter.HasDefaultValue
+            ? parameter.DefaultValue : throw new ArgumentException($"Missing audit argument: {method}.{parameter.Name}"))).ToArray();
+        return target.Invoke(window, supplied);
+    }
 
     private static DeckBuildJob? CurrentJob(MainWindow window) =>
         (DeckBuildJob?)typeof(MainWindow).GetField("_deckBuildJob", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(window);
 
-    private static object? Field(MainWindow window, string name) =>
+    internal static object? Field(MainWindow window, string name) =>
         typeof(MainWindow).GetField(name, BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(window);
 
-    private static void SetField(MainWindow window, string name, object value) =>
+    internal static void SetField(MainWindow window, string name, object value) =>
         typeof(MainWindow).GetField(name, BindingFlags.Instance | BindingFlags.NonPublic)!.SetValue(window, value);
 
     private static void AuditProofRecovery(MainWindow window, string directory)
@@ -273,7 +282,7 @@ internal static class Program
             rows.Any(row => row.ProposedCopies != 0) || ((Button)window.FindName("VerifyOptimizationButton")).IsEnabled)
             throw new InvalidOperationException("Manual quantities/provenance/result reset were not preserved correctly.");
         Invoke(window, "SaveDesktopSettings");
-        var restored = new MainWindow { ShowActivated = false, ShowInTaskbar = false };
+        var restored = new MainWindow(backgroundServicesEnabled: false) { ShowActivated = false, ShowInTaskbar = false };
         restored.Show();
         WaitUntil(() => ((List<OwnedCardRow>)Field(restored, "_ownedCardRows")!).Count > 0, TimeSpan.FromSeconds(3), "Manual restart");
         var restoredRows = (List<OwnedCardRow>)Field(restored, "_ownedCardRows")!;
@@ -281,9 +290,10 @@ internal static class Program
             ((TextBlock)restored.FindName("OptimizerSourceTitle")).Text != "MANUAL COLLECTION")
             throw new InvalidOperationException("Restart lost the manual collection.");
         restored.Close();
+        WaitUntil(() => !restored.IsVisible, TimeSpan.FromSeconds(3), "Manual window shutdown");
     }
 
-    private static void Await(Task task)
+    internal static void Await(Task task)
     {
         var clock = Stopwatch.StartNew();
         while (!task.IsCompleted && clock.Elapsed < TimeSpan.FromSeconds(8)) Pump(TimeSpan.FromMilliseconds(20));
@@ -332,14 +342,14 @@ internal static class Program
             throw new InvalidOperationException("Exact verification was not installed as Ready, or delayed progress overwrote it.");
     }
 
-    private static void WaitUntil(Func<bool> condition, TimeSpan timeout, string operation)
+    internal static void WaitUntil(Func<bool> condition, TimeSpan timeout, string operation)
     {
         var clock = Stopwatch.StartNew();
         while (!condition() && clock.Elapsed < timeout) Pump(TimeSpan.FromMilliseconds(20));
         if (!condition()) throw new TimeoutException($"{operation} did not finish within {timeout}.");
     }
 
-    private static void Pump(TimeSpan duration)
+    internal static void Pump(TimeSpan duration)
     {
         var frame = new DispatcherFrame();
         var timer = new DispatcherTimer(DispatcherPriority.Background) { Interval = duration };
@@ -390,7 +400,26 @@ internal static class Program
         picker.Clear();
         if (picker.SelectedCard is not null || !((TextBlock)picker.FindName("CardDetails")).Text.Contains("Empty slot", StringComparison.Ordinal))
             throw new InvalidOperationException("Clearing a card retained stale details.");
+        Invoke(window, "ClearDeck_Click", window, new RoutedEventArgs());
+        var add = (CardPicker)Field(window, "_deckAddPicker")!;
+        for (var copy = 0; copy < 3; copy++)
+        {
+            add.SetCard(catalog.GetCard(1));
+            Invoke(window, "AddDeckCard_Click", window, new RoutedEventArgs());
+        }
+        var tray = (DeckTrayViewModel)Field(window, "_deckTray")!;
+        if (tray.Cards.Count != 1 || tray.Cards[0].Copies != 3)
+            throw new InvalidOperationException("Deck tray failed to group three physical copies.");
+        var view = (YfmCompanion.Desktop.Views.DeckAnalyzerView)window.FindName("DeckAnalyzerPaneView");
+        ((ListBox)view.FindName("DeckTrayGallery")).SelectedIndex = 0;
+        Invoke(window, "RemoveDeckCard_Click", window, new RoutedEventArgs());
+        if (tray.Cards.Count != 1 || tray.Cards[0].Copies != 2)
+            throw new InvalidOperationException("Deck tray remove did not remove exactly one physical copy.");
         for (var index = 0; index < pickers.Count; index++) pickers[index].SetCard(catalog.GetCard(index + 1));
+        add.SetCard(catalog.GetCard(1));
+        Invoke(window, "AddDeckCard_Click", window, new RoutedEventArgs());
+        if (pickers.Count(p => p.SelectedCard is not null) != 40 || tray.Cards.Sum(row => row.Copies) != 40)
+            throw new InvalidOperationException("Deck tray exceeded 40 slots.");
         var analyze = (Button)window.FindName("AnalyzeDeckButton");
         analyze.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
         Invoke(window, "ClearDeck_Click", window, new RoutedEventArgs());

@@ -2,6 +2,7 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:controls="clr-namespace:YfmCompanion.Desktop.Controls"
+        xmlns:views="clr-namespace:YfmCompanion.Desktop.Views"
         Title="YFM Fusion Companion"
         Width="1420" Height="900" MinWidth="620" MinHeight="360"
         Background="{StaticResource WindowBrush}"
@@ -10,25 +11,7 @@
         FontSize="14"
         SizeChanged="Window_SizeChanged"
         WindowStartupLocation="CenterScreen">
-    <Window.Resources>
-        <DataTemplate x:Key="ReadOnlyCardTile"><controls:CardTile /></DataTemplate>
-        <Style x:Key="CardPanelList" TargetType="ListBox" BasedOn="{StaticResource {x:Type ListBox}}">
-            <Setter Property="ItemTemplate" Value="{StaticResource ReadOnlyCardTile}" />
-            <Setter Property="Height" Value="340" />
-            <Setter Property="Background" Value="Transparent" />
-            <Setter Property="BorderThickness" Value="0" />
-            <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled" />
-            <Setter Property="VirtualizingPanel.IsVirtualizing" Value="True" />
-            <Setter Property="VirtualizingPanel.VirtualizationMode" Value="Recycling" />
-            <Setter Property="ItemContainerStyle"><Setter.Value>
-                <Style TargetType="ListBoxItem" BasedOn="{StaticResource {x:Type ListBoxItem}}">
-                    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-                    <Setter Property="BorderThickness" Value="2" />
-                    <Setter Property="BorderBrush" Value="Transparent" />
-                </Style>
-            </Setter.Value></Setter>
-        </Style>
-    </Window.Resources>
+
     <Grid x:Name="RootLayout" Margin="20">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -60,547 +43,49 @@
             <ScrollViewer x:Name="FullWorkspaceScroll" Grid.Column="0" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto" CanContentScroll="False">
             <TabControl x:Name="WorkspaceTabs" Margin="0" MinHeight="600" SelectionChanged="WorkspaceTabs_SelectionChanged">
                 <TabItem Header="TURN ADVISER">
-                    <Grid Margin="0,14,0,0">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="*" />
-                        </Grid.RowDefinitions>
-                        <controls:AdaptiveColumnsPanel MinimumColumnWidth="240" MaximumColumns="3">
-                            <GroupBox Header="HAND • ordered slots 1–5">
-                                <StackPanel x:Name="HandPickerPanel" />
-                            </GroupBox>
-                            <GroupBox Grid.Column="1" Header="MONSTER FIELD • optional">
-                                <StackPanel x:Name="MonsterPickerPanel" />
-                            </GroupBox>
-                            <GroupBox Grid.Column="2" Header="SPELL / TRAP FIELD • optional" Margin="0">
-                                <StackPanel x:Name="SpellPickerPanel" />
-                            </GroupBox>
-                        </controls:AdaptiveColumnsPanel>
-                        <Grid Grid.Row="1" Margin="0,14,0,12">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto" />
-                                <ColumnDefinition Width="Auto" />
-                                <ColumnDefinition Width="*" />
-                            </Grid.ColumnDefinitions>
-                            <Button Content="ANALYZE TURN" Click="AnalyzeTurn_Click" />
-                            <Button Grid.Column="1" Content="CLEAR" Click="ClearTurn_Click" Background="#263E50" Foreground="{StaticResource TextBrush}" />
-                            <CheckBox Grid.Column="2" x:Name="IncludeGlitchesCheckBox" Content="Include documented glitch fusions" IsChecked="True" HorizontalAlignment="Right" />
-                        </Grid>
-                        <Grid Grid.Row="2">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="*" />
-                            </Grid.RowDefinitions>
-                            <TextBlock x:Name="TurnResultSummary" Text="Enter any available cards; empty slots are ignored." Foreground="{StaticResource MutedBrush}" Margin="2,0,0,8" />
-                            <DataGrid x:Name="TurnResultsGrid" Grid.Row="1" AutoGenerateColumns="False" AlternationCount="2">
-                                <DataGrid.Columns>
-                                    <DataGridTextColumn Header="RESULT" Binding="{Binding Result}" Width="2*" />
-                                    <DataGridTextColumn Header="ATK" Binding="{Binding Attack}" Width="70" />
-                                    <DataGridTextColumn Header="DEF" Binding="{Binding Defense}" Width="70" />
-                                    <DataGridTextColumn Header="HAND ORDER" Binding="{Binding HandOrder}" Width="1.6*" />
-                                    <DataGridTextColumn Header="ROUTE" Binding="{Binding Route}" Width="4*" />
-                                    <DataGridTextColumn Header="FIELD" Binding="{Binding Field}" Width="1.3*" />
-                                    <DataGridCheckBoxColumn Header="GLITCH" Binding="{Binding IsGlitch}" Width="70" />
-                                </DataGrid.Columns>
-                            </DataGrid>
-                        </Grid>
-                    </Grid>
+                    <views:TurnAdviserView x:Name="TurnAdviserPaneView" AnalyzeTurn_ClickRequested="AnalyzeTurn_Click"
+                        ClearTurn_ClickRequested="ClearTurn_Click" />
                 </TabItem>
 
                 <TabItem x:Name="DeckAnalyzerTab" Header="DECK ANALYZER">
-                    <Grid Margin="0,14,0,0">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="340" />
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="*" />
-                        </Grid.RowDefinitions>
-                        <GroupBox Header="DECK • up to 40 cards" Margin="0">
-                            <ScrollViewer VerticalScrollBarVisibility="Auto">
-                                <WrapPanel x:Name="DeckPickerPanel" ItemWidth="235" />
-                            </ScrollViewer>
-                        </GroupBox>
-                        <Grid Grid.Row="1" Margin="0,14,0,12">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                            </Grid.RowDefinitions>
-                            <WrapPanel>
-                                <Button x:Name="AnalyzeDeckButton" Content="ANALYZE ALL 5-CARD HANDS" Click="AnalyzeDeck_Click" />
-                                <Button x:Name="LoadCurrentDeckButton" Content="LOAD CURRENT DECK FROM SAVE" Click="LoadCurrentDeckFromSave_Click" Background="#245475" />
-                                <Button x:Name="CancelDeckButton" Content="CANCEL" Click="CancelDeck_Click" IsEnabled="False" Background="#264C67" />
-                                <Button Content="CLEAR" Click="ClearDeck_Click" Background="#263E50" />
-                            </WrapPanel>
-                            <CheckBox Grid.Row="1" x:Name="DeckIncludeGlitchesCheckBox" Content="Include documented glitch fusions" IsChecked="True" HorizontalAlignment="Right" Margin="0,8,0,0" />
-                        </Grid>
-                        <Grid Grid.Row="2" Margin="0,0,0,12">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="*" />
-                            </Grid.ColumnDefinitions>
-                            <Border Background="{StaticResource PanelBrush}" Padding="10" Margin="0,0,7,0"><StackPanel><TextBlock Text="ANY FUSION / EQUIP" Foreground="{StaticResource MutedBrush}" FontSize="11" /><TextBlock x:Name="AnyFusionMetric" Text="—" FontSize="18" FontWeight="Bold" /></StackPanel></Border>
-                            <Border Grid.Column="1" Background="{StaticResource PanelBrush}" Padding="10" Margin="0,0,7,0"><StackPanel><TextBlock Text="ATK ≥ 2500" Foreground="{StaticResource MutedBrush}" FontSize="11" /><TextBlock x:Name="AtLeast2500Metric" Text="—" FontSize="18" FontWeight="Bold" /></StackPanel></Border>
-                            <Border Grid.Column="2" Background="{StaticResource PanelBrush}" Padding="10" Margin="0,0,7,0"><StackPanel><TextBlock Text="ATK ≥ 2800" Foreground="{StaticResource MutedBrush}" FontSize="11" /><TextBlock x:Name="AtLeast2800Metric" Text="—" FontSize="18" FontWeight="Bold" /></StackPanel></Border>
-                            <Border Grid.Column="3" Background="{StaticResource PanelBrush}" Padding="10" Margin="0,0,7,0"><StackPanel><TextBlock Text="ATK ≥ 3000" Foreground="{StaticResource MutedBrush}" FontSize="11" /><TextBlock x:Name="AtLeast3000Metric" Text="—" FontSize="18" FontWeight="Bold" /></StackPanel></Border>
-                            <Border Grid.Column="4" Background="{StaticResource PanelBrush}" Padding="10" Margin="0,0,7,0"><StackPanel><TextBlock Text="EXPECTED BEST ATK" Foreground="{StaticResource MutedBrush}" FontSize="11" /><TextBlock x:Name="ExpectedAttackMetric" Text="—" FontSize="18" FontWeight="Bold" /></StackPanel></Border>
-                            <Border Grid.Column="5" Background="{StaticResource PanelBrush}" Padding="10"><StackPanel><TextBlock Text="DEAD HAND" Foreground="{StaticResource MutedBrush}" FontSize="11" /><TextBlock x:Name="DeadHandMetric" Text="—" FontSize="18" FontWeight="Bold" /></StackPanel></Border>
-                        </Grid>
-                        <Grid Grid.Row="3">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="*" />
-                            </Grid.RowDefinitions>
-                            <StackPanel>
-                              <TextBlock x:Name="DeckResultSummary" Text="Fill any number of slots. A 40-card deck examines exactly 658,008 physical five-card hands." TextWrapping="Wrap" Foreground="{StaticResource MutedBrush}" Margin="2,0,0,8" />
-                              <ProgressBar x:Name="DeckAnalysisProgressBar" Minimum="0" Maximum="1" Height="8" Margin="0,0,0,8" />
-                            </StackPanel>
-                            <DataGrid x:Name="DeckResultsGrid" Grid.Row="1" AutoGenerateColumns="False" AlternationCount="2">
-                                <DataGrid.Columns>
-                                    <DataGridTextColumn Header="RESULT" Binding="{Binding Result}" Width="2*" />
-                                    <DataGridTextColumn Header="FINAL ATK" Binding="{Binding Attack}" Width="80" />
-                                    <DataGridTextColumn Header="FINAL DEF" Binding="{Binding Defense}" Width="80" />
-                                    <DataGridTextColumn Header="HAND CHANCE" Binding="{Binding Probability}" Width="110" />
-                                    <DataGridTextColumn Header="HANDS" Binding="{Binding Hands}" Width="110" />
-                                    <DataGridTextColumn Header="REPRESENTATIVE ROUTE" Binding="{Binding Route}" Width="4*" />
-                                    <DataGridCheckBoxColumn Header="GLITCH" Binding="{Binding IsGlitch}" Width="70" />
-                                </DataGrid.Columns>
-                            </DataGrid>
-                        </Grid>
-                    </Grid>
+                    <views:DeckAnalyzerView x:Name="DeckAnalyzerPaneView" AddDeckCardRequested="AddDeckCard_Click" RemoveDeckCardRequested="RemoveDeckCard_Click" AnalyzeDeck_ClickRequested="AnalyzeDeck_Click"
+                        LoadCurrentDeckFromSave_ClickRequested="LoadCurrentDeckFromSave_Click"
+                        CancelDeck_ClickRequested="CancelDeck_Click"
+                        ClearDeck_ClickRequested="ClearDeck_Click" />
                 </TabItem>
 
                 <TabItem x:Name="LiveDuelTab" Header="LIVE DUEL">
-                    <Grid Margin="0,14,0,0">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="*" />
-                        </Grid.RowDefinitions>
-                        <GroupBox Header="RETROARCH + SWANSTATION • READ ONLY" Margin="0">
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="2*" />
-                                    <ColumnDefinition Width="Auto" />
-                                </Grid.ColumnDefinitions>
-                                <TextBlock Text="Automatic read-only update every second" Foreground="{StaticResource MutedBrush}" VerticalAlignment="Center" />
-                                <TextBlock x:Name="LiveStatusText" Grid.Column="1" Text="Checking RetroArch…" TextWrapping="Wrap" Foreground="{StaticResource MutedBrush}" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="12,0" />
-                                <Button x:Name="InspectorToggleButton" Grid.Column="2" Content="INSPECT CARDS" Click="ToggleInspector_Click" Background="#245475" Foreground="{StaticResource TextBrush}" Padding="12,7" Margin="0" />
-                            </Grid>
-                        </GroupBox>
-                        <Border Grid.Row="1" Background="{StaticResource PanelBrush}" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" Padding="12" Margin="0,12,0,12">
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="2*" />
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="*" />
-                                </Grid.ColumnDefinitions>
-                                <StackPanel>
-                                    <TextBlock Text="CONNECTION" Foreground="{StaticResource MutedBrush}" FontSize="11" />
-                                    <TextBlock x:Name="LiveConnectionText" Text="Not connected" FontWeight="SemiBold" TextWrapping="Wrap" />
-                                </StackPanel>
-                                <StackPanel Grid.Column="1">
-                                    <TextBlock Text="PLAYER LP" Foreground="{StaticResource MutedBrush}" FontSize="11" />
-                                    <TextBlock x:Name="LivePlayerLpText" Text="—" FontSize="18" FontWeight="Bold" />
-                                </StackPanel>
-                                <StackPanel Grid.Column="2">
-                                    <TextBlock Text="OPPONENT LP" Foreground="{StaticResource MutedBrush}" FontSize="11" />
-                                    <TextBlock x:Name="LiveOpponentLpText" Text="—" FontSize="18" FontWeight="Bold" />
-                                </StackPanel>
-                                <StackPanel Grid.Column="3">
-                                    <TextBlock Text="TERRAIN" Foreground="{StaticResource MutedBrush}" FontSize="11" />
-                                    <TextBlock x:Name="LiveTerrainText" Text="—" FontSize="18" FontWeight="Bold" />
-                                </StackPanel>
-                                <StackPanel Grid.Column="4">
-                                    <TextBlock Text="UPDATE STATUS" Foreground="{StaticResource MutedBrush}" FontSize="11" />
-                                    <TextBlock x:Name="LiveUpdateHealthText" Text="ERROR" Foreground="{StaticResource ErrorBrush}" FontWeight="Bold" />
-                                </StackPanel>
-                            </Grid>
-                        </Border>
-                        <controls:AdaptiveColumnsPanel Grid.Row="2" MinimumColumnWidth="225" MaximumColumns="4">
-                            <GroupBox Header="HAND • current order" Margin="0,0,10,0">
-                                <ListBox x:Name="LiveHandGrid" Style="{StaticResource CardPanelList}" SelectionChanged="LiveCard_SelectionChanged" />
-                            </GroupBox>
-                            <GroupBox Grid.Column="1" Header="YOUR MONSTERS" Margin="0,0,10,0">
-                                <ListBox x:Name="LivePlayerFieldGrid" Style="{StaticResource CardPanelList}" SelectionChanged="LiveCard_SelectionChanged" />
-                            </GroupBox>
-                            <GroupBox Grid.Column="2" Header="YOUR SPELLS / TRAPS" Margin="0,0,10,0">
-                                <ListBox x:Name="LivePlayerSpellTrapGrid" Style="{StaticResource CardPanelList}" SelectionChanged="LiveCard_SelectionChanged" />
-                            </GroupBox>
-                            <GroupBox Grid.Column="3" Header="OPPONENT FIELD" Margin="0">
-                                <ListBox x:Name="LiveOpponentFieldGrid" Style="{StaticResource CardPanelList}" SelectionChanged="LiveCard_SelectionChanged" />
-                            </GroupBox>
-                        </controls:AdaptiveColumnsPanel>
-                        <TabControl Grid.Row="3" Margin="0,12,0,0">
-                            <TabItem Header="LIVE ADVICE">
-                                <Grid Margin="8">
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="Auto" />
-                                        <RowDefinition Height="*" />
-                                    </Grid.RowDefinitions>
-                                    <TextBlock x:Name="LiveAdviceSummary" Text="Live fusion advice will appear after a validated duel snapshot." Foreground="{StaticResource MutedBrush}" Margin="2,0,0,8" />
-                                    <DataGrid x:Name="LiveAdviceGrid" Grid.Row="1" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True" AlternationCount="2" SelectionChanged="LiveCard_SelectionChanged">
-                                        <DataGrid.Columns>
-                                            <DataGridTextColumn Header="RESULT" Binding="{Binding Result}" Width="2*" />
-                                            <DataGridTextColumn Header="ATK" Binding="{Binding Attack}" Width="70" />
-                                            <DataGridTextColumn Header="DEF" Binding="{Binding Defense}" Width="70" />
-                                            <DataGridTextColumn Header="HAND ORDER" Binding="{Binding HandOrder}" Width="1.6*" />
-                                            <DataGridTextColumn Header="ROUTE" Binding="{Binding Route}" Width="4*" />
-                                            <DataGridTextColumn Header="FIELD" Binding="{Binding Field}" Width="1.2*" />
-                                            <DataGridTextColumn Header="STAR 1" Binding="{Binding GuardianStar1}" Width="105" />
-                                            <DataGridTextColumn Header="STAR 2" Binding="{Binding GuardianStar2}" Width="105" />
-                                            <DataGridTextColumn Header="VS FIELD" Binding="{Binding GuardianOutcomes}" Width="120" />
-                                        </DataGrid.Columns>
-                                    </DataGrid>
-                                </Grid>
-                            </TabItem>
-                            <TabItem Header="CONSTRUCTED DECK">
-                                <DataGrid x:Name="LiveDeckGrid" Margin="8" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True" AlternationCount="2" SelectionChanged="LiveCard_SelectionChanged">
-                                    <DataGrid.Columns>
-                                        <DataGridTextColumn Header="SLOT" Binding="{Binding Slot}" Width="55" />
-                                        <DataGridTextColumn Header="#" Binding="{Binding Card.Id}" Width="50" />
-                                        <DataGridTextColumn Header="CARD" Binding="{Binding Card.Name}" Width="*" />
-                                        <DataGridTextColumn Header="TYPE" Binding="{Binding Card.PrimaryType}" Width="100" />
-                                        <DataGridTextColumn Header="ATK" Binding="{Binding Card.Attack}" Width="70" />
-                                        <DataGridTextColumn Header="DEF" Binding="{Binding Card.Defense}" Width="70" />
-                                    </DataGrid.Columns>
-                                </DataGrid>
-                            </TabItem>
-                            <TabItem Header="OWNED COLLECTION">
-                                <DataGrid x:Name="LiveCollectionGrid" Margin="8" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True" AlternationCount="2" SelectionChanged="LiveCard_SelectionChanged">
-                                    <DataGrid.Columns>
-                                        <DataGridTextColumn Header="#" Binding="{Binding Card.Id}" Width="50" />
-                                        <DataGridTextColumn Header="CARD" Binding="{Binding Card.Name}" Width="*" />
-                                        <DataGridTextColumn Header="CHEST" Binding="{Binding Chest}" Width="70" />
-                                        <DataGridTextColumn Header="DECK" Binding="{Binding Deck}" Width="70" />
-                                        <DataGridTextColumn Header="TOTAL OWNED" Binding="{Binding Total}" Width="100" />
-                                    </DataGrid.Columns>
-                                </DataGrid>
-                            </TabItem>
-                        </TabControl>
-                    </Grid>
+                    <views:LiveDuelView x:Name="LiveDuelPaneView" ToggleInspector_ClickRequested="ToggleInspector_Click"
+                        LiveCard_SelectionChangedRequested="LiveCard_SelectionChanged" />
                 </TabItem>
 
                 <TabItem x:Name="SaveSyncTab" Header="SAVE SNAPSHOT">
-                    <Grid Margin="0,14,0,0">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="*" />
-                        </Grid.RowDefinitions>
-                        <GroupBox Header="SWANSTATION MEMORY CARD • READ ONLY" Margin="0">
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto" />
-                                    <ColumnDefinition Width="Auto" />
-                                    <ColumnDefinition Width="Auto" />
-                                    <ColumnDefinition Width="Auto" />
-                                    <ColumnDefinition Width="*" />
-                                </Grid.ColumnDefinitions>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto" />
-                                    <RowDefinition Height="Auto" />
-                                    <RowDefinition Height="Auto" />
-                                    <RowDefinition Height="Auto" />
-                                    <RowDefinition Height="Auto" />
-                                </Grid.RowDefinitions>
-                                <WrapPanel Grid.ColumnSpan="5">
-                                    <Button x:Name="RefreshSaveButton" Content="REFRESH SAVED SNAPSHOT" Click="RefreshSaveSnapshot_Click" />
-                                    <Button Content="CHOOSE SAVE FILE…" Click="SelectSave_Click" Background="#263E50" />
-                                    <Button x:Name="ApplyDeckButton" Content="LOAD THIS DECK INTO ANALYZER" Click="ApplyDeckSnapshot_Click" IsEnabled="False" />
-                                    <Button x:Name="ApplyOwnedButton" Content="LOAD OWNED CARDS INTO OPTIMIZER" Click="ApplyOwnedSnapshot_Click" IsEnabled="False" />
-                                </WrapPanel>
-                                <TextBlock Grid.Row="1" Grid.ColumnSpan="5" Margin="0,8,0,0" Text="Refresh reads the latest Forbidden Memories memory-card save. The load buttons copy that saved deck or collection into the named analysis screen; they never change the game save." TextWrapping="Wrap" Foreground="{StaticResource MutedBrush}" />
-                                <TextBlock x:Name="SaveSnapshotStatus" Grid.Row="2" Grid.ColumnSpan="5" Margin="0,6,0,0" Text="Looking for a saved memory-card snapshot…" TextWrapping="Wrap" Foreground="{StaticResource MutedBrush}" />
-                            </Grid>
-                        </GroupBox>
-                        <Border Grid.Row="1" Background="{StaticResource PanelBrush}" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" Padding="12" Margin="0,12,0,12">
-                            <StackPanel>
-                                <Grid>
-                                    <Grid.ColumnDefinitions><ColumnDefinition Width="120"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
-                                    <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
-                                    <TextBlock Text="SOURCE" Foreground="{StaticResource MutedBrush}" />
-                                    <TextBlock x:Name="SaveSourceText" Grid.Column="1" Text="Manual entry" FontWeight="SemiBold" />
-                                    <TextBlock Grid.Row="1" Text="SAVED" Foreground="{StaticResource MutedBrush}" Margin="0,5,0,0" />
-                                    <TextBlock x:Name="SaveTimestampText" Grid.Row="1" Grid.Column="1" Text="—" TextWrapping="Wrap" Margin="0,5,0,0" />
-                                </Grid>
-                                <Expander Header="ADVANCED FILE AND VALIDATION DETAILS" Margin="0,8,0,0" IsExpanded="False">
-                                    <Grid Margin="0,7,0,0">
-                                        <Grid.ColumnDefinitions><ColumnDefinition Width="120"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
-                                        <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
-                                        <TextBlock Text="FILE" Foreground="{StaticResource MutedBrush}" />
-                                        <TextBlock x:Name="SavePathText" Grid.Column="1" Text="—" TextWrapping="Wrap" />
-                                        <TextBlock Grid.Row="1" Text="VALIDATION" Foreground="{StaticResource MutedBrush}" Margin="0,5,0,0" />
-                                        <TextBlock x:Name="SaveValidationText" Grid.Row="1" Grid.Column="1" Text="No saved snapshot loaded." TextWrapping="Wrap" Margin="0,5,0,0" />
-                                    </Grid>
-                                </Expander>
-                            </StackPanel>
-                        </Border>
-                        <controls:AdaptiveColumnsPanel Grid.Row="2" MinimumColumnWidth="300" MaximumColumns="2">
-                            <GroupBox Header="CONSTRUCTED DECK • 40 saved slots" Margin="0,0,12,0">
-                                <ListBox x:Name="SaveDeckGrid" Style="{StaticResource CardPanelList}" />
-                            </GroupBox>
-                            <GroupBox Grid.Column="1" Header="COLLECTION • chest + constructed deck" Margin="0">
-                                <ListBox x:Name="SaveCollectionGrid" Style="{StaticResource CardPanelList}" />
-                            </GroupBox>
-                        </controls:AdaptiveColumnsPanel>
-                    </Grid>
+                    <views:SaveSnapshotView x:Name="SaveSnapshotPaneView" RefreshSaveSnapshot_ClickRequested="RefreshSaveSnapshot_Click"
+                        SelectSave_ClickRequested="SelectSave_Click"
+                        ApplyDeckSnapshot_ClickRequested="ApplyDeckSnapshot_Click"
+                        ApplyOwnedSnapshot_ClickRequested="ApplyOwnedSnapshot_Click" />
                 </TabItem>
 
                 <TabItem x:Name="OwnedOptimizerTab" Header="OWNED-CARD OPTIMIZER">
-                    <Grid Margin="0,14,0,0">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="*" />
-                        </Grid.RowDefinitions>
-                        <Border x:Name="OptimizerSourcePane" Background="{StaticResource PanelBrush}" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" Padding="10" Margin="0,0,0,10">
-                            <StackPanel>
-                                <StackPanel>
-                                    <TextBlock x:Name="OptimizerSourceTitle" Text="AUTOMATIC — NEWEST SAVE" Foreground="{StaticResource GoldBrush}" FontWeight="SemiBold" />
-                                    <TextBlock x:Name="OptimizerSourceSummary" Text="Looking for the newest supported Forbidden Memories save…" TextWrapping="Wrap" Foreground="{StaticResource MutedBrush}" Margin="0,3,0,0" />
-                                </StackPanel>
-                                <WrapPanel Margin="0,8,0,0">
-                                    <Button Content="REFRESH" Click="RefreshSaveSnapshot_Click" Padding="10,6" />
-                                    <Button Content="CHOOSE SAVE FILE…" Click="SelectSave_Click" Padding="10,6" />
-                                    <Button Content="AUTOMATIC NEWEST" Click="UseAutomaticSave_Click" Padding="10,6" />
-                                    <Button Content="ENTER CARDS MANUALLY" Click="UseManualCollection_Click" Padding="10,6" />
-                                </WrapPanel>
-                            </StackPanel>
-                        </Border>
-                        <GroupBox x:Name="OptimizerStrategyPane" Grid.Row="1" Header="STRATEGY • choose the job this deck must do" Margin="0">
-                            <StackPanel>
-                              <controls:AdaptiveColumnsPanel MinimumColumnWidth="230" MaximumColumns="3">
-                                <StackPanel>
-                                    <TextBlock Text="CAMPAIGN GOAL" Foreground="{StaticResource MutedBrush}" FontSize="11" />
-                                    <ComboBox x:Name="CampaignScopeCombo" DisplayMemberPath="Label" SelectedValuePath="Scope" SelectionChanged="CampaignScope_SelectionChanged" />
-                                </StackPanel>
-                                <StackPanel>
-                                    <TextBlock Text="TARGET DUELIST" Foreground="{StaticResource MutedBrush}" FontSize="11" />
-                                    <ComboBox x:Name="CampaignOpponentCombo" DisplayMemberPath="Label" SelectedValuePath="DuelistId" Visibility="Collapsed" />
-                                    <TextBlock x:Name="CampaignOpponentHint" Text="Choose “One specific opponent” to select a duelist." TextWrapping="Wrap" Foreground="{StaticResource MutedBrush}" Margin="0,6,0,0" />
-                                </StackPanel>
-                                <StackPanel>
-                                    <CheckBox x:Name="UseSavedStarChipsCheckBox" Content="USE SAVED STAR CHIPS" Checked="CampaignStarChipSetting_Changed" Unchecked="CampaignStarChipSetting_Changed" IsEnabled="False" />
-                                    <TextBlock x:Name="CampaignInputHint" Text="Load a saved snapshot to use its Star Chip budget; the optimizer otherwise uses only the owned quantities below." TextWrapping="Wrap" Foreground="{StaticResource MutedBrush}" FontSize="11" Margin="0,3,0,0" />
-                                </StackPanel>
-                              </controls:AdaptiveColumnsPanel>
-                              <Expander Header="ADVANCED STRATEGY SETTINGS" Margin="0,10,0,0">
-                               <StackPanel Margin="0,8,0,0">
-                                <controls:AdaptiveColumnsPanel MinimumColumnWidth="230" MaximumColumns="4">
-                                 <StackPanel><TextBlock Text="CUSTOM PROFILE" Foreground="{StaticResource MutedBrush}" FontSize="11" />
-                                    <ComboBox x:Name="OptimizerProfileCombo" DisplayMemberPath="Label" SelectedValuePath="Profile" SelectionChanged="OptimizerProfile_SelectionChanged" /></StackPanel>
-                                 <StackPanel><TextBlock Text="FOCUS TYPES • comma separated" Foreground="{StaticResource MutedBrush}" FontSize="11" />
-                                    <TextBox x:Name="PreferredTypesTextBox" ToolTip="Examples: Dragon, Thunder or Pyro, Dragon" /></StackPanel>
-                                 <StackPanel><TextBlock Text="FIELD" Foreground="{StaticResource MutedBrush}" FontSize="11" />
-                                    <ComboBox x:Name="PreferredFieldCombo" DisplayMemberPath="Label" SelectedValuePath="CardId" /></StackPanel>
-                                 <StackPanel><TextBlock Text="OPPONENT TYPES • comma separated" Foreground="{StaticResource MutedBrush}" FontSize="11" />
-                                    <TextBox x:Name="OpponentTypesTextBox" ToolTip="Raises relevant type-removal cards; example: Dragon, Warrior" /></StackPanel>
-                                </controls:AdaptiveColumnsPanel>
-                                <TextBlock x:Name="OptimizerProfileDescription" TextWrapping="Wrap" Foreground="{StaticResource MutedBrush}" Margin="0,8,0,8" />
-                                <CheckBox x:Name="OptimizerIncludeGlitchesCheckBox" Content="Include documented glitch fusions" IsChecked="True" />
-                                <StackPanel Margin="0,8,0,0">
-                                    <TextBlock Text="ALREADY REDEEMED PASSWORD CARD NAMES • comma separated" Foreground="{StaticResource MutedBrush}" FontSize="11" />
-                                    <TextBox x:Name="AlreadyRedeemedCardsTextBox" ToolTip="Optional. These card names are excluded from virtual Star Chip recommendations because a save does not record past password redemption." />
-                                </StackPanel>
-                               </StackPanel>
-                              </Expander>
-                            </StackPanel>
-                        </GroupBox>
-                        <StackPanel Grid.Row="2" Margin="0,12,0,10">
-                          <Border Background="{StaticResource PanelBrush}" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" Padding="10" Margin="0,0,0,10">
-                            <StackPanel>
-                              <controls:AdaptiveColumnsPanel MinimumColumnWidth="240" MaximumColumns="2">
-                                <StackPanel><TextBlock Text="SEARCH MODE" Foreground="{StaticResource MutedBrush}" FontSize="11" />
-                                    <ComboBox x:Name="OptimizerSpeedCombo" DisplayMemberPath="Label" SelectedValuePath="Mode" /></StackPanel>
-                                <StackPanel><TextBlock x:Name="OptimizationStageText" Text="PREPARE → SEARCH → VERIFY → READY" TextWrapping="Wrap" FontWeight="SemiBold" />
-                                    <ProgressBar x:Name="OptimizationProgressBar" Height="10" Margin="0,6,0,0" Minimum="0" Maximum="1" Value="0" /></StackPanel>
-                              </controls:AdaptiveColumnsPanel>
-                              <TextBlock x:Name="OptimizationProgressDetail" Text="Ready." Foreground="{StaticResource MutedBrush}" Margin="0,7,0,0" TextWrapping="Wrap" />
-                              <Expander Header="ADVANCED PROOF SEARCH" Margin="0,8,0,0">
-                               <StackPanel>
-                                <CheckBox x:Name="ProveOptimalCheckBox" Margin="0,6,0,0"><TextBlock Text="Prove optimal for this scoring model (may be impractical; checkpointed)" TextWrapping="Wrap" /></CheckBox>
-                                <CheckBox x:Name="NewProofCheckpointCheckBox" Margin="0,6,0,0"><TextBlock Text="Start a new proof checkpoint; preserve the old file as a backup" TextWrapping="Wrap" /></CheckBox>
-                                <TextBlock Text="Proof searches can resume after restarting the app when the same collection and options are selected. Quick, Balanced and Thorough can resume only while this window remains open." TextWrapping="Wrap" Foreground="{StaticResource MutedBrush}" FontSize="11" Margin="0,6,0,0" />
-                               </StackPanel>
-                              </Expander>
-                            </StackPanel>
-                          </Border>
-                          <WrapPanel>
-                            <Button x:Name="OptimizeDeckButton" Content="BUILD DECK" Click="OptimizeDeck_Click" />
-                            <Button x:Name="PauseOptimizationButton" Grid.Column="1" Content="PAUSE" Click="PauseOptimization_Click" IsEnabled="False" />
-                            <Button x:Name="StopOptimizationButton" Grid.Column="2" Content="STOP AND KEEP BEST" Click="StopOptimization_Click" IsEnabled="False" />
-                            <Button x:Name="VerifyOptimizationButton" Grid.Column="3" Content="VERIFY DECK" Click="VerifyOptimization_Click" IsEnabled="False" />
-                            <Button Grid.Column="4" Content="CLEAR OWNED" Click="ClearOwned_Click" />
-                          </WrapPanel>
-                          <TextBlock x:Name="OptimizationStatus" Text="Owned cards load automatically from the newest save." TextWrapping="Wrap" Foreground="{StaticResource MutedBrush}" Margin="0,8,0,0" />
-                        </StackPanel>
-                        <Grid x:Name="OptimizerBody" Grid.Row="3" SizeChanged="OptimizerBody_SizeChanged">
-                            <Grid.RowDefinitions>
-                                <RowDefinition x:Name="OptimizerOwnedRow" Height="*" />
-                                <RowDefinition x:Name="OptimizerResultRow" Height="0" />
-                            </Grid.RowDefinitions>
-                            <Grid.ColumnDefinitions>
-                            <ColumnDefinition x:Name="OptimizerOwnedColumn" Width="0.8*" />
-                            <ColumnDefinition x:Name="OptimizerResultColumn" Width="1.6*" />
-                            </Grid.ColumnDefinitions>
-                            <GroupBox x:Name="OptimizerOwnedPane" Header="OWNED COLLECTION" Margin="0,0,12,0">
-                                <Grid>
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="Auto" />
-                                        <RowDefinition Height="Auto" />
-                                        <RowDefinition Height="Auto" />
-                                        <RowDefinition Height="*" />
-                                    </Grid.RowDefinitions>
-                                    <Grid>
-                                        <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="130"/><ColumnDefinition Width="115"/></Grid.ColumnDefinitions>
-                                        <TextBox x:Name="OwnedSearchBox" TextChanged="OwnedSearch_TextChanged" Margin="0,0,7,8" ToolTip="Search owned cards by name or card number" />
-                                        <ComboBox x:Name="OwnedTypeFilterCombo" Grid.Column="1" SelectionChanged="OwnedFilter_Changed" Margin="0,0,7,8" />
-                                        <ComboBox x:Name="OwnedSortCombo" Grid.Column="2" SelectionChanged="OwnedFilter_Changed" Margin="0,0,0,8" />
-                                    </Grid>
-                                    <StackPanel x:Name="OwnedAddPickerPanel" Grid.Row="1" Margin="0,0,0,8" />
-                                    <WrapPanel Grid.Row="2" Margin="0,0,0,8">
-                                        <Button Content="ADD CARD" Click="AddOwnedCard_Click" Padding="10,5" />
-                                        <Button Content="ARTWORK FOLDER…" Click="ChooseArtworkFolder_Click" Padding="10,5" />
-                                        <Button Content="ASSIGN SELECTED ART…" Click="AssignSelectedArtwork_Click" Padding="10,5" />
-                                        <TextBlock x:Name="OwnedCollectionCount" VerticalAlignment="Center" Foreground="{StaticResource MutedBrush}" Margin="8,0,0,0" />
-                                    </WrapPanel>
-                                    <ListBox x:Name="OwnedCardsGallery" Grid.Row="3" Height="440" SelectionChanged="OwnedCards_SelectionChanged"
-                                             ScrollViewer.CanContentScroll="True" ScrollViewer.HorizontalScrollBarVisibility="Disabled" VirtualizingStackPanel.IsVirtualizing="True"
-                                             VirtualizingStackPanel.VirtualizationMode="Recycling" Background="Transparent" BorderThickness="0">
-                                        <ListBox.ItemsPanel><ItemsPanelTemplate><VirtualizingStackPanel /></ItemsPanelTemplate></ListBox.ItemsPanel>
-                                        <ListBox.ItemContainerStyle><Style TargetType="ListBoxItem" BasedOn="{StaticResource CardTileStyle}" /></ListBox.ItemContainerStyle>
-                                        <ListBox.ItemTemplate>
-                                            <DataTemplate>
-                                                <Grid MinHeight="78">
-                                                    <Grid.ColumnDefinitions><ColumnDefinition Width="58"/><ColumnDefinition Width="*"/><ColumnDefinition Width="52"/></Grid.ColumnDefinitions>
-                                                    <Border Background="#0A172B" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" Margin="0,0,8,0">
-                                                        <Grid>
-                                                            <Image Source="{Binding Artwork}" Stretch="UniformToFill" />
-                                                            <TextBlock Text="{Binding Card.Id}" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{StaticResource GoldBrush}" FontWeight="Bold" />
-                                                        </Grid>
-                                                    </Border>
-                                                    <StackPanel Grid.Column="1" MinWidth="0">
-                                                        <TextBlock Text="{Binding Card.Name}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
-                                                        <TextBlock Text="{Binding DetailLine}" Foreground="{StaticResource MutedBrush}" FontSize="11" TextTrimming="CharacterEllipsis" />
-                                                        <TextBlock Text="{Binding QuantityLine}" Foreground="{StaticResource AccentBrush}" FontSize="11" TextTrimming="CharacterEllipsis" />
-                                                        <TextBlock Text="{Binding ProposedLine}" Foreground="{StaticResource GoldBrush}" FontSize="11" TextTrimming="CharacterEllipsis" />
-                                                    </StackPanel>
-                                                    <TextBox Grid.Column="2" Width="44" HorizontalAlignment="Right" Text="{Binding Quantity, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center" ToolTip="Total owned copies" />
-                                                </Grid>
-                                            </DataTemplate>
-                                        </ListBox.ItemTemplate>
-                                    </ListBox>
-                                </Grid>
-                            </GroupBox>
-                            <Grid x:Name="OptimizerResultPane" Grid.Column="1">
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto" />
-                                    <RowDefinition Height="Auto" />
-                                    <RowDefinition Height="Auto" />
-                                    <RowDefinition Height="*" />
-                                </Grid.RowDefinitions>
-                                <Grid Grid.Row="1" Margin="0,0,0,10">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*" />
-                                        <ColumnDefinition Width="*" />
-                                        <ColumnDefinition Width="*" />
-                                        <ColumnDefinition Width="*" />
-                                    </Grid.ColumnDefinitions>
-                                    <Border Background="{StaticResource PanelBrush}" Padding="9" Margin="0,0,7,0"><StackPanel><TextBlock Text="ATK ≥ 2800" Foreground="{StaticResource MutedBrush}" FontSize="10" /><TextBlock x:Name="Optimizer2800Metric" Text="—" FontSize="17" FontWeight="Bold" /></StackPanel></Border>
-                                    <Border Grid.Column="1" Background="{StaticResource PanelBrush}" Padding="9" Margin="0,0,7,0"><StackPanel><TextBlock Text="ATK ≥ 2500" Foreground="{StaticResource MutedBrush}" FontSize="10" /><TextBlock x:Name="Optimizer2500Metric" Text="—" FontSize="17" FontWeight="Bold" /></StackPanel></Border>
-                                    <Border Grid.Column="2" Background="{StaticResource PanelBrush}" Padding="9" Margin="0,0,7,0"><StackPanel><TextBlock Text="EXPECTED BEST" Foreground="{StaticResource MutedBrush}" FontSize="10" /><TextBlock x:Name="OptimizerExpectedMetric" Text="—" FontSize="17" FontWeight="Bold" /></StackPanel></Border>
-                                    <Border Grid.Column="3" Background="{StaticResource PanelBrush}" Padding="9"><StackPanel><TextBlock Text="DEAD HAND" Foreground="{StaticResource MutedBrush}" FontSize="10" /><TextBlock x:Name="OptimizerDeadMetric" Text="—" FontSize="17" FontWeight="Bold" /></StackPanel></Border>
-                                </Grid>
-                                <Border x:Name="CampaignPlanPanel" Grid.Row="2" Visibility="Collapsed" Background="{StaticResource PanelBrush}" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" Padding="10" Margin="0,0,0,10">
-                                    <StackPanel>
-                                        <TextBlock x:Name="CampaignScopeSummary" FontWeight="SemiBold" TextWrapping="Wrap" />
-                                        <TextBlock x:Name="CampaignSafetySummary" Foreground="{StaticResource MutedBrush}" TextWrapping="Wrap" Margin="0,3,0,0" />
-                                        <TextBlock x:Name="CampaignPurchaseSummary" Foreground="{StaticResource MutedBrush}" TextWrapping="Wrap" Margin="0,3,0,0" />
-                                    </StackPanel>
-                                </Border>
-                                <TabControl Grid.Row="3">
-                                    <TabItem Header="DECK">
-                                        <DataGrid x:Name="OptimizedDeckGrid" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True" AlternationCount="2" Margin="0,8,0,0">
-                                            <DataGrid.Columns>
-                                                <DataGridTextColumn Header="COPIES" Binding="{Binding Copies}" Width="60" />
-                                                <DataGridTextColumn Header="CARD" Binding="{Binding Card.Name}" Width="180" />
-                                                <DataGridTextColumn Header="OWNED" Binding="{Binding Owned}" Width="60" />
-                                                <DataGridTextColumn Header="BUY" Binding="{Binding Purchase}" Width="48" />
-                                                <DataGridTextColumn Header="TYPE" Binding="{Binding Card.PrimaryType}" Width="95" />
-                                                <DataGridTextColumn Header="ATK" Binding="{Binding Card.Attack}" Width="60" />
-                                                <DataGridTextColumn Header="WHY INCLUDED" Binding="{Binding Reason}" Width="260" />
-                                            </DataGrid.Columns>
-                                        </DataGrid>
-                                    </TabItem>
-                                    <TabItem Header="OUTCOMES">
-                                        <DataGrid x:Name="OptimizationTargetsGrid" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True" AlternationCount="2" Margin="0,8,0,0">
-                                            <DataGrid.Columns>
-                                                <DataGridTextColumn Header="RESULT" Binding="{Binding Result.Name}" Width="180" />
-                                                <DataGridTextColumn Header="FINAL ATK" Binding="{Binding EffectiveAttack}" Width="75" />
-                                                <DataGridTextColumn Header="CHANCE" Binding="{Binding FormattedProbability}" Width="90" />
-                                                <DataGridTextColumn Header="REPRESENTATIVE ROUTE" Binding="{Binding Route}" Width="260" />
-                                            </DataGrid.Columns>
-                                        </DataGrid>
-                                    </TabItem>
-                                    <TabItem Header="LIMITS">
-                                        <DataGrid x:Name="LimitedCardsGrid" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True" AlternationCount="2" Margin="0,8,0,0">
-                                            <DataGrid.Columns>
-                                                <DataGridTextColumn Header="CARD" Binding="{Binding Card.Name}" Width="180" />
-                                                <DataGridTextColumn Header="IN DECK" Binding="{Binding IncludedCopies}" Width="70" />
-                                                <DataGridTextColumn Header="OWNED" Binding="{Binding OwnedCopies}" Width="70" />
-                                                <DataGridTextColumn Header="LIMIT" Binding="{Binding LimitingReason}" Width="260" />
-                                            </DataGrid.Columns>
-                                        </DataGrid>
-                                    </TabItem>
-                                    <TabItem Header="LOW VALUE">
-                                        <DataGrid x:Name="ExcludedCardsGrid" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True" AlternationCount="2" Margin="0,8,0,0">
-                                            <DataGrid.Columns>
-                                                <DataGridTextColumn Header="CARD" Binding="{Binding Card.Name}" Width="180" />
-                                                <DataGridTextColumn Header="TIER" Binding="{Binding Tier}" Width="90" />
-                                                <DataGridTextColumn Header="ROLE" Binding="{Binding Role}" Width="1.2*" />
-                                                <DataGridTextColumn Header="WHY LEFT OUT" Binding="{Binding Rationale}" Width="260" />
-                                            </DataGrid.Columns>
-                                        </DataGrid>
-                                    </TabItem>
-                                    <TabItem Header="STAR CHIPS">
-                                        <DataGrid x:Name="PurchasePlanGrid" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True" AlternationCount="2" Margin="0,8,0,0">
-                                            <DataGrid.Columns>
-                                                <DataGridTextColumn Header="CARD" Binding="{Binding Card}" Width="145" />
-                                                <DataGridTextColumn Header="PASSWORD" Binding="{Binding Password}" Width="85" />
-                                                <DataGridTextColumn Header="QTY" Binding="{Binding Copies}" Width="48" />
-                                                <DataGridTextColumn Header="EACH" Binding="{Binding UnitCost}" Width="62" />
-                                                <DataGridTextColumn Header="TOTAL" Binding="{Binding TotalCost}" Width="65" />
-                                                <DataGridTextColumn Header="SPENT" Binding="{Binding CumulativeSpend}" Width="65" />
-                                                <DataGridTextColumn Header="LEFT" Binding="{Binding Remaining}" Width="65" />
-                                                <DataGridTextColumn Header="WHY THIS PURCHASE" Binding="{Binding Rationale}" Width="240" />
-                                            </DataGrid.Columns>
-                                        </DataGrid>
-                                    </TabItem>
-                                    <TabItem Header="THREATS">
-                                        <DataGrid x:Name="CampaignThreatsGrid" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True" AlternationCount="2" Margin="0,8,0,0">
-                                            <DataGrid.Columns>
-                                                <DataGridTextColumn Header="OPPONENT" Binding="{Binding Opponent}" Width="1.2*" />
-                                                <DataGridTextColumn Header="THREAT" Binding="{Binding Threat}" Width="1.4*" />
-                                                <DataGridTextColumn Header="ATK" Binding="{Binding Attack}" Width="65" />
-                                                <DataGridTextColumn Header="STARS" Binding="{Binding GuardianStars}" Width="95" />
-                                                <DataGridTextColumn Header="SOURCE" Binding="{Binding Source}" Width="1.1*" />
-                                            </DataGrid.Columns>
-                                        </DataGrid>
-                                    </TabItem>
-                                </TabControl>
-                            </Grid>
-                        </Grid>
-                    </Grid>
+                    <views:OwnedOptimizerView x:Name="OwnedOptimizerPaneView" RefreshSaveSnapshot_ClickRequested="RefreshSaveSnapshot_Click"
+                        SelectSave_ClickRequested="SelectSave_Click"
+                        UseAutomaticSave_ClickRequested="UseAutomaticSave_Click"
+                        UseManualCollection_ClickRequested="UseManualCollection_Click"
+                        CampaignScope_SelectionChangedRequested="CampaignScope_SelectionChanged"
+                        CampaignStarChipSetting_ChangedRequested="CampaignStarChipSetting_Changed"
+                        OptimizerProfile_SelectionChangedRequested="OptimizerProfile_SelectionChanged"
+                        OptimizeDeck_ClickRequested="OptimizeDeck_Click"
+                        PauseOptimization_ClickRequested="PauseOptimization_Click"
+                        StopOptimization_ClickRequested="StopOptimization_Click"
+                        VerifyOptimization_ClickRequested="VerifyOptimization_Click"
+                        ClearOwned_ClickRequested="ClearOwned_Click"
+                        OptimizerBody_SizeChangedRequested="OptimizerBody_SizeChanged"
+                        OwnedSearch_TextChangedRequested="OwnedSearch_TextChanged"
+                        OwnedFilter_ChangedRequested="OwnedFilter_Changed"
+                        AddOwnedCard_ClickRequested="AddOwnedCard_Click"
+                        ChooseArtworkFolder_ClickRequested="ChooseArtworkFolder_Click"
+                        AssignSelectedArtwork_ClickRequested="AssignSelectedArtwork_Click"
+                        OwnedCards_SelectionChangedRequested="OwnedCards_SelectionChanged" />
                 </TabItem>
             </TabControl>
             </ScrollViewer>
@@ -669,15 +154,15 @@
             </Grid>
             <DataGrid x:Name="CompactAdviceGrid" Grid.Row="1" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True" FontSize="12" RowHeaderWidth="0" HeadersVisibility="Column">
                 <DataGrid.Columns>
-                    <DataGridTemplateColumn Header="RESULT" Width="138">
+                    <DataGridTemplateColumn Header="RESULT" Width="*" MinWidth="50">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding Result}" TextWrapping="Wrap" ToolTip="{Binding Result}" Padding="3,2" />
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
-                    <DataGridTextColumn Header="ATK" Binding="{Binding Attack}" Width="50" />
-                    <DataGridTemplateColumn Header="ROUTE" Width="98">
+                    <DataGridTextColumn Header="ATK" Binding="{Binding Attack}" Width="44" />
+                    <DataGridTemplateColumn Header="ROUTE" Width="92">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <StackPanel Margin="3,2">
