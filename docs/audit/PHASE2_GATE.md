@@ -2,7 +2,7 @@
 
 Date: 2026-09-24
 
-Status: **passed**. Phase 3 has not begun.
+Historical status at the Phase 2 handoff: **passed**. **Reopened by Phase 3 on 2026-09-25** after independent review found engine-state, source-race, virtualization and visual-acceptance gaps. See [PHASE3_AUDIT.md](PHASE3_AUDIT.md) for the current status; the historical timings below do not establish release readiness.
 
 ## Automated verification
 

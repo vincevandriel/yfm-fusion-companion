@@ -7,10 +7,14 @@ public static class RetroArchSaveLocator
     private static readonly string[] SupportedExtensions = [".srm", ".mcr"];
 
     public static SaveDiscoveryResult Discover(string? explicitConfigPath = null,
-        IEnumerable<string>? additionalLocations = null)
+        IEnumerable<string>? additionalLocations = null, CancellationToken cancellationToken = default)
     {
         var paths = FindCandidatePaths(explicitConfigPath, additionalLocations);
-        var inspections = paths.Select(Ps1MemoryCardReader.Inspect).ToArray();
+        var inspections = paths.Select(path =>
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            return Ps1MemoryCardReader.Inspect(path);
+        }).ToArray();
         var selected = inspections
             .Where(result => result.IsValid)
             .Select(result => result.Snapshot!)
@@ -48,11 +52,15 @@ public static class RetroArchSaveLocator
 
     private static IEnumerable<string> EnumerateSaveFiles(string directory)
     {
-        foreach (var file in Directory.EnumerateFiles(directory)) yield return file;
-        // RetroArch can sort saves by core or content directory. One level covers
-        // those layouts without recursively walking an arbitrary drive.
-        foreach (var child in Directory.EnumerateDirectories(directory))
-            foreach (var file in Directory.EnumerateFiles(child)) yield return file;
+        // Core and content sorting can both be enabled. Do not follow junctions
+        // or let an inaccessible child prevent other locations being inspected.
+        return Directory.EnumerateFiles(directory, "*", new EnumerationOptions
+        {
+            RecurseSubdirectories = true,
+            MaxRecursionDepth = 2,
+            IgnoreInaccessible = true,
+            AttributesToSkip = FileAttributes.ReparsePoint
+        });
     }
 
     public static string? ResolveSaveDirectory(string configPath)

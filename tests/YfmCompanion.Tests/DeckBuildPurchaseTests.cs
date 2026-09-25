@@ -33,12 +33,14 @@ public sealed class DeckBuildPurchaseTests
         Assert.Equal(5, stopped.Best!.RequiredStarChips);
         Assert.Equal(39, stopped.Best.Report.Deck.Single(e => e.Card.Id == 1).Copies);
         Assert.Equal(1, stopped.Best.Report.Deck.Single(e => e.Card.Id == 2).Copies);
-        Assert.Equal(1, stopped.Best.Report.SafetyAssessment!.ThreatCount);
-        Assert.Equal(1, stopped.Best.Report.SecondarySafetyAssessment!.ThreatCount);
+        Assert.Null(stopped.Best.Report.SafetyAssessment);
+        Assert.Null(stopped.Best.Report.SecondarySafetyAssessment);
         Assert.False(stopped.Best.Report.ExactAnalysis.IsExact);
         var verified = await job.VerifyBestAsync();
         Assert.Equal(5, verified.Best!.RequiredStarChips);
         Assert.True(verified.Best.Report.ExactAnalysis.IsExact);
+        Assert.Equal(1, verified.Best.Report.SafetyAssessment!.ThreatCount);
+        Assert.Equal(1, verified.Best.Report.SecondarySafetyAssessment!.ThreatCount);
         Assert.Equal(658008, verified.Best.Report.ExactAnalysis.TotalHands);
         Assert.False(verified.ProvenOptimal);
         Assert.DoesNotContain(updates, p => p.Best is { RequiredStarChips: > 5 });

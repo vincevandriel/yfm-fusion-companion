@@ -403,7 +403,7 @@
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="*" />
                         </Grid.RowDefinitions>
-                        <Border Background="{StaticResource PanelBrush}" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" Padding="10" Margin="0,0,0,10">
+                        <Border x:Name="OptimizerSourcePane" Background="{StaticResource PanelBrush}" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" Padding="10" Margin="0,0,0,10">
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*" />
@@ -421,7 +421,7 @@
                                 </WrapPanel>
                             </Grid>
                         </Border>
-                        <GroupBox Grid.Row="1" Header="STRATEGY • choose the job this deck must do" Margin="0">
+                        <GroupBox x:Name="OptimizerStrategyPane" Grid.Row="1" Header="STRATEGY • choose the job this deck must do" Margin="0">
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="190" />
@@ -497,7 +497,7 @@
                             <ColumnDefinition x:Name="OptimizerOwnedColumn" Width="0.8*" />
                             <ColumnDefinition x:Name="OptimizerResultColumn" Width="1.6*" />
                             </Grid.ColumnDefinitions>
-                            <GroupBox Header="OWNED COLLECTION" Margin="0,0,12,0">
+                            <GroupBox x:Name="OptimizerOwnedPane" Header="OWNED COLLECTION" Margin="0,0,12,0">
                                 <Grid>
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="Auto" />
@@ -518,7 +518,7 @@
                                         <Button Content="ASSIGN SELECTED ART…" Click="AssignSelectedArtwork_Click" Padding="10,5" />
                                         <TextBlock x:Name="OwnedCollectionCount" VerticalAlignment="Center" Foreground="{StaticResource MutedBrush}" Margin="8,0,0,0" />
                                     </WrapPanel>
-                                    <ListBox x:Name="OwnedCardsGallery" Grid.Row="3" SelectionChanged="OwnedCards_SelectionChanged"
+                                    <ListBox x:Name="OwnedCardsGallery" Grid.Row="3" Height="440" SelectionChanged="OwnedCards_SelectionChanged"
                                              ScrollViewer.CanContentScroll="True" ScrollViewer.HorizontalScrollBarVisibility="Disabled" VirtualizingStackPanel.IsVirtualizing="True"
                                              VirtualizingStackPanel.VirtualizationMode="Recycling" Background="Transparent" BorderThickness="0">
                                         <ListBox.ItemsPanel><ItemsPanelTemplate><VirtualizingStackPanel /></ItemsPanelTemplate></ListBox.ItemsPanel>

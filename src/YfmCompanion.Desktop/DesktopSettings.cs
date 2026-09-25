@@ -22,7 +22,7 @@ internal static class DesktopSettingsStore
 {
     private static readonly JsonSerializerOptions JsonOptions = new() { WriteIndented = true };
 
-    public static string SettingsDirectory => Path.Combine(
+    public static string SettingsDirectory => Environment.GetEnvironmentVariable("YFM_COMPANION_SETTINGS_DIRECTORY") ?? Path.Combine(
         Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
         "YFM Fusion Companion");
 

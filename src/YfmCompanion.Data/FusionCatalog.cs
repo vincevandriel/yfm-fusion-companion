@@ -14,6 +14,7 @@ public sealed class FusionCatalog
     private readonly Dictionary<(int Low, int High), IReadOnlyList<FusionRuleReference>> _ruleReferences;
     private readonly HashSet<(int EquipCardId, int EquippedCardId)> _equipCompatibility;
     private readonly Dictionary<int, IReadOnlyList<string>> _categories;
+    private readonly Dictionary<int, CardAdvancedDetails> _advancedDetails;
     private string? _contentIdentity;
 
     // A bounded, short transaction used before creating a resumable search checkpoint.
@@ -78,6 +79,14 @@ public sealed class FusionCatalog
             _pairFlags[pair.MaterialLowId, pair.MaterialHighId] = flags;
             _pairFlags[pair.MaterialHighId, pair.MaterialLowId] = flags;
         }
+        var partners = _pairs.Values.SelectMany(p => new[] { p.MaterialLowId, p.MaterialHighId }.Distinct())
+            .GroupBy(id => id).ToDictionary(g => g.Key, g => g.Count());
+        var recipes = _pairs.Values.GroupBy(p => p.ResultCardId).ToDictionary(g => g.Key, g => g.Count());
+        var equips = _equipCompatibility.GroupBy(p => p.EquipCardId).ToDictionary(g => g.Key, g => g.Count());
+        var equippedBy = _equipCompatibility.GroupBy(p => p.EquippedCardId).ToDictionary(g => g.Key, g => g.Count());
+        _advancedDetails = _cards.Values.ToDictionary(card => card.Id, card => new CardAdvancedDetails(card,
+            _categories.GetValueOrDefault(card.Id) ?? [], partners.GetValueOrDefault(card.Id),
+            recipes.GetValueOrDefault(card.Id), equips.GetValueOrDefault(card.Id), equippedBy.GetValueOrDefault(card.Id)));
     }
 
     public IReadOnlyCollection<Card> Cards => _cards.Values;
@@ -160,20 +169,8 @@ public sealed class FusionCatalog
 
     public CardAdvancedDetails GetAdvancedDetails(int cardId)
     {
-        var card = GetCard(cardId);
-        _categories.TryGetValue(cardId, out var categories);
-        var fusionPartners = _pairs.Values.Count(pair =>
-            pair.MaterialLowId == cardId || pair.MaterialHighId == cardId);
-        var recipes = _pairs.Values.Count(pair => pair.ResultCardId == cardId);
-        var canEquip = _equipCompatibility.Count(pair => pair.EquipCardId == cardId);
-        var equippedBy = _equipCompatibility.Count(pair => pair.EquippedCardId == cardId);
-        return new CardAdvancedDetails(
-            card,
-            categories ?? [],
-            fusionPartners,
-            recipes,
-            canEquip,
-            equippedBy);
+        _ = GetCard(cardId);
+        return _advancedDetails[cardId];
     }
 
     public static FusionCatalog Load(string databasePath)

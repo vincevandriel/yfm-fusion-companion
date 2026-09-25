@@ -19,14 +19,36 @@ public sealed class DeckBuildJobTests
         Assert.NotNull(stopped.Best);
         Assert.Equal(40, stopped.Best.Report.TotalCards);
         Assert.All(stopped.Best.Report.Deck, entry => Assert.False(string.IsNullOrWhiteSpace(entry.ContributionReason)));
-        Assert.NotEmpty(stopped.Best.Report.ImportantTargets);
+        Assert.Empty(stopped.Best.Report.ImportantTargets);
+        Assert.Equal(0, stopped.Best.Report.ExactAnalysis.TotalHands);
+        Assert.Null(stopped.Best.Report.SafetyAssessment);
         Assert.False(stopped.Best.Report.ExactAnalysis.IsExact);
         Assert.False(stopped.ProvenOptimal);
         var verified = await job.VerifyBestAsync();
         Assert.Equal(DeckBuildState.Completed, verified.State);
         Assert.True(verified.Best!.Report.ExactAnalysis.IsExact);
+        Assert.NotEmpty(verified.Best.Report.ImportantTargets);
         Assert.Equal(658008, verified.Best.Report.ExactAnalysis.TotalHands);
         Assert.False(verified.ProvenOptimal);
+    }
+
+    [Fact]
+    public async Task ResumingAnUnevaluatedPreviewScoresItBeforeSearchingChallengers()
+    {
+        var job = new DeckBuildJob(Catalog(), Request());
+        var preview = await job.RunAsync(new Callback<DeckBuildProgress>(p =>
+        {
+            if (p.Best is not null) job.Pause();
+        }));
+        Assert.Equal(0, preview.Best!.Report.ExactAnalysis.TotalHands);
+        var evaluated = await job.RunAsync(new Callback<DeckBuildProgress>(p =>
+        {
+            if (p.Stage == "Initial deck evaluated") job.Pause();
+        }));
+        Assert.Equal(DeckBuildState.Paused, evaluated.State);
+        Assert.Equal(24, evaluated.Best!.Report.ExactAnalysis.TotalHands);
+        Assert.Equal(1, evaluated.CandidatesExamined);
+        Assert.False(evaluated.ProvenOptimal);
     }
 
     [Fact]

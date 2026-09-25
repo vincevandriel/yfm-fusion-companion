@@ -1,6 +1,7 @@
 using System.Buffers.Binary;
 using System.Diagnostics;
 using System.IO;
+using System.Reflection;
 using System.Text;
 using System.Text.Json;
 using System.Windows;
@@ -10,6 +11,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using YfmCompanion.Desktop;
+using YfmCompanion.Engine;
 using YfmCompanion.RetroArch;
 
 internal static class Program
@@ -17,12 +19,23 @@ internal static class Program
     [STAThread]
     private static int Main(string[] args)
     {
+        var fixtureDirectory = Directory.CreateTempSubdirectory("yfm-ui-audit-").FullName;
+        var previousSettingsDirectory = Environment.GetEnvironmentVariable("YFM_COMPANION_SETTINGS_DIRECTORY");
+        Environment.SetEnvironmentVariable("YFM_COMPANION_SETTINGS_DIRECTORY", fixtureDirectory);
+        try { return Run(args, fixtureDirectory); }
+        finally
+        {
+            Environment.SetEnvironmentVariable("YFM_COMPANION_SETTINGS_DIRECTORY", previousSettingsDirectory);
+            Application.Current?.Shutdown();
+            Directory.Delete(fixtureDirectory, recursive: true);
+        }
+    }
+
+    private static int Run(string[] args, string fixtureDirectory)
+    {
         var output = args.Length > 0 ? Path.GetFullPath(args[0]) : Path.GetFullPath("phase2-ui");
         Directory.CreateDirectory(output);
-        var settingsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "YFM Fusion Companion", "settings.json");
-        var settingsBackup = File.Exists(settingsPath) ? File.ReadAllBytes(settingsPath) : null;
-        var fixtureDirectory = Path.Combine(Path.GetTempPath(), "yfm-phase2-ui-audit");
-        Directory.CreateDirectory(fixtureDirectory);
+        var settingsPath = Path.Combine(fixtureDirectory, "settings.json");
         var fixtureSave = Path.Combine(fixtureDirectory, "Synthetic-Forbidden-Memories.srm");
         File.WriteAllBytes(fixtureSave, CreateSyntheticSave());
         Directory.CreateDirectory(Path.GetDirectoryName(settingsPath)!);
@@ -102,12 +115,14 @@ internal static class Program
         ((ComboBox)window.FindName("OptimizerSpeedCombo")).SelectedIndex = 2;
         optimizeButton.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
         var pauseAvailableClock = Stopwatch.StartNew();
-        while (!pauseButton.IsEnabled && pauseAvailableClock.Elapsed < TimeSpan.FromSeconds(5)) Pump(TimeSpan.FromMilliseconds(20));
-        if (!pauseButton.IsEnabled) throw new InvalidOperationException("Pause did not become available within five seconds.");
+        while (CurrentJob(window)?.State is not (DeckBuildState.Searching or DeckBuildState.Verifying) && pauseAvailableClock.Elapsed < TimeSpan.FromSeconds(5)) Pump(TimeSpan.FromMilliseconds(20));
+        if (CurrentJob(window)?.State is not (DeckBuildState.Searching or DeckBuildState.Verifying))
+            throw new InvalidOperationException("A real search did not start within five seconds.");
         var pauseClock = Stopwatch.StartNew();
         pauseButton.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
         while (!optimizeButton.IsEnabled && pauseClock.Elapsed < TimeSpan.FromSeconds(3)) Pump(TimeSpan.FromMilliseconds(20));
         var pauseMilliseconds = pauseClock.Elapsed.TotalMilliseconds;
+        if (CurrentJob(window)?.State != DeckBuildState.Paused) throw new InvalidOperationException("Pause did not preserve a paused job.");
         optimizeButton.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
         var stopAvailableClock = Stopwatch.StartNew();
         while (!stopButton.IsEnabled && stopAvailableClock.Elapsed < TimeSpan.FromSeconds(5)) Pump(TimeSpan.FromMilliseconds(20));
@@ -116,12 +131,20 @@ internal static class Program
         stopButton.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
         while (!optimizeButton.IsEnabled && stopClock.Elapsed < TimeSpan.FromSeconds(3)) Pump(TimeSpan.FromMilliseconds(20));
         var stopMilliseconds = stopClock.Elapsed.TotalMilliseconds;
+        if (CurrentJob(window)?.State != DeckBuildState.Cancelled) throw new InvalidOperationException("Stop did not cancel the resumed job.");
 
+        if (busyMilliseconds > 200 || firstCandidateMilliseconds > 5000 ||
+            pauseMilliseconds > 1000 || stopMilliseconds > 1000)
+            throw new InvalidOperationException($"Responsiveness gate failed: busy {busyMilliseconds}, first {firstCandidateMilliseconds}, pause {pauseMilliseconds}, stop {stopMilliseconds} ms.");
+
+        AuditSourceTransitions(window, fixtureSave);
         var focusVisits = AuditKeyboardNavigation(window);
         File.WriteAllText(Path.Combine(output, "keyboard-navigation.txt"), $"Forward focus visits: {focusVisits}{Environment.NewLine}");
         File.WriteAllText(Path.Combine(output, "ui-audit.json"), JsonSerializer.Serialize(new
         {
             SyntheticSave = true,
+            IsolatedSettings = true,
+            SourceTransitionChecks = "missing -> stale -> recovered; in-flight refresh -> protected manual edit",
             BusyStateMilliseconds = busyMilliseconds,
             FirstCandidateMilliseconds = firstCandidateMilliseconds,
             PauseResponseMilliseconds = pauseMilliseconds,
@@ -134,16 +157,6 @@ internal static class Program
 
         window.Close();
         app.Shutdown();
-        if (settingsBackup is null)
-        {
-            if (File.Exists(settingsPath)) File.Delete(settingsPath);
-        }
-        else
-        {
-            Directory.CreateDirectory(Path.GetDirectoryName(settingsPath)!);
-            File.WriteAllBytes(settingsPath, settingsBackup);
-        }
-        Directory.Delete(fixtureDirectory, recursive: true);
         Console.WriteLine($"Captured {Directory.GetFiles(output, "*.png").Length} UI audit images; busy {busyMilliseconds:N0} ms; first deck {firstCandidateMilliseconds:N0} ms; pause {pauseMilliseconds:N0} ms; stop {stopMilliseconds:N0} ms; keyboard focus visits {focusVisits}; output {output}");
         return 0;
     }
@@ -162,6 +175,38 @@ internal static class Program
         encoder.Frames.Add(BitmapFrame.Create(bitmap));
         using var stream = File.Create(path);
         encoder.Save(stream);
+    }
+
+    private static object? Invoke(MainWindow window, string method, params object?[] arguments) =>
+        typeof(MainWindow).GetMethod(method, BindingFlags.Instance | BindingFlags.NonPublic)!.Invoke(window, arguments);
+
+    private static DeckBuildJob? CurrentJob(MainWindow window) =>
+        (DeckBuildJob?)typeof(MainWindow).GetField("_deckBuildJob", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(window);
+
+    private static void Await(Task task)
+    {
+        var clock = Stopwatch.StartNew();
+        while (!task.IsCompleted && clock.Elapsed < TimeSpan.FromSeconds(8)) Pump(TimeSpan.FromMilliseconds(20));
+        if (!task.IsCompleted) throw new TimeoutException("Audit operation did not complete.");
+        task.GetAwaiter().GetResult();
+    }
+
+    private static void AuditSourceTransitions(MainWindow window, string save)
+    {
+        var original = File.ReadAllBytes(save);
+        File.Delete(save);
+        Await((Task)Invoke(window, "RefreshCollectionAsync", false)!);
+        var title = (TextBlock)window.FindName("OptimizerSourceTitle");
+        if (!title.Text.Contains("STALE", StringComparison.Ordinal)) throw new InvalidOperationException("Missing source was not marked stale.");
+        File.WriteAllBytes(save, original);
+        Await((Task)Invoke(window, "RefreshCollectionAsync", false)!);
+        if (title.Text.Contains("STALE", StringComparison.Ordinal)) throw new InvalidOperationException("Recovered source remained stale.");
+        var pending = (Task)Invoke(window, "RefreshCollectionAsync", false)!;
+        Invoke(window, "UseManualCollection_Click", window, new RoutedEventArgs());
+        Await(pending);
+        if (title.Text != "MANUAL COLLECTION") throw new InvalidOperationException("An in-flight save refresh overwrote manual mode.");
+        var snapshot = typeof(MainWindow).GetField("_collectionSnapshot", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(window);
+        if (snapshot is not null) throw new InvalidOperationException("Manual mode retained an automatic collection identity.");
     }
 
     private static void Pump(TimeSpan duration)

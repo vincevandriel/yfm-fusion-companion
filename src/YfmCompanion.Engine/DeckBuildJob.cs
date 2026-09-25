@@ -64,6 +64,16 @@ public sealed class DeckBuildJob
 
     public DeckBuildState State => _state;
 
+    /// <summary>Legal unscored preview while campaign contexts are prepared.</summary>
+    public static DeckBuildCandidate CreateLegalPreview(FusionCatalog catalog, DeckBuildRequest request,
+        CancellationToken cancellationToken = default)
+    {
+        var previewJob = new DeckBuildJob(catalog, request with { Mode = DeckSearchMode.Quick });
+        previewJob._space = new(catalog, previewJob._request.OwnedCards, previewJob._request.Options,
+            request.UseStarChips, request.StarChips, cancellationToken);
+        return previewJob.Preview(previewJob.FeasibleSeed(cancellationToken, _ => { }));
+    }
+
     public void AdoptVerifiedIncumbent(DeckBuildResult previous)
     {
         lock (_control)
@@ -117,6 +127,11 @@ public sealed class DeckBuildJob
     {
         lock (_control)
         {
+            if (!_running && _state == DeckBuildState.Paused)
+            {
+                _state = DeckBuildState.Cancelled;
+                return;
+            }
             if (!_running || _state is not (DeckBuildState.Preparing or DeckBuildState.Searching or DeckBuildState.Verifying or DeckBuildState.Pausing)) return;
             _stopRequested = true;
             _cancellation?.Cancel();
@@ -199,14 +214,10 @@ public sealed class DeckBuildJob
                 // report is explicitly an unevaluated preview and is replaced before
                 // it can participate in comparisons or finalist selection.
                 _estimated = Preview(seed);
-                _shortlist.Add(_estimated);
-                _candidates++;
                 _searchTime += seedClock.Elapsed;
                 Report("First legal deck found; evaluation pending", force: true);
-                _optimizer ??= new(_catalog);
-                _estimated = Describe(Evaluate(seed, exact: false, token, p => Report(p.Stage, p.CompletedHands, p.TotalHands)));
-                _shortlist[0] = _estimated;
             }
+            token.ThrowIfCancellationRequested();
             _optimizer ??= new(_catalog);
 
             _state = DeckBuildState.Searching;
@@ -222,6 +233,19 @@ public sealed class DeckBuildJob
                     while (!_searchDone)
                     {
                         searchCancellation.Token.ThrowIfCancellationRequested();
+                        // A pause can retain the legal preview before any scoring.
+                        // Score it under the same budget before comparing challengers.
+                        if (_estimated!.Report.ExactAnalysis.TotalHands == 0)
+                        {
+                            _estimated = Evaluate(Expand(_estimated), exact: false, searchCancellation.Token,
+                                p => Report(p.Stage, p.CompletedHands, p.TotalHands));
+                            _candidates++;
+                            Retain(_estimated);
+                            _estimated = Describe(_estimated);
+                            _searchTime = priorSearch + search.Elapsed;
+                            Report("Initial deck evaluated", force: true);
+                            continue;
+                        }
                         var deck = Expand(_estimated!);
                         // Deterministic multi-swap restarts supplement single-swap local improvements.
                         var swaps = _candidates % 16 == 0 ? 12 : _candidates % 5 == 0 ? 3 : 1;
@@ -246,7 +270,8 @@ public sealed class DeckBuildJob
             if (_request.Mode != DeckSearchMode.Quick || _verifyRequested)
             {
                 _state = DeckBuildState.Verifying;
-                var finalists = _request.Mode == DeckSearchMode.Quick ? new[] { _estimated } : _shortlist.ToArray();
+                var finalists = _request.Mode == DeckSearchMode.Quick || _shortlist.Count == 0
+                    ? new[] { _estimated! } : _shortlist.ToArray();
                 foreach (var finalist in finalists)
                 {
                     stageClock.Restart();
@@ -351,35 +376,9 @@ public sealed class DeckBuildJob
             IsExact = false,
             SampleCount = 0
         };
-        var counts = deck.GroupBy(id => id).ToDictionary(group => group.Key, group => group.Count());
-        var previewTarget = _catalog.FusionPairs
-            .Where(pair => counts.ContainsKey(pair.MaterialLowId) && counts.ContainsKey(pair.MaterialHighId) &&
-                           (pair.MaterialLowId != pair.MaterialHighId || counts[pair.MaterialLowId] >= 2))
-            .Select(pair => new
-            {
-                Pair = pair,
-                Result = _catalog.GetCard(pair.ResultCardId)
-            })
-            .OrderByDescending(item => item.Result.Attack)
-            .ThenByDescending(item => item.Result.Defense)
-            .ThenBy(item => item.Result.Id)
-            .FirstOrDefault();
-        var targets = previewTarget is null
-            ? Array.Empty<OptimizationTarget>()
-            : new[]
-            {
-                new OptimizationTarget(previewTarget.Result, 0, previewTarget.Result.Attack, false,
-                    $"{_catalog.GetCard(previewTarget.Pair.MaterialLowId).Name} + {_catalog.GetCard(previewTarget.Pair.MaterialHighId).Name}")
-            };
-        return new(new(entries, analysis, targets, [], [], null, _request.Options.Profile,
-            _request.Options.RandomSeed, PreviewSafety(_request.Options.SafetyContext),
-            PreviewSafety(_request.Options.SecondarySafetyContext)), spent);
+        return new(new(entries, analysis, [], [], [], null, _request.Options.Profile,
+            _request.Options.RandomSeed, null, null), spent);
     }
-
-    private static DeckSafetyAssessment? PreviewSafety(OpponentSafetyContext? context) => context is null
-        ? null
-        : new(context.Label, 0, context.Threats.Count, context.Methodology,
-            OpponentCount: context.OpponentIds.Count);
 
     private DeckBuildCandidate Evaluate(int[] deck, bool exact, CancellationToken token, Action<DeckOptimizationProgress> progress)
     {

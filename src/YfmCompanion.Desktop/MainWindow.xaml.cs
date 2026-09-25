@@ -53,7 +53,13 @@ public partial class MainWindow : Window
     private CollectionSnapshot? _pendingCollectionSnapshot;
     private CollectionSourceMode _collectionSourceMode = CollectionSourceMode.AutomaticNewest;
     private string? _artworkFolder;
-    private bool _collectionRefreshInProgress;
+    private Task? _collectionRefreshTask;
+    private long _collectionSourceGeneration;
+    private bool _optimizerBusy;
+    private CancellationTokenSource? _preparationCancellation;
+    private bool _preparationPauseRequested;
+    private IReadOnlyDictionary<int, int> _resultOwned = new Dictionary<int, int>();
+    private uint _resultStarChips;
     private bool _suppressManualCollectionChange;
     private RetroArchNetworkClient? _liveClient;
     private ForbiddenMemoriesLiveReader? _liveReader;
@@ -998,12 +1004,21 @@ public partial class MainWindow : Window
 
     private async Task RefreshCollectionAsync(bool silentWhenNone)
     {
-        if (_collectionRefreshInProgress || _collectionSourceMode == CollectionSourceMode.Manual)
+        while (_collectionRefreshTask is { } active)
         {
-            return;
+            await active;
+            if (ReferenceEquals(_collectionRefreshTask, active)) _collectionRefreshTask = null;
         }
+        if (_collectionSourceMode == CollectionSourceMode.Manual || _windowCancellation.IsCancellationRequested) return;
+        var refresh = RefreshCollectionCoreAsync(silentWhenNone);
+        _collectionRefreshTask = refresh;
+        try { await refresh; }
+        finally { if (ReferenceEquals(_collectionRefreshTask, refresh)) _collectionRefreshTask = null; }
+    }
 
-        _collectionRefreshInProgress = true;
+    private async Task RefreshCollectionCoreAsync(bool silentWhenNone)
+    {
+        var sourceGeneration = _collectionSourceGeneration;
         RefreshSaveButton.IsEnabled = false;
         SaveSnapshotStatus.Text = _collectionSourceMode == CollectionSourceMode.PinnedFile
             ? "Refreshing the selected save file…"
@@ -1020,17 +1035,20 @@ public partial class MainWindow : Window
                 known,
                 _collectionSnapshot,
                 _windowCancellation.Token);
+            if (sourceGeneration != _collectionSourceGeneration || _windowCancellation.IsCancellationRequested) return;
             if (result.Snapshot is not null)
             {
-                if (_collectionSnapshot is { IsStale: false } current &&
+                if (_collectionSnapshot is { } current &&
                     current.ContentIdentity == result.Snapshot.ContentIdentity &&
                     current.Save.FilePath.Equals(result.Snapshot.Save.FilePath, StringComparison.OrdinalIgnoreCase))
                 {
-                    SaveSnapshotStatus.Text = $"Up to date • {Path.GetFileName(current.Save.FilePath)} remains the newest validated save.";
+                    _collectionSnapshot = result.Snapshot;
+                    ShowCollectionSource(result.Snapshot);
+                    SaveSnapshotStatus.Text = result.Message;
+                    if (result.Message.Contains("Warning:", StringComparison.Ordinal)) OptimizerSourceSummary.Text += $" • {result.Message}";
                     return;
                 }
-                if (_deckBuildJob is { State: DeckBuildState.Preparing or DeckBuildState.Searching or DeckBuildState.Verifying or DeckBuildState.Pausing } &&
-                    _collectionSnapshot is not null && result.Snapshot.ContentIdentity != _collectionSnapshot.ContentIdentity)
+                if (_optimizerBusy || _deckBuildJob?.State == DeckBuildState.Paused)
                 {
                     _pendingCollectionSnapshot = result.Snapshot;
                     OptimizerSourceSummary.Text = "New save available. It will be applied when the current build stops or completes.";
@@ -1065,7 +1083,6 @@ public partial class MainWindow : Window
         finally
         {
             RefreshSaveButton.IsEnabled = true;
-            _collectionRefreshInProgress = false;
         }
     }
 
@@ -1145,7 +1162,7 @@ public partial class MainWindow : Window
             return;
         }
 
-        _collectionSourceMode = CollectionSourceMode.PinnedFile;
+        ChangeCollectionSource(CollectionSourceMode.PinnedFile);
         _lastSavePath = dialog.FileName;
         var directory = Path.GetDirectoryName(dialog.FileName);
         if (!string.IsNullOrWhiteSpace(directory) && !_knownSaveLocations.Contains(directory, StringComparer.OrdinalIgnoreCase))
@@ -1157,13 +1174,13 @@ public partial class MainWindow : Window
 
     private async void UseAutomaticSave_Click(object sender, RoutedEventArgs e)
     {
-        _collectionSourceMode = CollectionSourceMode.AutomaticNewest;
+        ChangeCollectionSource(CollectionSourceMode.AutomaticNewest);
         await RefreshCollectionAsync(silentWhenNone: false);
     }
 
     private void UseManualCollection_Click(object sender, RoutedEventArgs e)
     {
-        _collectionSourceMode = CollectionSourceMode.Manual;
+        ChangeCollectionSource(CollectionSourceMode.Manual);
         _collectionSnapshot = null;
         _saveSnapshot = null;
         OptimizerSourceTitle.Text = "MANUAL COLLECTION";
@@ -1172,7 +1189,7 @@ public partial class MainWindow : Window
         RefreshOwnedGallery();
     }
 
-    private void ApplyCollectionSnapshot(CollectionSnapshot collection)
+    private void ApplyCollectionSnapshot(CollectionSnapshot collection, bool keepResult = false)
     {
         _collectionSnapshot = collection;
         ConfigureSaveWatchers(collection.Save.FilePath);
@@ -1191,13 +1208,25 @@ public partial class MainWindow : Window
         {
             _suppressManualCollectionChange = false;
         }
+        ShowCollectionSource(collection);
+        RefreshOwnedGallery();
+        if (!keepResult) ResetOptimizerResults();
+    }
+
+    private void ChangeCollectionSource(CollectionSourceMode mode)
+    {
+        _collectionSourceGeneration++;
+        _pendingCollectionSnapshot = null;
+        _collectionSourceMode = mode;
+    }
+
+    private void ShowCollectionSource(CollectionSnapshot collection)
+    {
         OptimizerSourceTitle.Text = collection.IsStale
             ? "STALE SAVE — RETAINED COLLECTION"
             : _collectionSourceMode == CollectionSourceMode.PinnedFile ? "SELECTED SAVE FILE" : "AUTOMATIC — NEWEST SAVE";
         OptimizerSourceSummary.Text = $"{Path.GetFileName(collection.Save.FilePath)} • saved {collection.Save.LastWriteTimeUtc.ToLocalTime():g} • {collection.DistinctOwnedCards:N0} cards / {collection.TotalOwnedCopies:N0} copies • {collection.Save.StarChips?.ToString("N0", CultureInfo.InvariantCulture) ?? "unknown"} Star Chips" +
             (collection.IsStale ? $" • {collection.StaleReason}" : string.Empty);
-        RefreshOwnedGallery();
-        ResetOptimizerResults();
     }
 
     private void ShowSaveSnapshot(SaveSnapshot snapshot)
@@ -1254,18 +1283,16 @@ public partial class MainWindow : Window
             .ToArray();
     }
 
-    private void ApplyOwnedSnapshot_Click(object sender, RoutedEventArgs e)
+    private async void ApplyOwnedSnapshot_Click(object sender, RoutedEventArgs e)
     {
         if (_saveSnapshot is null)
         {
             return;
         }
 
-        if (_collectionSnapshot is not null)
-        {
-            ApplyCollectionSnapshot(_collectionSnapshot);
-        }
-        OptimizationStatus.Text = $"Loaded owned quantities from {Path.GetFileName(_saveSnapshot.FilePath)} (chest + constructed deck).";
+        ChangeCollectionSource(CollectionSourceMode.PinnedFile);
+        _lastSavePath = _saveSnapshot.FilePath;
+        await RefreshCollectionAsync(silentWhenNone: false);
         WorkspaceTabs.SelectedItem = OwnedOptimizerTab;
     }
 
@@ -1301,13 +1328,14 @@ public partial class MainWindow : Window
 
     private async void OptimizeDeck_Click(object sender, RoutedEventArgs e)
     {
-        if (_catalog is null)
+        if (_catalog is null || _optimizerBusy)
         {
             return;
         }
         if (_deckBuildJob?.State == DeckBuildState.Paused)
         {
-            await RunDeckBuildJobAsync(_deckBuildJob, ++_deckBuildGeneration);
+            try { await RunDeckBuildJobAsync(_deckBuildJob, ++_deckBuildGeneration); }
+            catch (Exception error) { OptimizationStatus.Text = $"Resume failed: {error.Message}"; }
             return;
         }
         if (_deckBuildJob is { State: DeckBuildState.Preparing or DeckBuildState.Searching or DeckBuildState.Verifying or DeckBuildState.Pausing })
@@ -1360,17 +1388,44 @@ public partial class MainWindow : Window
             return;
         }
 
+        var mode = ProveOptimalCheckBox.IsChecked == true ? DeckSearchMode.ProveOptimal
+            : OptimizerSpeedCombo.SelectedValue is DeckSearchMode selectedMode ? selectedMode : DeckSearchMode.Balanced;
+        var sourceIdentity = _collectionSnapshot?.ContentIdentity ?? ManualCollectionIdentity();
+        _resultOwned = owned.ToDictionary(item => item.CardId, item => item.Quantity);
+        _resultStarChips = starChips;
+        using var preparation = CancellationTokenSource.CreateLinkedTokenSource(_windowCancellation.Token);
+        _preparationCancellation = preparation;
+        _preparationPauseRequested = false;
+        SetOptimizerRunning(true);
+        OptimizationStageText.Text = "PREPARE ●  SEARCH  VERIFY  READY";
+        OptimizationProgressBar.IsIndeterminate = true;
+        OptimizationProgressDetail.Text = "Preparing frozen inventory and scoring options…";
+        var preparationProgress = new Progress<DeckOptimizationProgress>(value =>
+        {
+            if (!ReferenceEquals(_preparationCancellation, preparation)) return;
+            OptimizationProgressDetail.Text = value.CompletedHands is { } hands
+                ? $"{value.Stage} • {hands:N0} / {value.TotalHands:N0} hands"
+                : $"{value.Stage} • {value.Completed:N0} / {value.Total:N0}";
+        });
         try
         {
             _activeCampaignContext = null;
+            if (_lastDeckBuildResult?.Best is null)
+            {
+                var previewRequest = new DeckBuildRequest(owned, options, mode, useSavedStarChips, starChips, sourceIdentity);
+                var legalPreview = await Task.Run(() => DeckBuildJob.CreateLegalPreview(_catalog, previewRequest, preparation.Token), preparation.Token);
+                ShowBestSoFar(legalPreview, DeckBuildState.Preparing);
+            }
             if (isCampaignGoal)
             {
                 OptimizationStatus.Text = "Preparing modeled opponent threats…";
                 var builder = _campaignContextBuilder!;
-                var context = await Task.Run(() => builder.Build(ToCampaignOpponentScope(goal), specificOpponentId));
+                var context = await Task.Run(() => builder.Build(ToCampaignOpponentScope(goal), specificOpponentId,
+                    progress: preparationProgress, cancellationToken: preparation.Token), preparation.Token);
                 _activeCampaignContext = context;
                 var secondary = goal == OptimizerGoal.GeneralCampaign
-                    ? await Task.Run(() => builder.Build(CampaignOpponentScope.FinalGauntlet).Safety)
+                    ? await Task.Run(() => builder.Build(CampaignOpponentScope.FinalGauntlet,
+                        progress: preparationProgress, cancellationToken: preparation.Token).Safety, preparation.Token)
                     : null;
                 options = options with
                 {
@@ -1380,10 +1435,6 @@ public partial class MainWindow : Window
                 };
             }
 
-            var mode = ProveOptimalCheckBox.IsChecked == true
-                ? DeckSearchMode.ProveOptimal
-                : OptimizerSpeedCombo.SelectedValue is DeckSearchMode selectedMode ? selectedMode : DeckSearchMode.Balanced;
-            var sourceIdentity = _collectionSnapshot?.ContentIdentity ?? ManualCollectionIdentity();
             var request = new DeckBuildRequest(owned, options, mode, useSavedStarChips, starChips, sourceIdentity);
             string? checkpoint = mode == DeckSearchMode.ProveOptimal
                 ? Path.Combine(DesktopSettingsStore.SettingsDirectory, "proof-checkpoints", $"{RequestCheckpointIdentity(request)}.json")
@@ -1391,7 +1442,14 @@ public partial class MainWindow : Window
             if (mode == DeckSearchMode.ProveOptimal)
             {
                 OptimizationStatus.Text = "Measuring the proof search space…";
-                var preview = await DeckProofPreflight.PreviewAsync(_catalog, request);
+                var preview = await DeckProofPreflight.PreviewAsync(_catalog, request,
+                    progress: preparationProgress, cancellationToken: preparation.Token);
+                preparation.Token.ThrowIfCancellationRequested();
+                if (!preview.HasFeasibleDeck)
+                {
+                    OptimizationStatus.Text = "The frozen collection and affordable eligible purchases cannot supply a legal 40-card deck.";
+                    return;
+                }
                 var estimate = preview.UnprunedWorkLowMilliseconds is null
                     ? "No reliable duration estimate is available."
                     : $"Unpruned measured range: {FormatMilliseconds(preview.UnprunedWorkLowMilliseconds.Value)} to {FormatMilliseconds(preview.UnprunedWorkHighMilliseconds!.Value)}; pruning may reduce it.";
@@ -1412,27 +1470,45 @@ public partial class MainWindow : Window
             }
             _deckBuildJob = job;
             ResetOptimizerResults();
+            preparation.Token.ThrowIfCancellationRequested();
+            _preparationCancellation = null;
             await RunDeckBuildJobAsync(job, ++_deckBuildGeneration);
+        }
+        catch (OperationCanceledException) when (preparation.IsCancellationRequested)
+        {
+            OptimizationStatus.Text = _preparationPauseRequested
+                ? "Paused during preparation. Build deck resumes preparation; completed cached work is retained."
+                : "Stopped during preparation.";
+            OptimizationStageText.Text = _preparationPauseRequested ? "PAUSED" : "STOPPED";
+            OptimizationProgressBar.IsIndeterminate = false;
         }
         catch (Exception exception)
         {
             OptimizationStatus.Text = $"Deck optimization failed: {exception.Message}";
             OptimizationProgressDetail.Text = exception.Message;
         }
+        finally
+        {
+            _preparationCancellation = null;
+            SetOptimizerRunning(false);
+            ApplyPendingCollection();
+        }
     }
 
     private async Task RunDeckBuildJobAsync(DeckBuildJob job, long generation)
     {
         SetOptimizerRunning(true);
+        var acceptingProgress = true;
         var progress = new Progress<DeckBuildProgress>(value =>
         {
-            if (generation != _deckBuildGeneration) return;
+            if (!acceptingProgress || generation != _deckBuildGeneration) return;
             ShowDeckBuildProgress(value);
             if (value.Best is not null) ShowBestSoFar(value.Best, value.State);
         });
         try
         {
             var result = await job.RunAsync(progress, _windowCancellation.Token);
+            acceptingProgress = false;
             if (generation != _deckBuildGeneration) return;
             _lastDeckBuildResult = result;
             if (result.Best is not null)
@@ -1443,12 +1519,15 @@ public partial class MainWindow : Window
             }
             OptimizationProgressBar.IsIndeterminate = false;
             OptimizationProgressBar.Value = result.State == DeckBuildState.Completed ? 1 : OptimizationProgressBar.Value;
-            OptimizationStageText.Text = result.State == DeckBuildState.Completed ? "PREPARE ✓  SEARCH ✓  VERIFY ✓  READY" : result.State.ToString().ToUpperInvariant();
+            OptimizationStageText.Text = result.State == DeckBuildState.Completed
+                ? result.Best?.Report.ExactAnalysis.IsExact == true ? "PREPARE ✓  SEARCH ✓  VERIFY ✓  READY" : "PREPARE ✓  SEARCH ✓  READY • ESTIMATED"
+                : result.State.ToString().ToUpperInvariant();
             VerifyOptimizationButton.IsEnabled = result.State is DeckBuildState.Completed or DeckBuildState.Cancelled &&
                                                    result.Best?.Report.ExactAnalysis.IsExact != true;
         }
         finally
         {
+            acceptingProgress = false;
             SetOptimizerRunning(false);
             ApplyPendingCollection();
         }
@@ -1485,16 +1564,31 @@ public partial class MainWindow : Window
 
     private void SetOptimizerRunning(bool running)
     {
+        _optimizerBusy = running;
+        var paused = _deckBuildJob?.State == DeckBuildState.Paused;
         OptimizeDeckButton.IsEnabled = !running;
-        OptimizeDeckButton.Content = _deckBuildJob?.State == DeckBuildState.Paused ? "RESUME" : "IMPROVE DECK";
+        OptimizeDeckButton.Content = paused ? "RESUME" : _lastDeckBuildResult?.Best is null ? "BUILD DECK" : "IMPROVE DECK";
         PauseOptimizationButton.IsEnabled = running;
-        StopOptimizationButton.IsEnabled = running;
-        OptimizerSpeedCombo.IsEnabled = !running;
-        ProveOptimalCheckBox.IsEnabled = !running;
+        StopOptimizationButton.IsEnabled = running || paused;
+        OptimizerSpeedCombo.IsEnabled = !running && !paused;
+        ProveOptimalCheckBox.IsEnabled = !running && !paused;
+        VerifyOptimizationButton.IsEnabled = !running && !paused && _lastDeckBuildResult?.Best is { Report.ExactAnalysis.IsExact: false };
+        OptimizerOwnedPane.IsEnabled = !running && !paused;
+        OptimizerStrategyPane.IsEnabled = !running && !paused;
+        OptimizerSourcePane.IsEnabled = !running && !paused;
     }
 
-    private void PauseOptimization_Click(object sender, RoutedEventArgs e) => _deckBuildJob?.Pause();
-    private void StopOptimization_Click(object sender, RoutedEventArgs e) => _deckBuildJob?.StopAndKeepBest();
+    private void PauseOptimization_Click(object sender, RoutedEventArgs e)
+    {
+        if (_preparationCancellation is { } preparation) { _preparationPauseRequested = true; preparation.Cancel(); }
+        else _deckBuildJob?.Pause();
+    }
+    private void StopOptimization_Click(object sender, RoutedEventArgs e)
+    {
+        if (_preparationCancellation is { } preparation) { _preparationPauseRequested = false; preparation.Cancel(); }
+        else _deckBuildJob?.StopAndKeepBest();
+        if (!_optimizerBusy) { SetOptimizerRunning(false); ApplyPendingCollection(); }
+    }
 
     private async void VerifyOptimization_Click(object sender, RoutedEventArgs e)
     {
@@ -1521,11 +1615,12 @@ public partial class MainWindow : Window
 
     private void ClearOwned_Click(object sender, RoutedEventArgs e)
     {
+        if (_optimizerBusy || _deckBuildJob?.State == DeckBuildState.Paused) return;
         _deckBuildJob?.StopAndKeepBest();
         _suppressManualCollectionChange = true;
         try { foreach (var row in _ownedCardRows) row.Quantity = 0; }
         finally { _suppressManualCollectionChange = false; }
-        _collectionSourceMode = CollectionSourceMode.Manual;
+        ChangeCollectionSource(CollectionSourceMode.Manual);
         _collectionSnapshot = null;
         RefreshOwnedGallery();
         ResetOptimizerResults();
@@ -1576,7 +1671,7 @@ public partial class MainWindow : Window
     private void OwnedQuantityChanged(OwnedCardRow row)
     {
         if (_suppressManualCollectionChange) return;
-        _collectionSourceMode = CollectionSourceMode.Manual;
+        ChangeCollectionSource(CollectionSourceMode.Manual);
         _collectionSnapshot = null;
         OptimizerSourceTitle.Text = "MANUAL COLLECTION";
         OptimizerSourceSummary.Text = "Edited quantities are protected from automatic save refresh until Automatic newest is selected.";
@@ -1638,8 +1733,14 @@ public partial class MainWindow : Window
             "In proposed deck" => rows.OrderByDescending(row => row.ProposedCopies).ThenBy(row => row.Card.Name),
             _ => rows.OrderBy(row => row.Card.Name)
         };
-        _visibleOwnedCardRows = rows.ToArray();
-        OwnedCardsGallery.ItemsSource = _visibleOwnedCardRows;
+        var visible = rows.ToArray();
+        if (!_visibleOwnedCardRows.SequenceEqual(visible))
+        {
+            var selected = OwnedCardsGallery.SelectedItem;
+            _visibleOwnedCardRows = visible;
+            OwnedCardsGallery.ItemsSource = _visibleOwnedCardRows;
+            if (selected is OwnedCardRow selectedRow && visible.Contains(selectedRow)) OwnedCardsGallery.SelectedItem = selected;
+        }
         OwnedCollectionCount.Text = $"{_visibleOwnedCardRows.Count:N0} shown • {_ownedCardRows.Count(row => row.Quantity > 0):N0} distinct • {_ownedCardRows.Sum(row => row.Quantity):N0} copies";
     }
 
@@ -1661,11 +1762,12 @@ public partial class MainWindow : Window
 
     private void ApplyPendingCollection()
     {
-        if (_pendingCollectionSnapshot is null) return;
+        if (_pendingCollectionSnapshot is null || _optimizerBusy || _deckBuildJob?.State == DeckBuildState.Paused) return;
         var pending = _pendingCollectionSnapshot;
         _pendingCollectionSnapshot = null;
-        ApplyCollectionSnapshot(pending);
-        OptimizationStatus.Text = "The newer save was applied after the completed/stopped run. Build again to use it.";
+        if (_collectionSourceMode == CollectionSourceMode.Manual) return;
+        ApplyCollectionSnapshot(pending, keepResult: true);
+        OptimizationStatus.Text += " • New save loaded; displayed deck still uses the previous frozen collection. Build again to use the new save.";
     }
 
     private void OptimizerProfile_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -1678,14 +1780,15 @@ public partial class MainWindow : Window
 
     private void ShowOptimizationReport(DeckOptimizationReport report)
     {
-        Optimizer2800Metric.Text = FormatProbability(report.ExactAnalysis.AtLeast2800Probability);
-        Optimizer2500Metric.Text = FormatProbability(report.ExactAnalysis.AtLeast2500Probability);
-        OptimizerExpectedMetric.Text = report.ExactAnalysis.ExpectedBestFusionAttack.ToString("N0", CultureInfo.InvariantCulture);
-        OptimizerDeadMetric.Text = FormatProbability(report.ExactAnalysis.DeadHandProbability);
+        var evaluated = report.ExactAnalysis.TotalHands > 0;
+        Optimizer2800Metric.Text = evaluated ? FormatProbability(report.ExactAnalysis.AtLeast2800Probability) : "—";
+        Optimizer2500Metric.Text = evaluated ? FormatProbability(report.ExactAnalysis.AtLeast2500Probability) : "—";
+        OptimizerExpectedMetric.Text = evaluated ? report.ExactAnalysis.ExpectedBestFusionAttack.ToString("N0", CultureInfo.InvariantCulture) : "—";
+        OptimizerDeadMetric.Text = evaluated ? FormatProbability(report.ExactAnalysis.DeadHandProbability) : "—";
         var displayDeck = BuildDeckDisplay(report);
         OptimizedDeckGrid.ItemsSource = displayDeck;
         long cumulative = 0;
-        var startingChips = _saveSnapshot?.StarChips ?? 0;
+        var startingChips = _resultStarChips;
         PurchasePlanGrid.ItemsSource = displayDeck.Where(row => row.Purchase > 0).Select(row =>
         {
             var unit = row.Card.StarchipCost ?? 0;
@@ -1711,7 +1814,8 @@ public partial class MainWindow : Window
         OptimizationStatus.Text = string.Create(
             CultureInfo.InvariantCulture,
             $"{analysisLabel} • {report.TotalCards}/40 cards • seed {report.RandomSeed}{comparison}");
-        if (report.SafetyAssessment is not null)
+        CampaignPlanPanel.Visibility = Visibility.Collapsed;
+        if (evaluated && report.SafetyAssessment is not null)
         {
             CampaignPlanPanel.Visibility = Visibility.Visible;
             CampaignScopeSummary.Text = $"{report.SafetyAssessment.Label} • best found unless proof status explicitly says otherwise.";
@@ -1729,7 +1833,7 @@ public partial class MainWindow : Window
 
     private OptimizedDeckDisplayRow[] BuildDeckDisplay(DeckOptimizationReport report)
     {
-        var ownedById = _ownedCardRows.ToDictionary(row => row.Card.Id, row => row.Quantity);
+        var ownedById = _resultOwned;
         return report.Deck.Select(entry =>
         {
             var owned = ownedById.GetValueOrDefault(entry.Card.Id);

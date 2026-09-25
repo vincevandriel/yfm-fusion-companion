@@ -13,8 +13,7 @@ public sealed class OwnedDeckOptimizer
     // One combined 256 MiB retained-search-cache budget, including prepared scores.
     private readonly DeckAnalyzer _analyzer;
     private readonly BoundedAnalysisCache _assessmentCache = new(32L * 1024 * 1024);
-    private readonly Dictionary<int, CardHeuristic> _allHeuristics;
-    private readonly Dictionary<int, CardHeuristic> _intendedHeuristics;
+    private PreparedHeuristics? _heuristics;
     private readonly ForbiddenMemoriesStrategyEvaluator _strategyEvaluator;
     private DeckOptimizationOptions? _assessmentOptions;
     private readonly Dictionary<OpponentSafetyContext, string> _contextKeys = new(ReferenceEqualityComparer.Instance);
@@ -25,10 +24,17 @@ public sealed class OwnedDeckOptimizer
         _catalog = catalog;
         _analyzer = new(catalog, 224L * 1024 * 1024);
         _strategyEvaluator = new(catalog);
+    }
+
+    private PreparedHeuristics PrepareHeuristics()
+    {
+        if (_heuristics is not null) return _heuristics;
+        _assessmentToken.ThrowIfCancellationRequested();
+        var catalog = _catalog;
         if (!SharedHeuristics.TryGetValue(catalog, out var prepared))
         {
-            var computed = new PreparedHeuristics(BuildHeuristics(catalog, includeGlitches: true),
-                BuildHeuristics(catalog, includeGlitches: false));
+            var computed = new PreparedHeuristics(BuildHeuristics(catalog, true, _assessmentToken),
+                BuildHeuristics(catalog, false, _assessmentToken));
             lock (HeuristicsLock)
             {
                 if (!SharedHeuristics.TryGetValue(catalog, out prepared))
@@ -38,8 +44,7 @@ public sealed class OwnedDeckOptimizer
                 }
             }
         }
-        _allHeuristics = prepared.All;
-        _intendedHeuristics = prepared.Intended;
+        return _heuristics = prepared;
     }
 
     public AnalysisCacheDiagnostics CacheDiagnostics
@@ -657,15 +662,16 @@ public sealed class OwnedDeckOptimizer
     }
 
     private Dictionary<int, CardHeuristic> Heuristics(DeckOptimizationOptions options) =>
-        options.IncludeGlitches ? _allHeuristics : _intendedHeuristics;
+        options.IncludeGlitches ? PrepareHeuristics().All : PrepareHeuristics().Intended;
 
-    private static Dictionary<int, CardHeuristic> BuildHeuristics(FusionCatalog catalog, bool includeGlitches)
+    private static Dictionary<int, CardHeuristic> BuildHeuristics(FusionCatalog catalog, bool includeGlitches, CancellationToken token)
     {
         var resultCounts = catalog.Cards.ToDictionary(card => card.Id, _ => new Dictionary<int, int>());
         var partnerCounts = catalog.Cards.ToDictionary(card => card.Id, _ => 0);
         var bestResult = catalog.Cards.ToDictionary(card => card.Id, _ => 0);
         foreach (var pair in catalog.FusionPairs.Where(pair => includeGlitches || !pair.IsGlitch))
         {
+            token.ThrowIfCancellationRequested();
             var resultAttack = catalog.GetCard(pair.ResultCardId).Attack;
             foreach (var material in new[] { pair.MaterialLowId, pair.MaterialHighId })
             {
@@ -679,6 +685,7 @@ public sealed class OwnedDeckOptimizer
             card => card.Id,
             card =>
             {
+                token.ThrowIfCancellationRequested();
                 var details = catalog.GetAdvancedDetails(card.Id);
                 var baseStrength = Math.Max(card.Attack, card.Defense);
                 var flexibility = partnerCounts[card.Id] + details.CanEquipCount + details.EquippedByCount;

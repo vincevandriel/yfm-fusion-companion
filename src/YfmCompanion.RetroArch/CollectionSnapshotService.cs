@@ -1,5 +1,3 @@
-using System.Security.Cryptography;
-
 namespace YfmCompanion.RetroArch;
 
 public enum CollectionSourceMode { AutomaticNewest, PinnedFile, Manual }
@@ -45,7 +43,8 @@ public sealed class CollectionSnapshotService
                 .Select(item => $"{Path.GetFileName(item.FilePath)} was newer but rejected: {item.Error}")
                 .ToArray();
             var warning = rejectedNewer.Length == 0 ? string.Empty : $" Warning: {string.Join(" • ", rejectedNewer)}";
-            return new(mode, CollectionSnapshot.FromSave(selected, identity), discovery.Inspections,
+            return new(mode, CollectionSnapshot.FromSave(selected, identity, rejectedNewer.Length > 0,
+                    rejectedNewer.Length > 0 ? string.Join(" • ", rejectedNewer) : null), discovery.Inspections,
                 $"Loaded {Path.GetFileName(selected.FilePath)} ({selected.LastWriteTimeUtc.ToLocalTime():g}).{warning}");
         }
         catch (Exception error) when (error is IOException or UnauthorizedAccessException)
@@ -67,18 +66,15 @@ public sealed class CollectionSnapshotService
         for (var attempt = 0; attempt < 3; attempt++)
         {
             token.ThrowIfCancellationRequested();
-            last = mode == CollectionSourceMode.PinnedFile
+            var locations = knownLocations?.ToArray();
+            last = await Task.Run(() => mode == CollectionSourceMode.PinnedFile
                 ? InspectPinned(pinnedFile)
-                : RetroArchSaveLocator.Discover(additionalLocations: knownLocations);
+                : RetroArchSaveLocator.Discover(additionalLocations: locations, cancellationToken: token), token).ConfigureAwait(false);
             if (last.SelectedSnapshot is { } selected)
             {
-                var before = new FileInfo(selected.FilePath);
-                var length = before.Length;
-                var write = before.LastWriteTimeUtc;
-                var identity = await HashStableFileAsync(selected.FilePath, token).ConfigureAwait(false);
-                var after = new FileInfo(selected.FilePath);
-                if (after.Length == length && after.LastWriteTimeUtc == write && selected.LastWriteTimeUtc == write)
-                    return (last, selected, identity);
+                var inspection = last.Inspections.Single(item => ReferenceEquals(item.Snapshot, selected));
+                return (last, selected, inspection.ContentIdentity
+                    ?? throw new InvalidDataException("The validated save has no content identity."));
             }
             if (attempt < 2) await Task.Delay(150 * (attempt + 1), token).ConfigureAwait(false);
         }
@@ -95,20 +91,4 @@ public sealed class CollectionSnapshotService
         return new([result], result.Snapshot);
     }
 
-    private static async Task<string> HashStableFileAsync(string path, CancellationToken token)
-    {
-        for (var attempt = 0; attempt < 3; attempt++)
-        {
-            var before = new FileInfo(path);
-            var length = before.Length;
-            var write = before.LastWriteTimeUtc;
-            await using var stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete,
-                64 * 1024, FileOptions.Asynchronous | FileOptions.SequentialScan);
-            var hash = Convert.ToHexString(await SHA256.HashDataAsync(stream, token).ConfigureAwait(false));
-            var after = new FileInfo(path);
-            if (after.Length == length && after.LastWriteTimeUtc == write) return hash;
-            if (attempt < 2) await Task.Delay(150 * (attempt + 1), token).ConfigureAwait(false);
-        }
-        throw new IOException("The save changed repeatedly while it was being read; retry after saving finishes.");
-    }
 }

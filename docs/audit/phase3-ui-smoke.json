@@ -1,0 +1,13 @@
+{
+  "SyntheticSave": true,
+  "IsolatedSettings": true,
+  "SourceTransitionChecks": "missing -\u003E stale -\u003E recovered; in-flight refresh -\u003E protected manual edit",
+  "BusyStateMilliseconds": 11.0465,
+  "FirstCandidateMilliseconds": 1009.8805,
+  "PauseResponseMilliseconds": 138.5425,
+  "StopResponseMilliseconds": 101.6673,
+  "KeyboardFocusVisits": 40,
+  "ScreenshotCount": 15,
+  "OptimizerStatus": "Manual collection active. Add cards with autocomplete or edit quantities in the gallery.",
+  "ProgressDetail": "Stopped; best completed deck retained \u2022 elapsed 0:00:00.1523653 \u2022 1 candidates"
+}

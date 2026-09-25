@@ -263,6 +263,57 @@ public sealed class Ps1MemoryCardReaderTests
         Assert.Equal(Path.GetFullPath(path), discovery.SelectedSnapshot!.FilePath);
     }
 
+    [Fact]
+    public async Task FrozenIdentityMatchesTheBytesUsedForOwnershipAndTornSaveRecovers()
+    {
+        var directory = CreateTemporaryDirectory();
+        var path = Path.Combine(directory, "renamed.mcr");
+        var complete = CreateMemoryCard(1);
+        try
+        {
+            var torn = complete.ToArray();
+            torn[Ps1MemoryCardReader.BlockSize + Ps1MemoryCardReader.SecondSaveCopyOffset] ^= 1;
+            await File.WriteAllBytesAsync(path, torn);
+            var service = new CollectionSnapshotService();
+            var pending = service.RefreshAsync(CollectionSourceMode.PinnedFile, path, [directory]);
+            await Task.Delay(100);
+            await File.WriteAllBytesAsync(path, complete);
+            var recovered = await pending;
+            Assert.NotNull(recovered.Snapshot);
+            Assert.False(recovered.Snapshot.IsStale);
+            Assert.Equal(Convert.ToHexString(System.Security.Cryptography.SHA256.HashData(complete)), recovered.Snapshot.ContentIdentity);
+            Assert.Equal(1, recovered.Snapshot.OwnedQuantities[0]);
+            Assert.Equal(2, recovered.Snapshot.OwnedQuantities[40]);
+            File.Delete(path);
+            var missing = await service.RefreshAsync(CollectionSourceMode.PinnedFile, path, [directory], recovered.Snapshot);
+            Assert.True(missing.Snapshot!.IsStale);
+            Assert.Equal(recovered.Snapshot.ContentIdentity, missing.Snapshot.ContentIdentity);
+        }
+        finally { Directory.Delete(directory, recursive: true); }
+    }
+
+    [Fact]
+    public void DiscoveryIncludesCombinedCoreAndContentFoldersAndBreaksTimestampTiesByPath()
+    {
+        var directory = CreateTemporaryDirectory();
+        try
+        {
+            var nested = Directory.CreateDirectory(Path.Combine(directory, "saves", "Core", "Content")).FullName;
+            var first = Path.Combine(nested, "A.mcr");
+            var second = Path.Combine(nested, "B.srm");
+            File.WriteAllBytes(first, CreateMemoryCard(1));
+            File.WriteAllBytes(second, CreateMemoryCard(1));
+            File.SetLastWriteTimeUtc(first, DateTime.UnixEpoch.AddDays(100));
+            File.SetLastWriteTimeUtc(second, DateTime.UnixEpoch.AddDays(100));
+            var config = Path.Combine(directory, "retroarch.cfg");
+            File.WriteAllText(config, "savefile_directory = \"saves\"");
+            var found = RetroArchSaveLocator.Discover(config);
+            Assert.Equal(2, found.Inspections.Count);
+            Assert.Equal(first, found.SelectedSnapshot!.FilePath);
+        }
+        finally { Directory.Delete(directory, recursive: true); }
+    }
+
     private static byte[] CreateMemoryCard(int blockNumber, int bankCount = 1, int bankIndex = 0)
     {
         var bytes = Enumerable.Repeat((byte)0xFF, Ps1MemoryCardReader.MemoryCardBankSize * bankCount).ToArray();

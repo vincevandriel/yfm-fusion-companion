@@ -1,4 +1,5 @@
 using System.Buffers.Binary;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace YfmCompanion.RetroArch;
@@ -39,8 +40,8 @@ public static class Ps1MemoryCardReader
 
         try
         {
-            var bytes = ReadWithRetry(fullPath);
-            var snapshots = Parse(fullPath, File.GetLastWriteTimeUtc(fullPath), bytes);
+            var (bytes, savedAt) = ReadWithRetry(fullPath);
+            var snapshots = Parse(fullPath, savedAt, bytes);
             if (snapshots.Count == 0)
             {
                 return SaveReadResult.Failure(fullPath, "No valid NTSC-U Forbidden Memories save block was found.");
@@ -52,7 +53,7 @@ public static class Ps1MemoryCardReader
                 selected = AddWarning(selected, $"This image contains {snapshots.Count} valid Forbidden Memories saves; bank {selected.MemoryCardBank}, block {selected.BlockNumber} was selected.");
             }
 
-            return SaveReadResult.Success(selected);
+            return SaveReadResult.Success(selected) with { ContentIdentity = Convert.ToHexString(SHA256.HashData(bytes)) };
         }
         catch (Exception exception) when (exception is IOException or UnauthorizedAccessException or InvalidDataException)
         {
@@ -150,13 +151,16 @@ public static class Ps1MemoryCardReader
         return results;
     }
 
-    private static byte[] ReadWithRetry(string fullPath)
+    private static (byte[] Bytes, DateTime SavedAt) ReadWithRetry(string fullPath)
     {
         IOException? lastError = null;
         for (var attempt = 1; attempt <= MaximumReadAttempts; attempt++)
         {
             try
             {
+                var before = new FileInfo(fullPath);
+                var savedAt = before.LastWriteTimeUtc;
+                var length = before.Length;
                 using var stream = new FileStream(
                     fullPath,
                     FileMode.Open,
@@ -169,7 +173,14 @@ public static class Ps1MemoryCardReader
 
                 var bytes = new byte[stream.Length];
                 stream.ReadExactly(bytes);
-                return bytes;
+                stream.Position = 0;
+                var confirmation = new byte[bytes.Length];
+                stream.ReadExactly(confirmation);
+                var after = new FileInfo(fullPath);
+                if (length != bytes.Length || after.Length != length || after.LastWriteTimeUtc != savedAt ||
+                    !bytes.AsSpan().SequenceEqual(confirmation))
+                    throw new IOException("The memory-card image changed during reading; retrying a stable snapshot.");
+                return (bytes, savedAt);
             }
             catch (IOException exception)
             {

@@ -9,6 +9,8 @@ internal sealed class ThumbnailCache(long maximumBytes = 64L * 1024 * 1024)
     private readonly Dictionary<string, (ImageSource Image, long Bytes, LinkedListNode<string> Node)> _items = new(StringComparer.OrdinalIgnoreCase);
     private readonly LinkedList<string> _recent = [];
     private long _bytes;
+    public long AccountedBytes => _bytes;
+    public long LimitBytes => maximumBytes;
 
     public ImageSource? Load(string? path)
     {
@@ -25,10 +27,12 @@ internal sealed class ThumbnailCache(long maximumBytes = 64L * 1024 * 1024)
             bitmap.BeginInit();
             bitmap.CacheOption = BitmapCacheOption.OnLoad;
             bitmap.DecodePixelWidth = 96;
+            bitmap.DecodePixelHeight = 144;
             bitmap.UriSource = new Uri(path, UriKind.Absolute);
             bitmap.EndInit();
             bitmap.Freeze();
             var bytes = Math.Max(1L, (long)bitmap.PixelWidth * bitmap.PixelHeight * 4);
+            if (bytes > maximumBytes) return null;
             while (_items.Count > 0 && _bytes + bytes > maximumBytes)
             {
                 var oldest = _recent.Last!;
@@ -42,7 +46,7 @@ internal sealed class ThumbnailCache(long maximumBytes = 64L * 1024 * 1024)
             _bytes += bytes;
             return bitmap;
         }
-        catch (Exception error) when (error is IOException or UnauthorizedAccessException or NotSupportedException)
+        catch (Exception error) when (error is IOException or UnauthorizedAccessException or NotSupportedException or FormatException or ArgumentException)
         {
             return null;
         }

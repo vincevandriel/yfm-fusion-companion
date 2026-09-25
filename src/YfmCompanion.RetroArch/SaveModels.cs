@@ -91,6 +91,7 @@ public sealed class SaveSnapshot
 
 public sealed record SaveReadResult(string FilePath, SaveSnapshot? Snapshot, string? Error)
 {
+    public string? ContentIdentity { get; init; }
     public bool IsValid => Snapshot is not null;
 
     public static SaveReadResult Success(SaveSnapshot snapshot) => new(snapshot.FilePath, snapshot, null);
