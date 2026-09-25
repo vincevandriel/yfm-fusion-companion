@@ -29,6 +29,9 @@ internal static class DesktopContractAudit
         var timed = OptimizerProgressPresenter.Present(progress with
         { State = DeckBuildState.Searching, CompletedHands = null, TotalHands = null });
         Require(timed.Detail.Contains("search budget", StringComparison.Ordinal), "Timed progress did not label the budget.");
+        var sampled = OptimizerProgressPresenter.Present(progress with
+        { State = DeckBuildState.Searching, SearchTimeConsumed = TimeSpan.FromSeconds(1), CompletedHands = 160, TotalHands = 160 });
+        Require(Math.Abs(sampled.Value - .2) < .001, "A completed sample incorrectly filled the five-second search budget bar.");
     }
 
     private static void Thumbnails(string directory)

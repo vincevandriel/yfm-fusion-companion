@@ -22,6 +22,7 @@ internal static class DesktopLifecycleAudit
             DesktopSettingsStore.Save(settings with { CollectionSourceMode = CollectionSourceMode.PinnedFile, PinnedSavePath = save, LastSavePath = save, CompactMode = false });
             Watcher(save);
             CloseDuringProof(directory);
+            ProofWorkflowAudit.Run();
         }
         finally { DesktopSettingsStore.Save(settings); }
     }
@@ -71,6 +72,8 @@ internal static class DesktopLifecycleAudit
             dialog.ShowActivated = false;
             dialog.Loaded += (_, _) => dialog.Dispatcher.BeginInvoke(() =>
             {
+                if (dialog.ActualHeight > owner.ActualHeight + 1)
+                    throw new InvalidOperationException("Proof confirmation exceeded its owner's available height.");
                 if (!dialog.SpaceText.Text.Contains("123", StringComparison.Ordinal) ||
                     !dialog.CheckpointText.Text.Contains(approve ? "backup" : "match", StringComparison.Ordinal))
                     throw new InvalidOperationException("Proof confirmation omitted space or recovery information.");

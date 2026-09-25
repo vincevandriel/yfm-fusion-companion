@@ -25,6 +25,7 @@ public partial class MainWindow : Window
     private readonly List<CardPicker> _spellPickers = [];
     private readonly List<CardPicker> _deckPickers = [];
     private readonly DeckTrayViewModel _deckTray = new();
+    private readonly OptimizerActivityViewModel _optimizerActivity = new();
     private CardPicker? _deckAddPicker;
     private readonly List<OwnedCardRow> _ownedCardRows = [];
     private CardPicker? _ownedAddPicker;
@@ -66,6 +67,7 @@ public partial class MainWindow : Window
     private bool _optimizerBusy;
     private CancellationTokenSource? _preparationCancellation;
     private bool _preparationPauseRequested;
+    private bool _preparationPaused;
     private IReadOnlyDictionary<int, int> _resultOwned = new Dictionary<int, int>();
     private uint _resultStarChips;
     private bool _suppressManualCollectionChange;
@@ -93,6 +95,8 @@ public partial class MainWindow : Window
         _livePollingEnabled = livePollingEnabled ?? backgroundServicesEnabled;
         InitializeComponent();
         RegisterTabControls();
+        OwnedOptimizerPaneView.DataContext = _optimizerActivity;
+        OptimizerActivityDock.DataContext = _optimizerActivity;
         Loaded += MainWindow_Loaded;
         Closing += MainWindow_Closing;
         Closed += MainWindow_Closed;
@@ -1142,7 +1146,7 @@ public partial class MainWindow : Window
                     if (result.Message.Contains("Warning:", StringComparison.Ordinal)) OptimizerSourceSummary.Text += $" • {result.Message}";
                     return;
                 }
-                if (_optimizerBusy || _deckBuildJob?.State == DeckBuildState.Paused)
+                if (_optimizerBusy || _preparationPaused || _deckBuildJob?.State == DeckBuildState.Paused)
                 {
                     _pendingCollectionSnapshot = result.Snapshot;
                     OptimizerSourceSummary.Text = "New save available. It will be applied when the current build stops or completes.";
@@ -1513,15 +1517,16 @@ public partial class MainWindow : Window
         _resultStarChips = starChips;
         using var preparation = CancellationTokenSource.CreateLinkedTokenSource(_windowCancellation.Token);
         _preparationCancellation = preparation;
+        _preparationPaused = false;
         _preparationPauseRequested = false;
         SetOptimizerRunning(true);
-        OptimizationStageText.Text = "PREPARE ●  SEARCH  VERIFY  READY";
-        OptimizationProgressBar.IsIndeterminate = true;
-        OptimizationProgressDetail.Text = "Preparing frozen inventory and scoring options…";
+        _optimizerActivity.Stage = "PREPARE ●  SEARCH  VERIFY  READY";
+        _optimizerActivity.IsIndeterminate = true;
+        _optimizerActivity.Detail = "Preparing frozen inventory and scoring options…";
         var preparationProgress = new Progress<DeckOptimizationProgress>(value =>
         {
             if (!ReferenceEquals(_preparationCancellation, preparation)) return;
-            OptimizationProgressDetail.Text = value.CompletedHands is { } hands
+            _optimizerActivity.Detail = value.CompletedHands is { } hands
                 ? $"{value.Stage} • {hands:N0} / {value.TotalHands:N0} hands"
                 : $"{value.Stage} • {value.Completed:N0} / {value.Total:N0}";
         });
@@ -1566,21 +1571,22 @@ public partial class MainWindow : Window
                 if (!preview.HasFeasibleDeck)
                 {
                     OptimizationStatus.Text = "The frozen collection and affordable eligible purchases cannot supply a legal 40-card deck.";
-                    OptimizationStageText.Text = "NO LEGAL DECK • preparation complete";
-                    OptimizationProgressBar.IsIndeterminate = false;
-                    OptimizationProgressBar.Value = 0;
+                    _optimizerActivity.Stage = "NO LEGAL DECK • preparation complete";
+                    _optimizerActivity.IsIndeterminate = false;
+                    _optimizerActivity.Value = 0;
                     return;
                 }
                 var estimate = preview.UnprunedWorkLowMilliseconds is null
                     ? "No reliable duration estimate is available."
                     : $"Unpruned measured range: {FormatMilliseconds(preview.UnprunedWorkLowMilliseconds.Value)} to {FormatMilliseconds(preview.UnprunedWorkHighMilliseconds!.Value)}; pruning may reduce it.";
                 if (new Views.ProofConfirmationWindow(this, preview.CapacityVectors, estimate,
-                    File.Exists(checkpoint), NewProofCheckpointCheckBox.IsChecked == true).ShowDialog() != true)
+                    File.Exists(checkpoint), NewProofCheckpointCheckBox.IsChecked == true)
+                { ShowActivated = _backgroundServicesEnabled }.ShowDialog() != true)
                 {
                     OptimizationStatus.Text = "Proof search not started.";
-                    OptimizationStageText.Text = "CANCELLED • proof not started";
-                    OptimizationProgressBar.IsIndeterminate = false;
-                    OptimizationProgressBar.Value = 0;
+                    _optimizerActivity.Stage = "CANCELLED • proof not started";
+                    _optimizerActivity.IsIndeterminate = false;
+                    _optimizerActivity.Value = 0;
                     return;
                 }
                 preparation.Token.ThrowIfCancellationRequested();
@@ -1605,18 +1611,19 @@ public partial class MainWindow : Window
         }
         catch (OperationCanceledException) when (preparation.IsCancellationRequested)
         {
+            _preparationPaused = _preparationPauseRequested && !_closeRequested;
             OptimizationStatus.Text = _preparationPauseRequested
                 ? "Paused during preparation. Build deck resumes preparation; completed cached work is retained."
                 : "Stopped during preparation.";
-            OptimizationStageText.Text = _preparationPauseRequested ? "PAUSED" : "STOPPED";
-            OptimizationProgressBar.IsIndeterminate = false;
+            _optimizerActivity.Stage = _preparationPauseRequested ? "PAUSED" : "STOPPED";
+            _optimizerActivity.IsIndeterminate = false;
         }
         catch (Exception exception)
         {
             OptimizationStatus.Text = $"Deck optimization failed: {exception.Message}";
-            OptimizationProgressDetail.Text = exception.Message;
-            OptimizationStageText.Text = "FAILED • best completed result retained";
-            OptimizationProgressBar.IsIndeterminate = false;
+            _optimizerActivity.Detail = exception.Message;
+            _optimizerActivity.Stage = "FAILED • best completed result retained";
+            _optimizerActivity.IsIndeterminate = false;
         }
         finally
         {
@@ -1652,8 +1659,8 @@ public partial class MainWindow : Window
             if (generation == _deckBuildGeneration)
             {
                 if (job.LastResult is { } failed) InstallDeckBuildResult(failed);
-                OptimizationStageText.Text = "FAILED • best completed result retained";
-                OptimizationProgressBar.IsIndeterminate = false;
+                _optimizerActivity.Stage = "FAILED • best completed result retained";
+                _optimizerActivity.IsIndeterminate = false;
             }
             throw;
         }
@@ -1680,14 +1687,14 @@ public partial class MainWindow : Window
             OptimizationStatus.Text = $"{result.State}: no completed deck is available for this request.";
         }
         // Ready and 100% belong to the installed result, never to queued worker progress.
-        OptimizationProgressBar.IsIndeterminate = false;
-        OptimizationProgressBar.Value = result.State == DeckBuildState.Completed ? 1 : 0;
-        OptimizationStageText.Text = result.State == DeckBuildState.Completed
+        _optimizerActivity.IsIndeterminate = false;
+        _optimizerActivity.Value = result.State == DeckBuildState.Completed ? 1 : 0;
+        _optimizerActivity.Stage = result.State == DeckBuildState.Completed
             ? result.Best?.Report.ExactAnalysis.IsExact == true ? "PREPARE ✓  SEARCH ✓  VERIFY ✓  READY"
                 : result.Best?.Report.ExactAnalysis.TotalHands > 0 ? "PREPARE ✓  SEARCH ✓  READY • ESTIMATED"
                 : "READY • EVALUATION PENDING"
             : result.State.ToString().ToUpperInvariant();
-        OptimizationProgressDetail.Text = result.State switch
+        _optimizerActivity.Detail = result.State switch
         {
             DeckBuildState.Paused => _deckBuildJob?.HasDurableCheckpoint == true
                 ? "Paused and checkpointed to disk. Resume continues this proof; an unfinished deck evaluation may restart."
@@ -1701,10 +1708,10 @@ public partial class MainWindow : Window
     private void ShowDeckBuildProgress(DeckBuildProgress value)
     {
         var presentation = OptimizerProgressPresenter.Present(value);
-        OptimizationStageText.Text = presentation.Stage;
-        OptimizationProgressBar.IsIndeterminate = presentation.IsIndeterminate;
-        OptimizationProgressBar.Value = presentation.Value;
-        OptimizationProgressDetail.Text = presentation.Detail;
+        _optimizerActivity.Stage = presentation.Stage;
+        _optimizerActivity.IsIndeterminate = presentation.IsIndeterminate;
+        _optimizerActivity.Value = presentation.Value;
+        _optimizerActivity.Detail = presentation.Detail;
     }
 
     private void ShowBestSoFar(DeckBuildCandidate best, DeckBuildState state, bool proven = false)
@@ -1730,7 +1737,7 @@ public partial class MainWindow : Window
     private void SetOptimizerRunning(bool running)
     {
         _optimizerBusy = running;
-        var paused = _deckBuildJob?.State == DeckBuildState.Paused;
+        var paused = _preparationPaused || _deckBuildJob?.State == DeckBuildState.Paused;
         OptimizeDeckButton.IsEnabled = !running;
         OptimizeDeckButton.Content = paused ? "RESUME" : _lastDeckBuildResult?.Best is null ? "BUILD DECK" : "IMPROVE DECK";
         PauseOptimizationButton.IsEnabled = running;
@@ -1740,7 +1747,8 @@ public partial class MainWindow : Window
         NewProofCheckpointCheckBox.IsEnabled = !running && !paused;
         VerifyOptimizationButton.IsEnabled = !running && _deckBuildJob?.State is (DeckBuildState.Completed or DeckBuildState.Cancelled) &&
             _lastDeckBuildResult?.Best is { Report.ExactAnalysis.IsExact: false };
-        OptimizerOwnedPane.IsEnabled = !running && !paused;
+        _optimizerActivity.SetState(running, paused);
+        OwnedAddPickerPanel.IsEnabled = !running && !paused;
         OptimizerStrategyPane.IsEnabled = !running && !paused;
         OptimizerSourcePane.IsEnabled = !running && !paused;
     }
@@ -1752,6 +1760,12 @@ public partial class MainWindow : Window
     }
     private void StopOptimization_Click(object sender, RoutedEventArgs e)
     {
+        if (_preparationPaused)
+        {
+            _preparationPaused = false;
+            _optimizerActivity.Stage = "STOPPED";
+            _optimizerActivity.Detail = "Preparation stopped; completed cached work retained.";
+        }
         if (_preparationCancellation is { } preparation) { _preparationPauseRequested = false; preparation.Cancel(); }
         else _deckBuildJob?.StopAndKeepBest();
         if (!_optimizerBusy)
@@ -1820,6 +1834,15 @@ public partial class MainWindow : Window
     {
         if (FullWorkspaceScroll is null) return;
         FullWorkspaceScroll.HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled;
+        var narrow = ActualWidth < 1000;
+        HeaderSubtitle.Visibility = narrow ? Visibility.Collapsed : Visibility.Visible;
+        HeaderTitle.FontSize = narrow ? 18 : 22;
+        foreach (var button in new[] { CompactModeButton, ExportDiagnosticsButton })
+        {
+            button.FontSize = narrow ? 11 : 14;
+            button.Padding = narrow ? new Thickness(8, 4, 8, 4) : new Thickness(12, 7, 12, 7);
+        }
+        SourceModeText.FontSize = AlwaysOnTopCheckBox.FontSize = narrow ? 11 : 14;
     }
 
     private void OwnedCards_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -1847,7 +1870,7 @@ public partial class MainWindow : Window
     private void AddOwnedCard_Click(object sender, RoutedEventArgs e) => AddOwnedCard();
     private void AddOwnedCard()
     {
-        if (_ownedAddPicker?.SelectedCard is not { } card) return;
+        if (_optimizerBusy || _deckBuildJob?.State == DeckBuildState.Paused || _ownedAddPicker?.SelectedCard is not { } card) return;
         var row = _ownedCardRows[card.Id - 1];
         row.Quantity++;
         _ownedAddPicker.Clear();
@@ -1927,7 +1950,7 @@ public partial class MainWindow : Window
 
     private void ApplyPendingCollection()
     {
-        if (_pendingCollectionSnapshot is null || _optimizerBusy || _deckBuildJob?.State == DeckBuildState.Paused) return;
+        if (_pendingCollectionSnapshot is null || _optimizerBusy || _preparationPaused || _deckBuildJob?.State == DeckBuildState.Paused) return;
         var pending = _pendingCollectionSnapshot;
         _pendingCollectionSnapshot = null;
         if (_collectionSourceMode == CollectionSourceMode.Manual) return;
@@ -2036,10 +2059,10 @@ public partial class MainWindow : Window
         _lastDeckBuildResult = null;
         _deckBuildJob = null;
         SetOptimizerRunning(false);
-        OptimizationStageText.Text = "PREPARE → SEARCH → VERIFY → READY";
-        OptimizationProgressBar.IsIndeterminate = false;
-        OptimizationProgressBar.Value = 0;
-        OptimizationProgressDetail.Text = "Build a deck from the selected collection.";
+        _optimizerActivity.Stage = "PREPARE → SEARCH → VERIFY → READY";
+        _optimizerActivity.IsIndeterminate = false;
+        _optimizerActivity.Value = 0;
+        _optimizerActivity.Detail = "Build a deck from the selected collection.";
     }
 
     private static CampaignOpponentScope ToCampaignOpponentScope(OptimizerGoal goal) => goal switch

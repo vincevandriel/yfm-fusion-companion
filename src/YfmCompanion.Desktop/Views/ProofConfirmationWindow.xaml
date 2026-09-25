@@ -3,6 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Start proof search?" Width="560" SizeToContent="Height" ResizeMode="NoResize"
         WindowStartupLocation="CenterOwner" ShowInTaskbar="False">
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
     <StackPanel Margin="22">
         <TextBlock Text="PROVE OPTIMAL" FontSize="22" FontWeight="Bold" Foreground="{StaticResource GoldBrush}" />
         <TextBlock x:Name="SpaceText" TextWrapping="Wrap" Margin="0,14,0,8" />
@@ -14,4 +15,5 @@
             <Button x:Name="ConfirmProofButton" Content="START / RESUME PROOF" IsDefault="True" Click="Confirm_Click" />
         </WrapPanel>
     </StackPanel>
+    </ScrollViewer>
 </Window>

@@ -157,6 +157,7 @@ internal static class Program
         AuditManualPersistence(window);
         AuditCardEntryAndAnalysis(window);
         AuditGallery(window);
+        DesktopInteractionAudit.Run(window);
         AuditProofRecovery(window, fixtureDirectory);
         DesktopLifecycleAudit.Run(window, fixtureDirectory, fixtureSave);
         var focusVisits = AuditKeyboardNavigation(window);
@@ -165,6 +166,8 @@ internal static class Program
         {
             SyntheticSave = true,
             IsolatedSettings = true,
+            ProofWorkflowChecks = "real Build button; preflight; cancel; approve; pause; close; reopen; resume; proven installation; explicit restart preserves original checkpoint bytes; preparation pause freezes inputs",
+            PresentationChecks = "docked progress stays visible; collection browsable but quantity read-only during a job; 20 changed synthetic live snapshots retain deck selection and scroll; disconnect clears stale rows",
             SourceTransitionChecks = "missing -> stale -> recovered; in-flight refresh -> protected manual edit",
             VerificationChecks = "pause -> resume -> exact Ready; late callbacks do not overwrite terminal state",
             DesktopContracts = "progress labels; thumbnail LRU, replacement pixels, corruption, deletion, oversize; manual persistence; pending save during pause; stable live selection; adaptive layout; autocomplete clearing; analysis cancellation; deck tray add/remove/copy counts; gallery virtualization; proof desktop restart and incompatibility; pinned missing/recovery/race; real folder watcher; proof confirmation; close during proof and durable resume",

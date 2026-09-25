@@ -22,6 +22,11 @@ var fixtures = new Dictionary<string, OwnedCardQuantity[]>
     ["near-complete"] = catalog.Cards.OrderBy(c => c.Id).Select(c => new OwnedCardQuantity(c.Id, 3)).ToArray()
 };
 #if !LEGACY_BASELINE
+if (args.Contains("--prepare", StringComparer.Ordinal))
+{
+    PreparationBenchmark.Run(catalog, root, output);
+    return;
+}
 if (args.Contains("--live", StringComparer.Ordinal))
 {
     await LiveOptimizerBenchmark.RunAsync(catalog, fixtures["near-complete"], output,

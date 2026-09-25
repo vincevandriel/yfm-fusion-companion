@@ -5,6 +5,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using YfmCompanion.Data;
 using YfmCompanion.Desktop;
 using YfmCompanion.Desktop.Controls;
@@ -22,6 +23,7 @@ internal static class VisualStateAudit
         var scroll = (ScrollViewer)window.FindName("FullWorkspaceScroll");
         var names = new[] { "turn", "deck", "live", "save", "optimizer" };
         var details = new[] { "TurnResultsGrid", "DeckResultsGrid", "LiveAdviceGrid", "SaveDeckGrid", "OwnedCardsGallery" };
+        var middle = new[] { "MonsterPickerPanel", "AnyFusionMetric", "LivePlayerLpText", "SaveTimestampText", "OptimizerSpeedCombo" };
         var manifest = new List<object>();
         var pair = catalog.FusionPairs.First(pair => pair.IsIntended && !pair.IsGlitch && pair.MaterialLowId != pair.MaterialHighId);
         var hand = new[] { pair.MaterialLowId, pair.MaterialHighId, 1, 2, 3 };
@@ -90,6 +92,10 @@ internal static class VisualStateAudit
                     var prefix = $"{state}-{names[tab]}-{width}x{height}-{scale.ToString("0.##", CultureInfo.InvariantCulture)}";
                     Capture(window, Path.Combine(output, prefix + "-top.png"), width / scale, height / scale, scale);
                     var clipped = ClippedText(window);
+                    ((FrameworkElement)window.FindName(middle[tab])).BringIntoView();
+                    Pump(TimeSpan.FromMilliseconds(30));
+                    Capture(window, Path.Combine(output, prefix + "-middle.png"), width / scale, height / scale, scale);
+                    clipped = clipped.Concat(ClippedText(window)).Distinct().ToArray();
                     ((FrameworkElement)window.FindName(details[tab])).BringIntoView();
                     Pump(TimeSpan.FromMilliseconds(30));
                     Capture(window, Path.Combine(output, prefix + "-detail.png"), width / scale, height / scale, scale);
@@ -101,14 +107,35 @@ internal static class VisualStateAudit
                         Height = height,
                         Scale = scale,
                         Top = prefix + "-top.png",
+                        Middle = prefix + "-middle.png",
                         Detail = prefix + "-detail.png",
                         ClippedText = clipped.Concat(ClippedText(window)).Distinct().ToArray()
                     });
+                    if (state == "loading")
+                    {
+                        var dock = (FrameworkElement)window.FindName("OptimizerActivityDock");
+                        var position = dock.TranslatePoint(new Point(), window);
+                        if (!dock.IsVisible || position.Y < 0 || position.Y + dock.ActualHeight > window.ActualHeight)
+                            throw new InvalidOperationException("Active-job dock left the window while scrolling.");
+                    }
                 }
             }
             Console.WriteLine($"Visual state audit captured {state} across all tabs/sizes.");
         }
         Populate();
+        tabs.SelectedIndex = 4;
+        ((FrameworkElement)window.FindName("CampaignScopeCombo")).BringIntoView();
+        var combo = (ComboBox)window.FindName("CampaignScopeCombo");
+        combo.IsDropDownOpen = true;
+        Pump(TimeSpan.FromMilliseconds(200));
+        var popup = (Popup)combo.Template.FindName("PART_Popup", combo);
+        var popupBody = (FrameworkElement)popup.Child;
+        var popupBitmap = new RenderTargetBitmap((int)Math.Ceiling(popupBody.ActualWidth), (int)Math.Ceiling(popupBody.ActualHeight), 96, 96, PixelFormats.Pbgra32);
+        popupBitmap.Render(popupBody);
+        var popupPng = new PngBitmapEncoder();
+        popupPng.Frames.Add(BitmapFrame.Create(popupBitmap));
+        using (var file = File.Create(Path.Combine(output, "strategy-dropdown.png"))) popupPng.Save(file);
+        combo.IsDropDownOpen = false;
         tabs.SelectedIndex = 2;
         Invoke(window, "ApplyCompactMode", true, false);
         Invoke(window, "ShowLiveSnapshot", snapshot);
@@ -121,6 +148,7 @@ internal static class VisualStateAudit
             SyntheticOnly = true,
             LiveNetworkDisabled = true,
             Scope = "WPF logical-size/scaled render matrix; not OS DPI switching",
+            HostDpiScale = VisualTreeHelper.GetDpi(window).DpiScaleX,
             Frames = manifest,
             ScreenshotCount = Directory.GetFiles(output, "*.png").Length
         }, new JsonSerializerOptions { WriteIndented = true }));

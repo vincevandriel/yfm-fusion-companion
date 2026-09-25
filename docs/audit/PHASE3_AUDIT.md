@@ -1,5 +1,23 @@
 # Phase 3 independent audit
 
+## Fourth repair checkpoint — 2026-09-26
+
+**Automated desktop/engine checks pass; Phase 3 remains open for live changing-board sign-off. Phase 4 has not started.**
+
+- A shared optimizer activity view model now drives inline progress and a fixed bottom strip. Active/paused progress stays visible while scrolling or changing tabs, and remains absent from Compact Live. Gallery browsing/filtering stays enabled; quantity edits and request settings remain locked.
+- Sample completion no longer fills the timed-search bar. The bar represents search-budget consumption during searching and physical hand counts during verification. Elapsed time is formatted compactly. A regression checks 160/160 sampled hands at one second of a five-second search gives 20%, not 99%.
+- Pausing during preparation preserves frozen source/settings and resumable controls; stopping releases them. The full native proof workflow now runs through Build/preflight/confirmation/cancel/start/pause/close/reopen/resume/proven installation and explicit restart with byte-for-byte preservation of the previous checkpoint.
+- Full-mode metrics reflow, table text wraps, numeric columns have explicit minimum widths, and horizontal scrolling stays accessible within the available viewport. Narrow headers use less vertical space. The proof dialog scrolls within its owner's available height. Audit confirmation windows do not activate over the user's game.
+- Twenty changing synthetic snapshots passed selection/scroll preservation through the actual Live Duel presentation; disconnect cleared stale rows. This is synthetic integration, not evidence of a changing real duel.
+- Latest evidence: `phase3-final-desktop.json`, `phase3-final-visual-states.json`, `../benchmarks/phase3-preparation.json`, `../benchmarks/phase3-active-duel-balanced.json`. Selected synthetic captures are committed in `visual-samples/`; all 455 captures remain under ignored `tmp/phase3-final-visual/`.
+- Desktop timings: busy about 10 ms, first legal deck 1,010 ms, pause 58 ms, stop 126 ms; 152 keyboard focus visits. Complete proof, preparation pause, fixed-dock, locked-edit and synthetic scroll tests passed. The artifact's final failed label is the intentionally incompatible-request test.
+- Six cold/warm preparation cases passed. General campaign: 60.25 ms cold / 0.89 ms warm, maximum gap 17.09 ms; cancellation delay 1.19 ms. Timings are reference-machine observations, not universal guarantees.
+- Balanced/live coexistence: 67 successful active-duel reads, zero failures, maximum concurrent reads one, first legal preview 105.13 ms, max progress gap 224.84 ms; exact 658,008 hands and `ProvenOptimal=false`. **PlayingReads=0, DuelStateChanges=0**. RetroArch was paused throughout. Concurrent visual work was present, so this is not an isolated throughput benchmark.
+- Visual evidence: 150 tab/state/resolution/scale cases, top/middle/detail captures, dropdown and four Compact captures; representative adverse layouts reviewed. Zero automated text warnings alone is not acceptance. Host DPI was 100%; 125/150/200% were logical/scaled renders. Actual Windows DPI changes were not performed.
+- Full solution tests: 200 passed, none failed/skipped. Builds and formatting checks succeeded. One audit attempt failed because its own running screenshot process locked the executable; sequential reruns resolved that tooling issue. A new test's visual-parent lookup was corrected to select the logical nested tab; subsequent interaction tests passed.
+
+**Remaining sign-off:** read an unpaused real duel while the player plays normally, record actual state changes and verify live presentation/scroll under them. No special moves, game inputs or save writes by the companion are needed. Retain the actual-OS-DPI coverage limitation in release documentation; do not claim it tested. Do not enter Phase 4 until the Phase 3 gate decision is recorded.
+
 ## Third repair checkpoint — 2026-09-25 (gate remains open)
 
 - Extracted all five tab layouts into tab-specific views with forwarded commands and a shared application workflow. Added a grouped Deck Analyzer tray, add/remove-copy controls, and selected-row route/intermediate details. No duplicate catalog or connector was introduced.

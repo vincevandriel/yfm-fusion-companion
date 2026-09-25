@@ -35,6 +35,7 @@
         </controls:AdaptiveColumnsPanel>
 
         <Grid x:Name="FullWorkspace" Grid.Row="1">
+            <Grid.RowDefinitions><RowDefinition Height="*" /><RowDefinition Height="Auto" /></Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="0" />
@@ -89,6 +90,22 @@
                 </TabItem>
             </TabControl>
             </ScrollViewer>
+
+            <Border x:Name="OptimizerActivityDock" Grid.Row="1" Background="{StaticResource PanelBrush}" BorderBrush="{StaticResource AccentBrush}" BorderThickness="1" Padding="8" Margin="0,6,0,0">
+                <Border.Style><Style TargetType="Border"><Setter Property="Visibility" Value="Collapsed" /><Style.Triggers><DataTrigger Binding="{Binding IsActive}" Value="True"><Setter Property="Visibility" Value="Visible" /></DataTrigger></Style.Triggers></Style></Border.Style>
+                <StackPanel>
+                    <DockPanel>
+                        <WrapPanel DockPanel.Dock="Right">
+                            <Button x:Name="DockPauseButton" Content="PAUSE" Click="PauseOptimization_Click" IsEnabled="{Binding CanPause}" Padding="8,3" FontSize="11" />
+                            <Button x:Name="DockResumeButton" Content="RESUME" Click="OptimizeDeck_Click" IsEnabled="{Binding CanResume}" Padding="8,3" FontSize="11" />
+                            <Button x:Name="DockStopButton" Content="STOP • KEEP BEST" Click="StopOptimization_Click" Padding="8,3" FontSize="11" />
+                        </WrapPanel>
+                        <TextBlock Text="{Binding Stage}" TextTrimming="CharacterEllipsis" ToolTip="{Binding Stage}" FontSize="12" FontWeight="SemiBold" VerticalAlignment="Center" />
+                    </DockPanel>
+                    <ProgressBar x:Name="DockProgressBar" Minimum="0" Maximum="1" Value="{Binding Value}" IsIndeterminate="{Binding IsIndeterminate}" Height="7" Margin="0,3" />
+                    <TextBlock Text="{Binding Detail}" TextTrimming="CharacterEllipsis" ToolTip="{Binding Detail}" Foreground="{StaticResource MutedBrush}" FontSize="11" />
+                </StackPanel>
+            </Border>
 
             <Border x:Name="InspectorPanel" Grid.Column="0" Width="360" HorizontalAlignment="Right" VerticalAlignment="Stretch" Panel.ZIndex="20"
                     Visibility="Collapsed" Background="{StaticResource PanelBrush}" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" Padding="18">

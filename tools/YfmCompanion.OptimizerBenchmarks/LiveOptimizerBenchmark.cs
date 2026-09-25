@@ -19,6 +19,8 @@ internal static class LiveOptimizerBenchmark
         var phase = "idle";
         var active = 0;
         var maximumActive = 0;
+        var duelChanges = 0;
+        ForbiddenMemoriesLiveSnapshot? previousDuel = null;
         var watch = Stopwatch.StartNew();
         var allocationsBefore = GC.GetTotalAllocatedBytes(true);
         var pollTask = Task.Run(async () =>
@@ -36,6 +38,15 @@ internal static class LiveOptimizerBenchmark
                     try
                     {
                         var snapshot = await reader.ReadSnapshotAsync(timeout.Token);
+                        if (snapshot.DuelActive && previousDuel is { DuelActive: true } previous &&
+                            (!snapshot.HandCardIds.SequenceEqual(previous.HandCardIds) ||
+                             !snapshot.PlayerField.SequenceEqual(previous.PlayerField) ||
+                             !snapshot.PlayerSpellTrapField.SequenceEqual(previous.PlayerSpellTrapField) ||
+                             !snapshot.OpponentField.SequenceEqual(previous.OpponentField) ||
+                             snapshot.PlayerLifePoints != previous.PlayerLifePoints ||
+                             snapshot.OpponentLifePoints != previous.OpponentLifePoints ||
+                             snapshot.TerrainId != previous.TerrainId)) duelChanges++;
+                        previousDuel = snapshot;
                         samples.Add(new(phaseAtStart, started, watch.Elapsed.TotalMilliseconds - started,
                             true, snapshot.DuelActive, snapshot.Status.State.ToString(), null));
                     }
@@ -72,7 +83,7 @@ internal static class LiveOptimizerBenchmark
                 SchemaVersion = 2,
                 CapturedUtc = DateTimeOffset.UtcNow,
                 LogicalProcessors = Environment.ProcessorCount,
-                Privacy = "Only poll timing, status, success and duel-active booleans; no game cards, save contents, paths or raw memory.",
+                Privacy = "Only timing, status and change counts; no game cards, save contents, paths or raw memory.",
                 Inventory = "Synthetic near-complete collection",
                 Mode = mode.ToString(),
                 PollIntervalMilliseconds = 1000,
@@ -80,6 +91,8 @@ internal static class LiveOptimizerBenchmark
                 SuccessfulReads = samples.Count(p => p.Success),
                 FailedReads = samples.Count(p => !p.Success),
                 ActiveDuelReads = samples.Count(p => p.DuelActive),
+                PlayingReads = samples.Count(p => p.DuelActive && p.Playback == "Playing"),
+                DuelStateChanges = duelChanges,
                 FirstUsableDeckMilliseconds = progress.FirstOrDefault(p => p.HasBest)?.Milliseconds,
                 FirstProgressMilliseconds = progress.FirstOrDefault()?.Milliseconds,
                 MaximumProgressGapMilliseconds = progress.Zip(progress.Skip(1), (a, b) => b.Milliseconds - a.Milliseconds).DefaultIfEmpty().Max(),

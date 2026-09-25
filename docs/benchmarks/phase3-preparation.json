@@ -1,0 +1,56 @@
+{
+  "CapturedUtc": "2026-09-25T22:44:26.3883987+00:00",
+  "ProcessorCount": 12,
+  "SyntheticOnly": true,
+  "Cases": [
+    {
+      "Scope": "GeneralSafety",
+      "Cache": "cold",
+      "Milliseconds": 60.2478,
+      "MaximumProgressGapMilliseconds": 17.088,
+      "AllocatedBytes": 3493544,
+      "Reports": 33
+    },
+    {
+      "Scope": "GeneralSafety",
+      "Cache": "warm",
+      "Milliseconds": 0.8897,
+      "MaximumProgressGapMilliseconds": 0.05449999999999999,
+      "AllocatedBytes": 130416,
+      "Reports": 33
+    },
+    {
+      "Scope": "SpecificOpponent",
+      "Cache": "cold",
+      "Milliseconds": 0.1842,
+      "MaximumProgressGapMilliseconds": 0.16929999999999998,
+      "AllocatedBytes": 20768,
+      "Reports": 1
+    },
+    {
+      "Scope": "SpecificOpponent",
+      "Cache": "warm",
+      "Milliseconds": 0.017,
+      "MaximumProgressGapMilliseconds": 0.010799999999999999,
+      "AllocatedBytes": 6160,
+      "Reports": 1
+    },
+    {
+      "Scope": "FinalGauntlet",
+      "Cache": "cold",
+      "Milliseconds": 2.8641,
+      "MaximumProgressGapMilliseconds": 1.2315,
+      "AllocatedBytes": 288104,
+      "Reports": 6
+    },
+    {
+      "Scope": "FinalGauntlet",
+      "Cache": "warm",
+      "Milliseconds": 0.0733,
+      "MaximumProgressGapMilliseconds": 0.0167,
+      "AllocatedBytes": 26752,
+      "Reports": 6
+    }
+  ],
+  "CancellationDelayMilliseconds": 1.1883000000000001
+}

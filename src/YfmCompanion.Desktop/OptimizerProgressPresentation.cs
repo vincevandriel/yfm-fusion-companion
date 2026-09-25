@@ -18,7 +18,11 @@ internal static class OptimizerProgressPresenter
         var hasTotal = value.TotalHands is > 0 && value.CompletedHands is not null;
         var indeterminate = !hasTotal && (value.State is DeckBuildState.Preparing or DeckBuildState.Verifying ||
             value.State == DeckBuildState.Searching && value.SearchBudget is null);
-        var fraction = hasTotal
+        // A sampled candidate finishing is not the timed search finishing.
+        var timedSearch = value.State == DeckBuildState.Searching && value.SearchBudget is not null;
+        var fraction = timedSearch
+            ? Math.Clamp(value.SearchTimeConsumed.TotalSeconds / value.SearchBudget!.Value.TotalSeconds, 0, .99)
+            : hasTotal
             ? Math.Clamp((double)value.CompletedHands!.Value / value.TotalHands!.Value, 0, .99)
             : value.SearchBudget is { } budget
                 ? Math.Clamp(value.SearchTimeConsumed.TotalSeconds / budget.TotalSeconds, 0, .99)
@@ -28,7 +32,8 @@ internal static class OptimizerProgressPresenter
         var proof = value.ProofTotalSpace is null ? string.Empty : $" • {value.ProofResolvedSpace:N0}/{value.ProofTotalSpace:N0} space • {value.ProofLegalDecksEvaluated:N0} legal decks";
         var search = value.State == DeckBuildState.Searching && value.SearchBudget is { } limit
             ? $" • search budget {value.SearchTimeConsumed.TotalSeconds:N1} / {limit.TotalSeconds:N0} s consumed" : string.Empty;
-        var detail = $"{value.Stage} • elapsed {value.Elapsed:g} • {value.CandidatesExamined:N0} candidates{search}{hands}{eta}{proof}";
+        var elapsed = value.Elapsed.ToString(@"hh\:mm\:ss");
+        var detail = $"{value.Stage} • elapsed {elapsed} • {value.CandidatesExamined:N0} candidates{search}{hands}{eta}{proof}";
         return new(stage, detail, indeterminate, fraction);
     }
 }

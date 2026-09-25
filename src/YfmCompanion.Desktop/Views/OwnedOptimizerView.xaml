@@ -68,10 +68,10 @@
                               <controls:AdaptiveColumnsPanel MinimumColumnWidth="240" MaximumColumns="2">
                                 <StackPanel><TextBlock Text="SEARCH MODE" Foreground="{StaticResource MutedBrush}" FontSize="11" />
                                     <ComboBox x:Name="OptimizerSpeedCombo" DisplayMemberPath="Label" SelectedValuePath="Mode" /></StackPanel>
-                                <StackPanel><TextBlock x:Name="OptimizationStageText" Text="PREPARE → SEARCH → VERIFY → READY" TextWrapping="Wrap" FontWeight="SemiBold" />
-                                    <ProgressBar x:Name="OptimizationProgressBar" Height="10" Margin="0,6,0,0" Minimum="0" Maximum="1" Value="0" /></StackPanel>
+                                <StackPanel><TextBlock x:Name="OptimizationStageText" Text="{Binding Stage}" TextWrapping="Wrap" FontWeight="SemiBold" />
+                                    <ProgressBar x:Name="OptimizationProgressBar" Height="10" Margin="0,6,0,0" Minimum="0" Maximum="1" Value="{Binding Value}" IsIndeterminate="{Binding IsIndeterminate}" /></StackPanel>
                               </controls:AdaptiveColumnsPanel>
-                              <TextBlock x:Name="OptimizationProgressDetail" Text="Ready." Foreground="{StaticResource MutedBrush}" Margin="0,7,0,0" TextWrapping="Wrap" />
+                              <TextBlock x:Name="OptimizationProgressDetail" Text="{Binding Detail}" Foreground="{StaticResource MutedBrush}" Margin="0,7,0,0" TextWrapping="Wrap" />
                               <Expander Header="ADVANCED PROOF SEARCH" Margin="0,8,0,0">
                                <StackPanel>
                                 <CheckBox x:Name="ProveOptimalCheckBox" Margin="0,6,0,0"><TextBlock Text="Prove optimal for this scoring model (may be impractical; checkpointed)" TextWrapping="Wrap" /></CheckBox>
@@ -86,7 +86,7 @@
                             <Button x:Name="PauseOptimizationButton" Grid.Column="1" Content="PAUSE" Click="PauseOptimization_Click" IsEnabled="False" />
                             <Button x:Name="StopOptimizationButton" Grid.Column="2" Content="STOP AND KEEP BEST" Click="StopOptimization_Click" IsEnabled="False" />
                             <Button x:Name="VerifyOptimizationButton" Grid.Column="3" Content="VERIFY DECK" Click="VerifyOptimization_Click" IsEnabled="False" />
-                            <Button Grid.Column="4" Content="CLEAR OWNED" Click="ClearOwned_Click" />
+                            <Button Grid.Column="4" Content="CLEAR OWNED" Click="ClearOwned_Click" IsEnabled="{Binding CanEdit}" />
                           </WrapPanel>
                           <TextBlock x:Name="OptimizationStatus" Text="Owned cards load automatically from the newest save." TextWrapping="Wrap" Foreground="{StaticResource MutedBrush}" Margin="0,8,0,0" />
                         </StackPanel>
@@ -115,7 +115,7 @@
                                     </Grid>
                                     <StackPanel x:Name="OwnedAddPickerPanel" Grid.Row="1" Margin="0,0,0,8" />
                                     <WrapPanel Grid.Row="2" Margin="0,0,0,8">
-                                        <Button Content="ADD CARD" Click="AddOwnedCard_Click" Padding="10,5" />
+                                        <Button Content="ADD CARD" Click="AddOwnedCard_Click" Padding="10,5" IsEnabled="{Binding CanEdit}" />
                                         <Button Content="ARTWORK FOLDER…" Click="ChooseArtworkFolder_Click" Padding="10,5" />
                                         <Button Content="ASSIGN SELECTED ART…" Click="AssignSelectedArtwork_Click" Padding="10,5" />
                                         <TextBlock x:Name="OwnedCollectionCount" VerticalAlignment="Center" Foreground="{StaticResource MutedBrush}" Margin="8,0,0,0" />
@@ -141,7 +141,7 @@
                                                         <TextBlock Text="{Binding QuantityLine}" Foreground="{StaticResource AccentBrush}" FontSize="11" TextTrimming="CharacterEllipsis" />
                                                         <TextBlock Text="{Binding ProposedLine}" Foreground="{StaticResource GoldBrush}" FontSize="11" TextTrimming="CharacterEllipsis" />
                                                     </StackPanel>
-                                                    <TextBox Grid.Column="2" Width="44" HorizontalAlignment="Right" Text="{Binding Quantity, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center" ToolTip="Total owned copies" />
+                                                    <TextBox Grid.Column="2" Width="44" HorizontalAlignment="Right" Text="{Binding Quantity, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding DataContext.IsCollectionReadOnly, RelativeSource={RelativeSource AncestorType=UserControl}}" VerticalAlignment="Center" ToolTip="Total owned copies" />
                                                 </Grid>
                                             </DataTemplate>
                                         </ListBox.ItemTemplate>
@@ -155,18 +155,13 @@
                                     <RowDefinition Height="Auto" />
                                     <RowDefinition Height="*" />
                                 </Grid.RowDefinitions>
-                                <Grid Grid.Row="1" Margin="0,0,0,10">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*" />
-                                        <ColumnDefinition Width="*" />
-                                        <ColumnDefinition Width="*" />
-                                        <ColumnDefinition Width="*" />
-                                    </Grid.ColumnDefinitions>
+                                <controls:AdaptiveColumnsPanel Grid.Row="1" Margin="0,0,0,10" MinimumColumnWidth="140" MaximumColumns="4">
+
                                     <Border Background="{StaticResource PanelBrush}" Padding="9" Margin="0,0,7,0"><StackPanel><TextBlock Text="ATK ≥ 2800" Foreground="{StaticResource MutedBrush}" FontSize="10" /><TextBlock x:Name="Optimizer2800Metric" Text="—" FontSize="17" FontWeight="Bold" /></StackPanel></Border>
-                                    <Border Grid.Column="1" Background="{StaticResource PanelBrush}" Padding="9" Margin="0,0,7,0"><StackPanel><TextBlock Text="ATK ≥ 2500" Foreground="{StaticResource MutedBrush}" FontSize="10" /><TextBlock x:Name="Optimizer2500Metric" Text="—" FontSize="17" FontWeight="Bold" /></StackPanel></Border>
-                                    <Border Grid.Column="2" Background="{StaticResource PanelBrush}" Padding="9" Margin="0,0,7,0"><StackPanel><TextBlock Text="EXPECTED BEST" Foreground="{StaticResource MutedBrush}" FontSize="10" /><TextBlock x:Name="OptimizerExpectedMetric" Text="—" FontSize="17" FontWeight="Bold" /></StackPanel></Border>
-                                    <Border Grid.Column="3" Background="{StaticResource PanelBrush}" Padding="9"><StackPanel><TextBlock Text="DEAD HAND" Foreground="{StaticResource MutedBrush}" FontSize="10" /><TextBlock x:Name="OptimizerDeadMetric" Text="—" FontSize="17" FontWeight="Bold" /></StackPanel></Border>
-                                </Grid>
+                                    <Border Background="{StaticResource PanelBrush}" Padding="9" Margin="0,0,7,0"><StackPanel><TextBlock Text="ATK ≥ 2500" Foreground="{StaticResource MutedBrush}" FontSize="10" /><TextBlock x:Name="Optimizer2500Metric" Text="—" FontSize="17" FontWeight="Bold" /></StackPanel></Border>
+                                    <Border Background="{StaticResource PanelBrush}" Padding="9" Margin="0,0,7,0"><StackPanel><TextBlock Text="EXPECTED BEST" Foreground="{StaticResource MutedBrush}" FontSize="10" /><TextBlock x:Name="OptimizerExpectedMetric" Text="—" FontSize="17" FontWeight="Bold" /></StackPanel></Border>
+                                    <Border Background="{StaticResource PanelBrush}" Padding="9"><StackPanel><TextBlock Text="DEAD HAND" Foreground="{StaticResource MutedBrush}" FontSize="10" /><TextBlock x:Name="OptimizerDeadMetric" Text="—" FontSize="17" FontWeight="Bold" /></StackPanel></Border>
+                                </controls:AdaptiveColumnsPanel>
                                 <Border x:Name="CampaignPlanPanel" Grid.Row="2" Visibility="Collapsed" Background="{StaticResource PanelBrush}" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" Padding="10" Margin="0,0,0,10">
                                     <StackPanel>
                                         <TextBlock x:Name="CampaignScopeSummary" FontWeight="SemiBold" TextWrapping="Wrap" />
@@ -176,70 +171,70 @@
                                 </Border>
                                 <TabControl Grid.Row="3">
                                     <TabItem Header="DECK">
-                                        <DataGrid x:Name="OptimizedDeckGrid" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True" AlternationCount="2" Margin="0,8,0,0">
+                                        <DataGrid x:Name="OptimizedDeckGrid" MaxHeight="{Binding ActualHeight, RelativeSource={RelativeSource AncestorType=ScrollViewer}}" ScrollViewer.HorizontalScrollBarVisibility="Auto" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True" AlternationCount="2" Margin="0,8,0,0">
                                             <DataGrid.Columns>
-                                                <DataGridTextColumn Header="COPIES" Binding="{Binding Copies}" Width="60" />
-                                                <DataGridTextColumn Header="CARD" Binding="{Binding Card.Name}" Width="180" />
-                                                <DataGridTextColumn Header="OWNED" Binding="{Binding Owned}" Width="60" />
-                                                <DataGridTextColumn Header="BUY" Binding="{Binding Purchase}" Width="48" />
-                                                <DataGridTextColumn Header="TYPE" Binding="{Binding Card.PrimaryType}" Width="95" />
-                                                <DataGridTextColumn Header="ATK" Binding="{Binding Card.Attack}" Width="60" />
-                                                <DataGridTextColumn Header="WHY INCLUDED" Binding="{Binding Reason}" Width="260" />
+                                                <DataGridTextColumn ElementStyle="{StaticResource ResultCellText}" Header="COPIES" Binding="{Binding Copies}" Width="60" MinWidth="60" />
+                                                <DataGridTextColumn ElementStyle="{StaticResource ResultCellText}" Header="CARD" Binding="{Binding Card.Name}" Width="180" MinWidth="180" />
+                                                <DataGridTextColumn ElementStyle="{StaticResource ResultCellText}" Header="OWNED" Binding="{Binding Owned}" Width="60" MinWidth="60" />
+                                                <DataGridTextColumn ElementStyle="{StaticResource ResultCellText}" Header="BUY" Binding="{Binding Purchase}" Width="48" MinWidth="48" />
+                                                <DataGridTextColumn ElementStyle="{StaticResource ResultCellText}" Header="TYPE" Binding="{Binding Card.PrimaryType}" Width="95" MinWidth="95" />
+                                                <DataGridTextColumn ElementStyle="{StaticResource ResultCellText}" Header="ATK" Binding="{Binding Card.Attack}" Width="60" MinWidth="60" />
+                                                <DataGridTextColumn ElementStyle="{StaticResource ResultCellText}" Header="WHY INCLUDED" Binding="{Binding Reason}" Width="260" MinWidth="260" />
                                             </DataGrid.Columns>
                                         </DataGrid>
                                     </TabItem>
                                     <TabItem Header="OUTCOMES">
-                                        <DataGrid x:Name="OptimizationTargetsGrid" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True" AlternationCount="2" Margin="0,8,0,0">
+                                        <DataGrid x:Name="OptimizationTargetsGrid" MaxHeight="{Binding ActualHeight, RelativeSource={RelativeSource AncestorType=ScrollViewer}}" ScrollViewer.HorizontalScrollBarVisibility="Auto" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True" AlternationCount="2" Margin="0,8,0,0">
                                             <DataGrid.Columns>
-                                                <DataGridTextColumn Header="RESULT" Binding="{Binding Result.Name}" Width="180" />
-                                                <DataGridTextColumn Header="FINAL ATK" Binding="{Binding EffectiveAttack}" Width="75" />
-                                                <DataGridTextColumn Header="CHANCE" Binding="{Binding FormattedProbability}" Width="90" />
-                                                <DataGridTextColumn Header="REPRESENTATIVE ROUTE" Binding="{Binding Route}" Width="260" />
+                                                <DataGridTextColumn ElementStyle="{StaticResource ResultCellText}" Header="RESULT" Binding="{Binding Result.Name}" Width="180" MinWidth="180" />
+                                                <DataGridTextColumn ElementStyle="{StaticResource ResultCellText}" Header="FINAL ATK" Binding="{Binding EffectiveAttack}" Width="75" MinWidth="75" />
+                                                <DataGridTextColumn ElementStyle="{StaticResource ResultCellText}" Header="CHANCE" Binding="{Binding FormattedProbability}" Width="90" MinWidth="90" />
+                                                <DataGridTextColumn ElementStyle="{StaticResource ResultCellText}" Header="REPRESENTATIVE ROUTE" Binding="{Binding Route}" Width="260" MinWidth="260" />
                                             </DataGrid.Columns>
                                         </DataGrid>
                                     </TabItem>
                                     <TabItem Header="LIMITS">
-                                        <DataGrid x:Name="LimitedCardsGrid" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True" AlternationCount="2" Margin="0,8,0,0">
+                                        <DataGrid x:Name="LimitedCardsGrid" MaxHeight="{Binding ActualHeight, RelativeSource={RelativeSource AncestorType=ScrollViewer}}" ScrollViewer.HorizontalScrollBarVisibility="Auto" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True" AlternationCount="2" Margin="0,8,0,0">
                                             <DataGrid.Columns>
-                                                <DataGridTextColumn Header="CARD" Binding="{Binding Card.Name}" Width="180" />
-                                                <DataGridTextColumn Header="IN DECK" Binding="{Binding IncludedCopies}" Width="70" />
-                                                <DataGridTextColumn Header="OWNED" Binding="{Binding OwnedCopies}" Width="70" />
-                                                <DataGridTextColumn Header="LIMIT" Binding="{Binding LimitingReason}" Width="260" />
+                                                <DataGridTextColumn ElementStyle="{StaticResource ResultCellText}" Header="CARD" Binding="{Binding Card.Name}" Width="180" MinWidth="180" />
+                                                <DataGridTextColumn ElementStyle="{StaticResource ResultCellText}" Header="IN DECK" Binding="{Binding IncludedCopies}" Width="70" MinWidth="70" />
+                                                <DataGridTextColumn ElementStyle="{StaticResource ResultCellText}" Header="OWNED" Binding="{Binding OwnedCopies}" Width="70" MinWidth="70" />
+                                                <DataGridTextColumn ElementStyle="{StaticResource ResultCellText}" Header="LIMIT" Binding="{Binding LimitingReason}" Width="260" MinWidth="260" />
                                             </DataGrid.Columns>
                                         </DataGrid>
                                     </TabItem>
                                     <TabItem Header="LOW VALUE">
-                                        <DataGrid x:Name="ExcludedCardsGrid" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True" AlternationCount="2" Margin="0,8,0,0">
+                                        <DataGrid x:Name="ExcludedCardsGrid" MaxHeight="{Binding ActualHeight, RelativeSource={RelativeSource AncestorType=ScrollViewer}}" ScrollViewer.HorizontalScrollBarVisibility="Auto" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True" AlternationCount="2" Margin="0,8,0,0">
                                             <DataGrid.Columns>
-                                                <DataGridTextColumn Header="CARD" Binding="{Binding Card.Name}" Width="180" />
-                                                <DataGridTextColumn Header="TIER" Binding="{Binding Tier}" Width="90" />
-                                                <DataGridTextColumn Header="ROLE" Binding="{Binding Role}" Width="1.2*" />
-                                                <DataGridTextColumn Header="WHY LEFT OUT" Binding="{Binding Rationale}" Width="260" />
+                                                <DataGridTextColumn ElementStyle="{StaticResource ResultCellText}" Header="CARD" Binding="{Binding Card.Name}" Width="180" MinWidth="180" />
+                                                <DataGridTextColumn ElementStyle="{StaticResource ResultCellText}" Header="TIER" Binding="{Binding Tier}" Width="90" MinWidth="90" />
+                                                <DataGridTextColumn ElementStyle="{StaticResource ResultCellText}" Header="ROLE" Binding="{Binding Role}" Width="1.2*" MinWidth="160" />
+                                                <DataGridTextColumn ElementStyle="{StaticResource ResultCellText}" Header="WHY LEFT OUT" Binding="{Binding Rationale}" Width="260" MinWidth="260" />
                                             </DataGrid.Columns>
                                         </DataGrid>
                                     </TabItem>
                                     <TabItem Header="STAR CHIPS">
-                                        <DataGrid x:Name="PurchasePlanGrid" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True" AlternationCount="2" Margin="0,8,0,0">
+                                        <DataGrid x:Name="PurchasePlanGrid" MaxHeight="{Binding ActualHeight, RelativeSource={RelativeSource AncestorType=ScrollViewer}}" ScrollViewer.HorizontalScrollBarVisibility="Auto" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True" AlternationCount="2" Margin="0,8,0,0">
                                             <DataGrid.Columns>
-                                                <DataGridTextColumn Header="CARD" Binding="{Binding Card}" Width="145" />
-                                                <DataGridTextColumn Header="PASSWORD" Binding="{Binding Password}" Width="85" />
-                                                <DataGridTextColumn Header="QTY" Binding="{Binding Copies}" Width="48" />
-                                                <DataGridTextColumn Header="EACH" Binding="{Binding UnitCost}" Width="62" />
-                                                <DataGridTextColumn Header="TOTAL" Binding="{Binding TotalCost}" Width="65" />
-                                                <DataGridTextColumn Header="SPENT" Binding="{Binding CumulativeSpend}" Width="65" />
-                                                <DataGridTextColumn Header="LEFT" Binding="{Binding Remaining}" Width="65" />
-                                                <DataGridTextColumn Header="WHY THIS PURCHASE" Binding="{Binding Rationale}" Width="240" />
+                                                <DataGridTextColumn ElementStyle="{StaticResource ResultCellText}" Header="CARD" Binding="{Binding Card}" Width="145" MinWidth="145" />
+                                                <DataGridTextColumn ElementStyle="{StaticResource ResultCellText}" Header="PASSWORD" Binding="{Binding Password}" Width="85" MinWidth="85" />
+                                                <DataGridTextColumn ElementStyle="{StaticResource ResultCellText}" Header="QTY" Binding="{Binding Copies}" Width="48" MinWidth="48" />
+                                                <DataGridTextColumn ElementStyle="{StaticResource ResultCellText}" Header="EACH" Binding="{Binding UnitCost}" Width="62" MinWidth="62" />
+                                                <DataGridTextColumn ElementStyle="{StaticResource ResultCellText}" Header="TOTAL" Binding="{Binding TotalCost}" Width="65" MinWidth="65" />
+                                                <DataGridTextColumn ElementStyle="{StaticResource ResultCellText}" Header="SPENT" Binding="{Binding CumulativeSpend}" Width="65" MinWidth="65" />
+                                                <DataGridTextColumn ElementStyle="{StaticResource ResultCellText}" Header="LEFT" Binding="{Binding Remaining}" Width="65" MinWidth="65" />
+                                                <DataGridTextColumn ElementStyle="{StaticResource ResultCellText}" Header="WHY THIS PURCHASE" Binding="{Binding Rationale}" Width="240" MinWidth="240" />
                                             </DataGrid.Columns>
                                         </DataGrid>
                                     </TabItem>
                                     <TabItem Header="THREATS">
-                                        <DataGrid x:Name="CampaignThreatsGrid" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True" AlternationCount="2" Margin="0,8,0,0">
+                                        <DataGrid x:Name="CampaignThreatsGrid" MaxHeight="{Binding ActualHeight, RelativeSource={RelativeSource AncestorType=ScrollViewer}}" ScrollViewer.HorizontalScrollBarVisibility="Auto" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True" AlternationCount="2" Margin="0,8,0,0">
                                             <DataGrid.Columns>
-                                                <DataGridTextColumn Header="OPPONENT" Binding="{Binding Opponent}" Width="1.2*" />
-                                                <DataGridTextColumn Header="THREAT" Binding="{Binding Threat}" Width="1.4*" />
-                                                <DataGridTextColumn Header="ATK" Binding="{Binding Attack}" Width="65" />
-                                                <DataGridTextColumn Header="STARS" Binding="{Binding GuardianStars}" Width="95" />
-                                                <DataGridTextColumn Header="SOURCE" Binding="{Binding Source}" Width="1.1*" />
+                                                <DataGridTextColumn ElementStyle="{StaticResource ResultCellText}" Header="OPPONENT" Binding="{Binding Opponent}" Width="1.2*" MinWidth="160" />
+                                                <DataGridTextColumn ElementStyle="{StaticResource ResultCellText}" Header="THREAT" Binding="{Binding Threat}" Width="1.4*" MinWidth="160" />
+                                                <DataGridTextColumn ElementStyle="{StaticResource ResultCellText}" Header="ATK" Binding="{Binding Attack}" Width="65" MinWidth="65" />
+                                                <DataGridTextColumn ElementStyle="{StaticResource ResultCellText}" Header="STARS" Binding="{Binding GuardianStars}" Width="95" MinWidth="95" />
+                                                <DataGridTextColumn ElementStyle="{StaticResource ResultCellText}" Header="SOURCE" Binding="{Binding Source}" Width="1.1*" MinWidth="160" />
                                             </DataGrid.Columns>
                                         </DataGrid>
                                     </TabItem>

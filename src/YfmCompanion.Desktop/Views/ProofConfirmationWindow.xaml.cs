@@ -9,6 +9,8 @@ public partial class ProofConfirmationWindow : Window
     {
         InitializeComponent();
         Owner = owner;
+        Width = Math.Min(560, owner.ActualWidth);
+        MaxHeight = Math.Max(180, Math.Min(SystemParameters.WorkArea.Height, owner.ActualHeight));
         SpaceText.Text = $"This request has {capacity:N0} capacity-bounded 40-card deck vectors. Purchase constraints may reject some branches.";
         EstimateText.Text = estimate;
         CheckpointText.Text = existing

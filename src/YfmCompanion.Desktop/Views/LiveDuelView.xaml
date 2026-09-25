@@ -16,7 +16,7 @@
                                     <ColumnDefinition Width="2*" />
                                     <ColumnDefinition Width="Auto" />
                                 </Grid.ColumnDefinitions>
-                                <TextBlock Text="Automatic read-only update every second" Foreground="{StaticResource MutedBrush}" VerticalAlignment="Center" />
+                                <TextBlock Text="Automatic read-only update every second" TextWrapping="Wrap" Foreground="{StaticResource MutedBrush}" VerticalAlignment="Center" />
                                 <TextBlock x:Name="LiveStatusText" Grid.Column="1" Text="Checking RetroArch…" TextWrapping="Wrap" Foreground="{StaticResource MutedBrush}" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="12,0" />
                                 <Button x:Name="InspectorToggleButton" Grid.Column="2" Content="INSPECT CARDS" Click="ToggleInspector_Click" Background="#245475" Foreground="{StaticResource TextBrush}" Padding="12,7" Margin="0" />
                             </Grid>
@@ -74,41 +74,41 @@
                                         <RowDefinition Height="*" />
                                     </Grid.RowDefinitions>
                                     <TextBlock x:Name="LiveAdviceSummary" Text="Live fusion advice will appear after a validated duel snapshot." Foreground="{StaticResource MutedBrush}" Margin="2,0,0,8" />
-                                    <DataGrid x:Name="LiveAdviceGrid" Grid.Row="1" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True" AlternationCount="2" SelectionChanged="LiveCard_SelectionChanged">
+                                    <DataGrid x:Name="LiveAdviceGrid" MaxHeight="{Binding ActualHeight, RelativeSource={RelativeSource AncestorType=ScrollViewer}}" ScrollViewer.HorizontalScrollBarVisibility="Auto" Grid.Row="1" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True" AlternationCount="2" SelectionChanged="LiveCard_SelectionChanged">
                                         <DataGrid.Columns>
-                                            <DataGridTextColumn Header="RESULT" Binding="{Binding Result}" Width="2*" />
-                                            <DataGridTextColumn Header="ATK" Binding="{Binding Attack}" Width="70" />
-                                            <DataGridTextColumn Header="DEF" Binding="{Binding Defense}" Width="70" />
-                                            <DataGridTextColumn Header="HAND ORDER" Binding="{Binding HandOrder}" Width="1.6*" />
-                                            <DataGridTextColumn Header="ROUTE" Binding="{Binding Route}" Width="4*" />
-                                            <DataGridTextColumn Header="FIELD" Binding="{Binding Field}" Width="1.2*" />
-                                            <DataGridTextColumn Header="STAR 1" Binding="{Binding GuardianStar1}" Width="105" />
-                                            <DataGridTextColumn Header="STAR 2" Binding="{Binding GuardianStar2}" Width="105" />
-                                            <DataGridTextColumn Header="VS FIELD" Binding="{Binding GuardianOutcomes}" Width="120" />
+                                            <DataGridTextColumn ElementStyle="{StaticResource ResultCellText}" Header="RESULT" Binding="{Binding Result}" Width="2*" MinWidth="160" />
+                                            <DataGridTextColumn ElementStyle="{StaticResource ResultCellText}" Header="ATK" Binding="{Binding Attack}" Width="70" MinWidth="70" />
+                                            <DataGridTextColumn ElementStyle="{StaticResource ResultCellText}" Header="DEF" Binding="{Binding Defense}" Width="70" MinWidth="70" />
+                                            <DataGridTextColumn ElementStyle="{StaticResource ResultCellText}" Header="HAND ORDER" Binding="{Binding HandOrder}" Width="1.6*" MinWidth="160" />
+                                            <DataGridTextColumn ElementStyle="{StaticResource ResultCellText}" Header="ROUTE" Binding="{Binding Route}" Width="4*" MinWidth="160" />
+                                            <DataGridTextColumn ElementStyle="{StaticResource ResultCellText}" Header="FIELD" Binding="{Binding Field}" Width="1.2*" MinWidth="160" />
+                                            <DataGridTextColumn ElementStyle="{StaticResource ResultCellText}" Header="STAR 1" Binding="{Binding GuardianStar1}" Width="105" MinWidth="105" />
+                                            <DataGridTextColumn ElementStyle="{StaticResource ResultCellText}" Header="STAR 2" Binding="{Binding GuardianStar2}" Width="105" MinWidth="105" />
+                                            <DataGridTextColumn ElementStyle="{StaticResource ResultCellText}" Header="VS FIELD" Binding="{Binding GuardianOutcomes}" Width="120" MinWidth="120" />
                                         </DataGrid.Columns>
                                     </DataGrid>
                                 </Grid>
                             </TabItem>
                             <TabItem Header="CONSTRUCTED DECK">
-                                <DataGrid x:Name="LiveDeckGrid" Margin="8" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True" AlternationCount="2" SelectionChanged="LiveCard_SelectionChanged">
+                                <DataGrid x:Name="LiveDeckGrid" MaxHeight="{Binding ActualHeight, RelativeSource={RelativeSource AncestorType=ScrollViewer}}" ScrollViewer.HorizontalScrollBarVisibility="Auto" Margin="8" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True" AlternationCount="2" SelectionChanged="LiveCard_SelectionChanged">
                                     <DataGrid.Columns>
-                                        <DataGridTextColumn Header="SLOT" Binding="{Binding Slot}" Width="55" />
-                                        <DataGridTextColumn Header="#" Binding="{Binding Card.Id}" Width="50" />
-                                        <DataGridTextColumn Header="CARD" Binding="{Binding Card.Name}" Width="*" />
-                                        <DataGridTextColumn Header="TYPE" Binding="{Binding Card.PrimaryType}" Width="100" />
-                                        <DataGridTextColumn Header="ATK" Binding="{Binding Card.Attack}" Width="70" />
-                                        <DataGridTextColumn Header="DEF" Binding="{Binding Card.Defense}" Width="70" />
+                                        <DataGridTextColumn ElementStyle="{StaticResource ResultCellText}" Header="SLOT" Binding="{Binding Slot}" Width="55" MinWidth="55" />
+                                        <DataGridTextColumn ElementStyle="{StaticResource ResultCellText}" Header="#" Binding="{Binding Card.Id}" Width="50" MinWidth="50" />
+                                        <DataGridTextColumn ElementStyle="{StaticResource ResultCellText}" Header="CARD" Binding="{Binding Card.Name}" Width="*" MinWidth="160" />
+                                        <DataGridTextColumn ElementStyle="{StaticResource ResultCellText}" Header="TYPE" Binding="{Binding Card.PrimaryType}" Width="100" MinWidth="100" />
+                                        <DataGridTextColumn ElementStyle="{StaticResource ResultCellText}" Header="ATK" Binding="{Binding Card.Attack}" Width="70" MinWidth="70" />
+                                        <DataGridTextColumn ElementStyle="{StaticResource ResultCellText}" Header="DEF" Binding="{Binding Card.Defense}" Width="70" MinWidth="70" />
                                     </DataGrid.Columns>
                                 </DataGrid>
                             </TabItem>
                             <TabItem Header="OWNED COLLECTION">
-                                <DataGrid x:Name="LiveCollectionGrid" Margin="8" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True" AlternationCount="2" SelectionChanged="LiveCard_SelectionChanged">
+                                <DataGrid x:Name="LiveCollectionGrid" MaxHeight="{Binding ActualHeight, RelativeSource={RelativeSource AncestorType=ScrollViewer}}" ScrollViewer.HorizontalScrollBarVisibility="Auto" Margin="8" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True" AlternationCount="2" SelectionChanged="LiveCard_SelectionChanged">
                                     <DataGrid.Columns>
-                                        <DataGridTextColumn Header="#" Binding="{Binding Card.Id}" Width="50" />
-                                        <DataGridTextColumn Header="CARD" Binding="{Binding Card.Name}" Width="*" />
-                                        <DataGridTextColumn Header="CHEST" Binding="{Binding Chest}" Width="70" />
-                                        <DataGridTextColumn Header="DECK" Binding="{Binding Deck}" Width="70" />
-                                        <DataGridTextColumn Header="TOTAL OWNED" Binding="{Binding Total}" Width="100" />
+                                        <DataGridTextColumn ElementStyle="{StaticResource ResultCellText}" Header="#" Binding="{Binding Card.Id}" Width="50" MinWidth="50" />
+                                        <DataGridTextColumn ElementStyle="{StaticResource ResultCellText}" Header="CARD" Binding="{Binding Card.Name}" Width="*" MinWidth="160" />
+                                        <DataGridTextColumn ElementStyle="{StaticResource ResultCellText}" Header="CHEST" Binding="{Binding Chest}" Width="70" MinWidth="70" />
+                                        <DataGridTextColumn ElementStyle="{StaticResource ResultCellText}" Header="DECK" Binding="{Binding Deck}" Width="70" MinWidth="70" />
+                                        <DataGridTextColumn ElementStyle="{StaticResource ResultCellText}" Header="TOTAL OWNED" Binding="{Binding Total}" Width="100" MinWidth="100" />
                                     </DataGrid.Columns>
                                 </DataGrid>
                             </TabItem>
