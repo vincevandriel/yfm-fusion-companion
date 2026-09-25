@@ -1,6 +1,19 @@
 # Optimizer update checkpoint
 
-## Current status — Phase 3 third repair batch; gate remains open
+## Current status — Phase 3 automated repairs verified; live sign-off outstanding
+
+- **Phase 3 remains IN PROGRESS; Phase 4 has not started. Resume with GPT-6 Astra (`gpt-6-astra`), reasoning xhigh.**
+- Repair/evidence commit: `c15a7e1b75afe14c7bfcb335ba88aaee1fa8f2e8` (2026-09-26). This checkpoint commit follows it.
+- Last completed subgate: persistent optimizer progress, browsable/read-only frozen collection, honest sampled-search budget bar, preparation pause/stop, full proof click/dialog/restart/backup workflow, twenty changing synthetic live snapshots with selection/scroll retention, narrow tables/metric reflow/dialog sizing, dropdown and Compact visual review.
+- Full solution 200 tests passed, none failed/skipped; warning-as-error build zero warnings/errors; formatting and whitespace checks passed. Final desktop harness passed: busy about 10 ms, first deck 1,010 ms, pause 58 ms, stop 126 ms, 152 keyboard focus visits. Evidence `docs/audit/phase3-final-desktop.json` (its terminal failed message is an intentional incompatible-request test).
+- Visual matrix: 150 cases / 455 captures at top/middle/detail positions, dropdown and Compact. Host DPI 100%; required 125/150/200% logical/scaled renders reviewed with representative adverse cases, not actual Windows DPI changes. Manifest `docs/audit/phase3-final-visual-states.json`, selected images `docs/audit/visual-samples/`, all images `tmp/phase3-final-visual/`.
+- Cold/warm preparation: six cases passed; general 60.25 / 0.89 ms, max gap 17.09 ms, cancellation 1.19 ms. Evidence `docs/benchmarks/phase3-preparation.json`.
+- Balanced/read-only RetroArch: 67 successful active-duel reads, no failures/overlap, first preview 105.13 ms, max gap 224.84 ms, exact 658,008 hands, NOT proven optimal. **PlayingReads=0 and DuelStateChanges=0**; game was paused throughout. Evidence `docs/benchmarks/phase3-active-duel-balanced.json`. Concurrent visual work was present, so timings are run-specific.
+- **Exact next action:** after usage permits, run the final read-only changing-board integration while RetroArch is unpaused and the user plays normally. Record actual state transitions and check live UI selection/scroll using those snapshots. No special test moves, game input, save states or game/save writes. The user was asked asynchronously to play normally; no response was received. Retain the real-OS-DPI limitation rather than claiming coverage. Then record the Phase 3 gate decision; pause before Phase 4/model change.
+- **Usage guard reached 90% used / 10% remaining; paused.** Weekly allowance also has only 4% remaining. Check both on resume and usage every 60 seconds. Do not redeem the available reset without explicit authorization.
+- All started tests, visual harnesses, formatting and benchmarks exited. Synthetic temporary settings/artwork/saves/proof folders were cleaned by the harness. RetroArch process 29256 was left untouched. No public push/release, installed replacement or personal save/settings changes. `.vs/` remains untracked and untouched.
+
+## Previous third repair checkpoint (historical)
 
 - Repair/evidence commit: `70ce4b6a7e44a7166f91fc273e524b91ec8be406`. This checkpoint includes trailing-blank-line cleanup found when staging the new views.
 - **Phase 3 is IN PROGRESS. Do not begin Phase 4. Resume with GPT-6 Astra (`gpt-6-astra`), reasoning xhigh.**
