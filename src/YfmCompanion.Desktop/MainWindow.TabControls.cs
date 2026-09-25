@@ -208,4 +208,3 @@ public partial class MainWindow
     private TextBlock TurnResultSummary => (TextBlock)TurnAdviserPaneView.FindName("TurnResultSummary");
     private DataGrid TurnResultsGrid => (DataGrid)TurnAdviserPaneView.FindName("TurnResultsGrid");
 }
-

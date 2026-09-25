@@ -16,4 +16,3 @@ public partial class SaveSnapshotView : UserControl
     public event EventHandler<RoutedEventArgs>? ApplyOwnedSnapshot_ClickRequested;
     private void ApplyOwnedSnapshot_Click(object sender, RoutedEventArgs e) => ApplyOwnedSnapshot_ClickRequested?.Invoke(sender, e);
 }
-

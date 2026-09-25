@@ -12,4 +12,3 @@ public partial class TurnAdviserView : UserControl
     public event EventHandler<RoutedEventArgs>? ClearTurn_ClickRequested;
     private void ClearTurn_Click(object sender, RoutedEventArgs e) => ClearTurn_ClickRequested?.Invoke(sender, e);
 }
-

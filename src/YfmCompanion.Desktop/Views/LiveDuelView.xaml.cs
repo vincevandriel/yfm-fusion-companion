@@ -12,4 +12,3 @@ public partial class LiveDuelView : UserControl
     public event EventHandler<SelectionChangedEventArgs>? LiveCard_SelectionChangedRequested;
     private void LiveCard_SelectionChanged(object sender, SelectionChangedEventArgs e) => LiveCard_SelectionChangedRequested?.Invoke(sender, e);
 }
-

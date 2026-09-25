@@ -1,6 +1,18 @@
 # Optimizer update checkpoint
 
-## Current status — Phase 3 second repair batch verified; gate still open
+## Current status — Phase 3 third repair batch; gate remains open
+
+- Repair/evidence commit: `70ce4b6a7e44a7166f91fc273e524b91ec8be406`. This checkpoint includes trailing-blank-line cleanup found when staging the new views.
+- **Phase 3 is IN PROGRESS. Do not begin Phase 4. Resume with GPT-6 Astra (`gpt-6-astra`), reasoning xhigh.**
+- Completed: five tab-specific views, grouped deck tray/add/remove, inspectable routes, pinned-source race/recovery fix, same-content freshness, empty-deck clearing, shutdown activity drain with durable proof resume, themed proof confirmation, selected-cell contrast and Compact column fit. See the third repair section of `docs/audit/PHASE3_AUDIT.md`.
+- Verification: full suite 200 passed; warning-as-error build clean; formatting checks passed. Latest isolated desktop harness passed including real watcher, pin race, proof close/restart, empty save, timestamp, deck tray and keyboard tests. Busy 10.26 ms, first deck 897.11 ms, pause 162.57 ms, stop 176.35 ms. Evidence `docs/audit/phase3-desktop-lifecycle.json`.
+- Visual harness completed 150 cases / 304 screenshots. Manifest `docs/audit/phase3-visual-states.json`; local images `tmp/phase3-states-final/`. Automated zero clipping warnings is NOT full acceptance; detector excludes table cells and misses offscreen sections. Representative screenshots reviewed. Actual OS-DPI changes unverified.
+- Read-only Quick/live benchmark: 12 successful active-duel reads, zero failures/overlap; playback paused throughout. First preview 103.21 ms, max progress gap 221.71 ms. Quick uses 160 sampled hands, not exact/proven. Evidence `docs/benchmarks/phase3-live-quick.json`. Concurrent visual work makes this run-specific, not an isolated universal performance claim.
+- **Exact next action:** review all intermediate scroll positions and improve narrow table readability and progress visibility while browsing owned cards. Then automate the complete preflight/confirmation/restart path, verify changing-board scroll behavior and cold campaign preparation, and rerun affected gates. Keep current visual limitations explicit; do not declare Phase 3 passed from a smoke test.
+- Usage was 89% used / 11% remaining before writing this checkpoint; recheck on resume and every 60 seconds. Pause at 90% used. Never redeem a reset without authorization.
+- All agent-started tests, visual harnesses, formatting and benchmarks have exited. Synthetic temporary settings/save/artwork/checkpoints were cleaned by harnesses. No game inputs/writes, personal saves/settings changes, installed replacement, public push or release. `.vs/` remains untouched/untracked.
+
+## Previous second repair checkpoint (historical)
 
 - **Phase 3 is IN PROGRESS. Its complete gate has NOT passed. Phase 4 has not started.**
 - Current repair/evidence commit: `ad3f0e8acd8cbce6d9789253cbd7f6ac0ba83ca0` (2026-09-25). This checkpoint-only commit follows it.

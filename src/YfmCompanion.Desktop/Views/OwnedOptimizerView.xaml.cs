@@ -46,4 +46,3 @@ public partial class OwnedOptimizerView : UserControl
     public event EventHandler<SelectionChangedEventArgs>? OwnedCards_SelectionChangedRequested;
     private void OwnedCards_SelectionChanged(object sender, SelectionChangedEventArgs e) => OwnedCards_SelectionChangedRequested?.Invoke(sender, e);
 }
-
