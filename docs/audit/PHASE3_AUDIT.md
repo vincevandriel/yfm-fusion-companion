@@ -46,9 +46,39 @@ Validation after these changes:
 
 ## Still required before the gate
 
+The list below describes the first checkpoint's open work; consult the second repair checkpoint for current closures and remaining limits.
+
 - Complete E03/U02 lifecycle review: standalone Verify completion, preparation pause semantics, freezing selected inputs on explicit source changes, proposed-copy reset, and proof checkpoint recovery from the desktop.
 - Check comparator grouping of campaign opening-answer coverage against the fixed 0.5-percentage-point contract, canonical proof comparisons and compatible-incumbent reduction. No comparator change was made during this checkpoint.
 - Correct and independently test the remaining visual redesign gaps (U04), all-tab keyboard navigation, narrow/high-DPI controls, selected/disabled contrast, true view separation and required visual trays/slots. The historical Phase 2 screenshot claim is not accepted as sufficient.
 - Finish gallery/artwork cache and stable selection/scroll tests, manual ownership persistence/labels and source-directory watcher edge cases.
 - Rerun measured before/after matrix, cold preparation/progress/cancellation, exact hand/proof independent oracles, caches and one-second live coexistence. RetroArch process 29256 was present during this checkpoint; this audit has not yet established active-duel coverage for the repaired build.
 - No release, public upload, installed replacement or Phase 4 work is authorized by a passing smoke test alone.
+
+## Second repair checkpoint — 2026-09-25
+
+This remains an **in-progress audit, not release approval**.
+
+- Standalone Verify now shares result installation, late-callback suppression and terminal controls with search. Engine tests cover verification pause/resume/stop and retained best-on-failure. Worker progress is capped below 100%; only installed results reach Ready. Unknown proof work shows activity, and timed progress explicitly labels search-budget consumption.
+- Manual collections now persist across actual window restart, preserve quantities above 99, hide inherited chest/deck provenance, and discard obsolete proposals/Verify controls when quantities change. Pending saves are tested while a real job is paused and are applied after stop.
+- Campaign opening-answer coverage now participates in fixed 0.005 primary groups before the gauntlet tie-break; exact primary metrics break ties afterward. Comparator version is `campaign-lexicographic-v3`; old proof objectives cannot resume silently. Boundary and transitivity tests pass.
+- Artwork uses bounded LRU accounting and stream decoding, bypassing WPF's separate URI cache. Tests check replacement pixels, cache reuse/eviction, deletion, invalid images and oversize rejection. Explicit artwork refresh invalidates even unchanged metadata.
+- The high-DPI header no longer overlaps, horizontal forcing was removed, strategy controls reflow, advanced options are collapsed, and progress moved above the gallery. Theme templates prevent native white/low-contrast disabled inputs and combo surfaces. Reusable adaptive columns, card tiles and detailed card slots are used in the full interface. Compact sizing and route notation are unchanged.
+- Saved/live cards have shared visual tiles. Live lists reconcile changes without replacing ItemsSource; changed/deleted selected slots have regression coverage. Gallery auditing asserts fewer than 30 realized containers for roughly 100 owned cards and stable items/selection on unchanged refresh.
+- Autocomplete no longer retains stale suggestions after a selection; clearing resets card details. Deck Analyzer now has a real progress bar and rejects callbacks/results from a deck edited during analysis.
+- Desktop proof tests pause to disk, recreate the job, complete a one-feasible-deck proof, and reject changed inputs with failed-state controls. An explicit advanced restart option preserves an old checkpoint; an engine-compatible lease prevents archiving another active job's file. Timed pause labels explicitly require keeping the window open.
+- UI audit now traverses all five tabs forward and backward, isolates its settings/save/artwork/proof files, and tests source, verification, manual restart, gallery, card-entry and proof workflows. The native proof confirmation dialog is not exercised by the direct job harness.
+
+### Fresh performance evidence
+
+`docs/benchmarks/phase3-matrix.json`: 42/48 completed under the two-second diagnostic cutoff, six clean cancellations, maximum progress gap 230.8194 ms, maximum cancellation overrun 22.0901 ms. The comparable pristine matrix completed 14/48 with 12,911 ms maximum gap and 10,912 ms overrun. This is the same synthetic harness, not a universal speedup claim. The diverse/manual/no-purchase cold and warm cases took 1,069.15 / 10.42 ms, allocating 124.37 / 0.96 MB; the historical baseline was 1,523 / 1,512 ms and about 17.8 MB each, so the cold-allocation tradeoff remains.
+
+`docs/benchmarks/phase3-live-balanced.json`: 68 successful read-only one-second polls, zero failures, maximum concurrent reads one, first progress 46.79 ms, first legal preview 119.63 ms, maximum progress gap 222.66 ms. Balanced completed with exact 658,008-hand statistics and **ProvenOptimal=false**. Accounted search caches used 235,539,010 of 268,435,456 bytes; this is not a process-memory cap. **ActiveDuelReads=0**, so this is menu/non-duel coexistence, not active-duel acceptance.
+
+### Remaining Phase 3 gate work
+
+1. Complete independent visual state review for all tabs: empty/populated/loading/error/completed, every required resolution/scale, dropdowns, disabled/selected states and Compact Live. Current synthetic captures are rendered WPF DIP/scaling cases, not a real OS-DPI-switch test. Layout fixes and keyboard traversal alone do not close this gate.
+2. Complete tab-specific presentation separation, deck-tray copy-count presentation and inspectable route/intermediate-result UX against the approved plan. Shared components now exist, but the main-window controller still owns substantial tab-specific logic.
+3. Audit remaining watcher/pinned-source races, proof confirmation/restart controls and shutdown during active work. Job-level proof recovery is covered; the complete confirmation-and-close workflow still needs automation.
+4. Measure live-card scroll preservation under actual changing duel snapshots and cold campaign preparation responsiveness across fixtures. A current active duel was unavailable in the measured run; do not substitute historical coverage.
+5. Rerun affected regression/visual/performance gates after further repairs, then make an explicit Phase 3 pass/fail decision. **Do not begin Phase 4.**

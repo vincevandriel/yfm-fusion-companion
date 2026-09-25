@@ -11,6 +11,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using YfmCompanion.Desktop;
+using YfmCompanion.Desktop.Controls;
 using YfmCompanion.Engine;
 using YfmCompanion.RetroArch;
 
@@ -33,6 +34,7 @@ internal static class Program
 
     private static int Run(string[] args, string fixtureDirectory)
     {
+        DesktopContractAudit.Run(fixtureDirectory);
         var output = args.Length > 0 ? Path.GetFullPath(args[0]) : Path.GetFullPath("phase2-ui");
         Directory.CreateDirectory(output);
         var settingsPath = Path.Combine(fixtureDirectory, "settings.json");
@@ -41,9 +43,17 @@ internal static class Program
         Directory.CreateDirectory(Path.GetDirectoryName(settingsPath)!);
         File.WriteAllText(settingsPath, JsonSerializer.Serialize(new
         {
-            Left = 0, Top = 0, Width = 1280, Height = 720, IsMaximized = false, AlwaysOnTop = false,
-            CompactMode = false, LastSavePath = fixtureSave, CollectionSourceMode = 1,
-            KnownSaveLocations = new[] { fixtureDirectory }, ArtworkFolder = (string?)null
+            Left = 0,
+            Top = 0,
+            Width = 1280,
+            Height = 720,
+            IsMaximized = false,
+            AlwaysOnTop = false,
+            CompactMode = false,
+            LastSavePath = fixtureSave,
+            CollectionSourceMode = 1,
+            KnownSaveLocations = new[] { fixtureDirectory },
+            ArtworkFolder = (string?)null
         }));
         var app = new App { ShutdownMode = ShutdownMode.OnExplicitShutdown };
         app.InitializeComponent();
@@ -112,6 +122,8 @@ internal static class Program
         Capture(window, Path.Combine(output, "1920x1080-150-quick-result-deck.png"), 1280, 720, 1.5);
         workspaceScroll.ScrollToTop();
 
+        AuditVerification(window);
+
         ((ComboBox)window.FindName("OptimizerSpeedCombo")).SelectedIndex = 2;
         optimizeButton.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
         var pauseAvailableClock = Stopwatch.StartNew();
@@ -123,6 +135,7 @@ internal static class Program
         while (!optimizeButton.IsEnabled && pauseClock.Elapsed < TimeSpan.FromSeconds(3)) Pump(TimeSpan.FromMilliseconds(20));
         var pauseMilliseconds = pauseClock.Elapsed.TotalMilliseconds;
         if (CurrentJob(window)?.State != DeckBuildState.Paused) throw new InvalidOperationException("Pause did not preserve a paused job.");
+        AuditSaveDuringPause(window, fixtureSave);
         optimizeButton.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
         var stopAvailableClock = Stopwatch.StartNew();
         while (!stopButton.IsEnabled && stopAvailableClock.Elapsed < TimeSpan.FromSeconds(5)) Pump(TimeSpan.FromMilliseconds(20));
@@ -132,12 +145,18 @@ internal static class Program
         while (!optimizeButton.IsEnabled && stopClock.Elapsed < TimeSpan.FromSeconds(3)) Pump(TimeSpan.FromMilliseconds(20));
         var stopMilliseconds = stopClock.Elapsed.TotalMilliseconds;
         if (CurrentJob(window)?.State != DeckBuildState.Cancelled) throw new InvalidOperationException("Stop did not cancel the resumed job.");
+        if (Field(window, "_pendingCollectionSnapshot") is not null)
+            throw new InvalidOperationException("The pending save was not applied after stop.");
 
         if (busyMilliseconds > 200 || firstCandidateMilliseconds > 5000 ||
             pauseMilliseconds > 1000 || stopMilliseconds > 1000)
             throw new InvalidOperationException($"Responsiveness gate failed: busy {busyMilliseconds}, first {firstCandidateMilliseconds}, pause {pauseMilliseconds}, stop {stopMilliseconds} ms.");
 
         AuditSourceTransitions(window, fixtureSave);
+        AuditManualPersistence(window);
+        AuditCardEntryAndAnalysis(window);
+        AuditGallery(window);
+        AuditProofRecovery(window, fixtureDirectory);
         var focusVisits = AuditKeyboardNavigation(window);
         File.WriteAllText(Path.Combine(output, "keyboard-navigation.txt"), $"Forward focus visits: {focusVisits}{Environment.NewLine}");
         File.WriteAllText(Path.Combine(output, "ui-audit.json"), JsonSerializer.Serialize(new
@@ -145,6 +164,8 @@ internal static class Program
             SyntheticSave = true,
             IsolatedSettings = true,
             SourceTransitionChecks = "missing -> stale -> recovered; in-flight refresh -> protected manual edit",
+            VerificationChecks = "pause -> resume -> exact Ready; late callbacks do not overwrite terminal state",
+            DesktopContracts = "progress labels; thumbnail LRU, replacement pixels, corruption, deletion, oversize; manual persistence; pending save during pause; stable live selection; adaptive layout; autocomplete clearing; analysis cancellation; gallery virtualization; proof desktop restart and incompatibility",
             BusyStateMilliseconds = busyMilliseconds,
             FirstCandidateMilliseconds = firstCandidateMilliseconds,
             PauseResponseMilliseconds = pauseMilliseconds,
@@ -183,6 +204,85 @@ internal static class Program
     private static DeckBuildJob? CurrentJob(MainWindow window) =>
         (DeckBuildJob?)typeof(MainWindow).GetField("_deckBuildJob", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(window);
 
+    private static object? Field(MainWindow window, string name) =>
+        typeof(MainWindow).GetField(name, BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(window);
+
+    private static void SetField(MainWindow window, string name, object value) =>
+        typeof(MainWindow).GetField(name, BindingFlags.Instance | BindingFlags.NonPublic)!.SetValue(window, value);
+
+    private static void AuditProofRecovery(MainWindow window, string directory)
+    {
+        var catalog = (YfmCompanion.Data.FusionCatalog)Field(window, "_catalog")!;
+        var owned = Enumerable.Range(1, 14).Select(id => new OwnedCardQuantity(id, id == 14 ? 1 : 3)).ToArray();
+        var request = new DeckBuildRequest(owned, new(IncludeGlitches: false), DeckSearchMode.ProveOptimal, SourceIdentity: "synthetic-proof");
+        var checkpoint = Path.Combine(directory, "desktop-proof.json");
+        SetField(window, "_resultOwned", owned.ToDictionary(row => row.CardId, row => row.Quantity));
+        SetField(window, "_resultStarChips", 0U);
+        Task Start(DeckBuildJob job)
+        {
+            SetField(window, "_deckBuildJob", job);
+            var generation = (long)Field(window, "_deckBuildGeneration")! + 1;
+            SetField(window, "_deckBuildGeneration", generation);
+            return (Task)Invoke(window, "RunDeckBuildJobAsync", job, generation, false)!;
+        }
+        var first = new DeckBuildJob(catalog, request, checkpoint);
+        var pausing = Start(first);
+        first.Pause();
+        Await(pausing);
+        if (first.State != DeckBuildState.Paused || !File.Exists(checkpoint) ||
+            !((TextBlock)window.FindName("OptimizationProgressDetail")).Text.Contains("checkpointed to disk", StringComparison.Ordinal))
+            throw new InvalidOperationException("Desktop proof pause did not preserve its durable checkpoint.");
+        var recovered = new DeckBuildJob(catalog, request, checkpoint);
+        Await(Start(recovered));
+        if (recovered.LastResult is not { ProvenOptimal: true, Best.Report.ExactAnalysis.TotalHands: 658008 } ||
+            !((TextBlock)window.FindName("OptimizationStatus")).Text.StartsWith("Proven optimal", StringComparison.Ordinal))
+            throw new InvalidOperationException("Desktop proof restart did not install the completed one-deck proof.");
+        var incompatible = new DeckBuildJob(catalog, request with { SourceIdentity = "different-input" }, checkpoint);
+        try { Await(Start(incompatible)); throw new InvalidOperationException("Incompatible proof checkpoint was accepted."); }
+        catch (InvalidDataException error) when (error.Message.Contains("Cannot resume", StringComparison.Ordinal)) { }
+        if (!((TextBlock)window.FindName("OptimizationStageText")).Text.StartsWith("FAILED", StringComparison.Ordinal) ||
+            ((TextBlock)window.FindName("OptimizationStatus")).Text.StartsWith("Proven optimal", StringComparison.Ordinal) ||
+            ((ProgressBar)window.FindName("OptimizationProgressBar")).IsIndeterminate ||
+            ((Button)window.FindName("VerifyOptimizationButton")).IsEnabled)
+            throw new InvalidOperationException("Proof failure left misleading progress or enabled verification.");
+    }
+
+    private static void AuditSaveDuringPause(MainWindow window, string save)
+    {
+        var frozen = (CollectionSnapshot)Field(window, "_collectionSnapshot")!;
+        var bytes = File.ReadAllBytes(save);
+        foreach (var offset in new[] { Ps1MemoryCardReader.FirstSaveCopyOffset, Ps1MemoryCardReader.SecondSaveCopyOffset })
+            bytes[Ps1MemoryCardReader.BlockSize + offset + Ps1MemoryCardReader.ChestOffset + 40] = 0;
+        File.WriteAllBytes(save, bytes);
+        Await((Task)Invoke(window, "RefreshCollectionAsync", false)!);
+        if (Field(window, "_pendingCollectionSnapshot") is not CollectionSnapshot pending || pending.ContentIdentity == frozen.ContentIdentity ||
+            !ReferenceEquals(frozen, Field(window, "_collectionSnapshot")))
+            throw new InvalidOperationException("A changed save was not frozen/pending during pause.");
+    }
+
+    private static void AuditManualPersistence(MainWindow window)
+    {
+        var rows = (List<OwnedCardRow>)Field(window, "_ownedCardRows")!;
+        rows[0].Quantity = 120;
+        rows[1].Quantity = 0;
+        rows[0].ProposedCopies = 2;
+        rows[0].Quantity++;
+        var settings = DesktopSettingsStore.Load();
+        if (settings.CollectionSourceMode != CollectionSourceMode.Manual || settings.ManualQuantities?.GetValueOrDefault(1) != 121 ||
+            settings.ManualQuantities.ContainsKey(2) || !rows[0].QuantityLine.Contains("manual", StringComparison.Ordinal) ||
+            rows.Any(row => row.ProposedCopies != 0) || ((Button)window.FindName("VerifyOptimizationButton")).IsEnabled)
+            throw new InvalidOperationException("Manual quantities/provenance/result reset were not preserved correctly.");
+        Invoke(window, "SaveDesktopSettings");
+        var restored = new MainWindow { ShowActivated = false, ShowInTaskbar = false };
+        restored.Show();
+        WaitUntil(() => ((List<OwnedCardRow>)Field(restored, "_ownedCardRows")!).Count > 0, TimeSpan.FromSeconds(3), "Manual restart");
+        var restoredRows = (List<OwnedCardRow>)Field(restored, "_ownedCardRows")!;
+        if (restoredRows[0].Quantity != 121 || restoredRows[1].Quantity != 0 ||
+            ((TextBlock)restored.FindName("OptimizerSourceTitle")).Text != "MANUAL COLLECTION")
+            throw new InvalidOperationException("Restart lost the manual collection.");
+        restored.Close();
+    }
+
     private static void Await(Task task)
     {
         var clock = Stopwatch.StartNew();
@@ -209,6 +309,36 @@ internal static class Program
         if (snapshot is not null) throw new InvalidOperationException("Manual mode retained an automatic collection identity.");
     }
 
+    private static void AuditVerification(MainWindow window)
+    {
+        var verify = (Button)window.FindName("VerifyOptimizationButton");
+        var build = (Button)window.FindName("OptimizeDeckButton");
+        var pause = (Button)window.FindName("PauseOptimizationButton");
+        var bar = (ProgressBar)window.FindName("OptimizationProgressBar");
+        var stage = (TextBlock)window.FindName("OptimizationStageText");
+        if (!verify.IsEnabled) throw new InvalidOperationException("Quick result did not offer Verify deck.");
+        verify.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+        pause.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+        WaitUntil(() => build.IsEnabled, TimeSpan.FromSeconds(2), "Verification pause");
+        if (CurrentJob(window)?.State != DeckBuildState.Paused || stage.Text != "PAUSED" || bar.IsIndeterminate || verify.IsEnabled)
+            throw new InvalidOperationException("Verification pause has inconsistent state or controls.");
+        build.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+        WaitUntil(() => build.IsEnabled, TimeSpan.FromSeconds(60), "Verification resume");
+        Pump(TimeSpan.FromMilliseconds(350));
+        var result = CurrentJob(window)?.LastResult;
+        if (result?.State != DeckBuildState.Completed || result.Best?.Report.ExactAnalysis.IsExact != true ||
+            result.Best.Report.ExactAnalysis.TotalHands != 658008 || result.ProvenOptimal ||
+            !stage.Text.EndsWith("VERIFY ✓  READY", StringComparison.Ordinal) || bar.Value != 1 || bar.IsIndeterminate || verify.IsEnabled)
+            throw new InvalidOperationException("Exact verification was not installed as Ready, or delayed progress overwrote it.");
+    }
+
+    private static void WaitUntil(Func<bool> condition, TimeSpan timeout, string operation)
+    {
+        var clock = Stopwatch.StartNew();
+        while (!condition() && clock.Elapsed < timeout) Pump(TimeSpan.FromMilliseconds(20));
+        if (!condition()) throw new TimeoutException($"{operation} did not finish within {timeout}.");
+    }
+
     private static void Pump(TimeSpan duration)
     {
         var frame = new DispatcherFrame();
@@ -220,15 +350,70 @@ internal static class Program
 
     private static int AuditKeyboardNavigation(Window window)
     {
-        ((Button)window.FindName("OptimizeDeckButton")).Focus();
-        var visited = new HashSet<IInputElement>();
-        for (var index = 0; index < 40; index++)
+        var tabs = (TabControl)window.FindName("WorkspaceTabs");
+        var total = 0;
+        for (var tab = 0; tab < tabs.Items.Count; tab++)
         {
-            if (Keyboard.FocusedElement is { } focused) visited.Add(focused);
-            if (!(Keyboard.FocusedElement as UIElement)?.MoveFocus(new TraversalRequest(FocusNavigationDirection.Next)) ?? true) break;
+            tabs.SelectedIndex = tab;
+            Pump(TimeSpan.FromMilliseconds(40));
+            var content = (UIElement)((TabItem)tabs.Items[tab]).Content;
+            content.MoveFocus(new TraversalRequest(FocusNavigationDirection.First));
+            foreach (var direction in new[] { FocusNavigationDirection.Next, FocusNavigationDirection.Previous })
+            {
+                var visited = new HashSet<IInputElement>();
+                for (var index = 0; index < 60; index++)
+                {
+                    if (Keyboard.FocusedElement is { } focused) visited.Add(focused);
+                    if (!(Keyboard.FocusedElement as UIElement)?.MoveFocus(new TraversalRequest(direction)) ?? true) break;
+                }
+                if (visited.Count < 4) throw new InvalidOperationException($"Tab {tab} {direction} navigation reached only {visited.Count} controls.");
+                total += visited.Count;
+            }
         }
-        if (visited.Count < 8) throw new InvalidOperationException($"Keyboard navigation reached only {visited.Count} distinct controls.");
-        return visited.Count;
+        return total;
+    }
+
+    private static void AuditCardEntryAndAnalysis(MainWindow window)
+    {
+        var pickers = (List<CardPicker>)Field(window, "_deckPickers")!;
+        var catalog = (YfmCompanion.Data.FusionCatalog)Field(window, "_catalog")!;
+        var picker = pickers[0];
+        ((TabControl)window.FindName("WorkspaceTabs")).SelectedIndex = 1;
+        var input = (TextBox)picker.FindName("InputBox");
+        input.Text = "Dragon";
+        var list = (ListBox)picker.FindName("SuggestionList");
+        if (list.Items.Count < 2) throw new InvalidOperationException("Autocomplete did not return multiple matches.");
+        var selected = (YfmCompanion.Data.Card)list.Items[1];
+        picker.SetCard(selected);
+        if (list.Items.Count != 0 || picker.SelectedCard != selected)
+            throw new InvalidOperationException("Selected autocomplete card retained stale Tab suggestions.");
+        picker.Clear();
+        if (picker.SelectedCard is not null || !((TextBlock)picker.FindName("CardDetails")).Text.Contains("Empty slot", StringComparison.Ordinal))
+            throw new InvalidOperationException("Clearing a card retained stale details.");
+        for (var index = 0; index < pickers.Count; index++) pickers[index].SetCard(catalog.GetCard(index + 1));
+        var analyze = (Button)window.FindName("AnalyzeDeckButton");
+        analyze.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+        Invoke(window, "ClearDeck_Click", window, new RoutedEventArgs());
+        WaitUntil(() => analyze.IsEnabled, TimeSpan.FromSeconds(3), "Changed-deck cancellation");
+        Pump(TimeSpan.FromMilliseconds(100));
+        if (((DataGrid)window.FindName("DeckResultsGrid")).Items.Count != 0 || ((ProgressBar)window.FindName("DeckAnalysisProgressBar")).Value != 0)
+            throw new InvalidOperationException("An old analysis overwrote the cleared deck.");
+    }
+
+    private static void AuditGallery(MainWindow window)
+    {
+        ((TabControl)window.FindName("WorkspaceTabs")).SelectedIndex = 4;
+        var gallery = (ListBox)window.FindName("OwnedCardsGallery");
+        var source = gallery.ItemsSource;
+        gallery.SelectedIndex = 3;
+        var selected = gallery.SelectedItem;
+        Invoke(window, "RefreshOwnedGallery");
+        if (!ReferenceEquals(source, gallery.ItemsSource) || !ReferenceEquals(selected, gallery.SelectedItem))
+            throw new InvalidOperationException("Gallery refresh reset stable items or selection.");
+        gallery.UpdateLayout();
+        var realized = Enumerable.Range(0, gallery.Items.Count).Count(index => gallery.ItemContainerGenerator.ContainerFromIndex(index) is not null);
+        if (realized == 0 || realized >= gallery.Items.Count || realized > 30)
+            throw new InvalidOperationException($"Gallery is not virtualized: {realized} / {gallery.Items.Count} containers.");
     }
 
     private static byte[] CreateSyntheticSave()

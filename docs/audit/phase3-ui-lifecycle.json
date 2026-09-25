@@ -1,0 +1,15 @@
+{
+  "SyntheticSave": true,
+  "IsolatedSettings": true,
+  "SourceTransitionChecks": "missing -> stale -> recovered; in-flight refresh -> protected manual edit",
+  "VerificationChecks": "pause -> resume -> exact Ready; late callbacks do not overwrite terminal state",
+  "DesktopContracts": "progress labels; thumbnail LRU, replacement pixels, corruption, deletion, oversize; manual persistence; pending save during pause; stable live selection; adaptive layout; autocomplete clearing; analysis cancellation; gallery virtualization; proof desktop restart and incompatibility",
+  "BusyStateMilliseconds": 9.6283,
+  "FirstCandidateMilliseconds": 1788.4224,
+  "PauseResponseMilliseconds": 147.0562,
+  "StopResponseMilliseconds": 184.4542,
+  "KeyboardFocusVisits": 222,
+  "ScreenshotCount": 15,
+  "OptimizerStatus": "Failed: no completed deck is available for this request.",
+  "ProgressDetail": "The operation failed; any completed best deck is retained. Start a new build to retry."
+}

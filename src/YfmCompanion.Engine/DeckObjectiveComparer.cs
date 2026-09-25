@@ -8,19 +8,22 @@ public sealed record DeckObjective(DeckAnalysisReport Analysis, DeckSafetyAssess
 /// <summary>Positive means better. Compare only evaluations of the same frozen objective.</summary>
 public sealed class DeckObjectiveComparer(bool campaign, bool gauntletTieBreak) : IComparer<DeckObjective>
 {
-    public const string Version = "campaign-lexicographic-v2";
+    public const string Version = "campaign-lexicographic-v3";
     public int Compare(DeckObjective? x, DeckObjective? y)
     {
         if (ReferenceEquals(x, y)) return 0;
         if (x is null) return -1;
         if (y is null) return 1;
         int difference;
-        if (campaign && (difference = CompareSafety(x.Safety, y.Safety)) != 0) return difference;
+        if (campaign && (difference = CompareSafety(x.Safety, y.Safety, binnedCoverage: gauntletTieBreak)) != 0) return difference;
         if (gauntletTieBreak)
         {
             if ((difference = ComparePower(x.Analysis, y.Analysis, binned: true)) != 0) return difference;
             if ((difference = CompareSafety(x.SecondarySafety, y.SecondarySafety)) != 0) return difference;
         }
+        // Once the fixed primary groups and gauntlet tie-break agree, recover the
+        // exact primary order (including opening-answer coverage) before cost/IDs.
+        if (campaign && gauntletTieBreak && (difference = CompareSafety(x.Safety, y.Safety)) != 0) return difference;
         if ((difference = ComparePower(x.Analysis, y.Analysis, binned: false)) != 0) return difference;
         if ((difference = y.RequiredStarChips.CompareTo(x.RequiredStarChips)) != 0) return difference;
         var first = x.Cards.Order().ToArray();
@@ -34,7 +37,7 @@ public sealed class DeckObjectiveComparer(bool campaign, bool gauntletTieBreak) 
         report.ExactAnalysis, report.SafetyAssessment, report.SecondarySafetyAssessment,
         report.Deck.SelectMany(e => Enumerable.Repeat(e.Card.Id, e.Copies)).ToArray(), spent);
 
-    private static int CompareSafety(DeckSafetyAssessment? x, DeckSafetyAssessment? y)
+    private static int CompareSafety(DeckSafetyAssessment? x, DeckSafetyAssessment? y, bool binnedCoverage = false)
     {
         if (x is null || y is null) return (x is not null).CompareTo(y is not null);
         var difference = x.SafeOpponentCount.CompareTo(y.SafeOpponentCount);
@@ -42,7 +45,8 @@ public sealed class DeckObjectiveComparer(bool campaign, bool gauntletTieBreak) 
         // Defined millionth-unit model scores, not approximate-equality tests between candidates.
         difference = Units(x.WorstOpponentScore).CompareTo(Units(y.WorstOpponentScore));
         if (difference != 0) return difference;
-        difference = Units(x.EstimatedOpeningAnswerCoverage).CompareTo(Units(y.EstimatedOpeningAnswerCoverage));
+        var divisor = binnedCoverage ? 5000 : 1; // 0.5 percentage points in canonical millionth units.
+        difference = (Units(x.EstimatedOpeningAnswerCoverage) / divisor).CompareTo(Units(y.EstimatedOpeningAnswerCoverage) / divisor);
         return difference != 0 ? difference : Units(x.HeuristicScore).CompareTo(Units(y.HeuristicScore));
     }
 

@@ -36,6 +36,7 @@ public partial class MainWindow : Window
     private readonly ThumbnailCache _thumbnailCache = new();
     private readonly List<string> _knownSaveLocations = [];
     private readonly Dictionary<int, string> _artworkOverrides = [];
+    private IReadOnlyDictionary<int, int> _restoredManualQuantities = new Dictionary<int, int>();
     private IReadOnlyList<OwnedCardRow> _visibleOwnedCardRows = [];
     private FusionCatalog? _catalog;
     private TacticalFusionPlanner? _planner;
@@ -44,6 +45,7 @@ public partial class MainWindow : Window
     private CampaignOptimizationContextBuilder? _campaignContextBuilder;
     private CampaignOptimizationContext? _activeCampaignContext;
     private CancellationTokenSource? _deckAnalysisCancellation;
+    private long _deckAnalysisGeneration;
     private DeckBuildJob? _deckBuildJob;
     private DeckBuildResult? _lastDeckBuildResult;
     private long _deckBuildGeneration;
@@ -160,6 +162,16 @@ public partial class MainWindow : Window
         AddDeckPickers(search);
         InitializeOptimizer(_catalog);
         InitializeCampaignOptimizer(_catalog);
+        if (_collectionSourceMode == CollectionSourceMode.Manual)
+        {
+            _suppressManualCollectionChange = true;
+            try
+            {
+                foreach (var row in _ownedCardRows) row.Quantity = _restoredManualQuantities.GetValueOrDefault(row.Card.Id);
+            }
+            finally { _suppressManualCollectionChange = false; }
+            UseManualCollection_Click(this, new RoutedEventArgs());
+        }
         DatabaseStatus.Text = string.Create(
             CultureInfo.InvariantCulture,
             $"Offline database ready • {_catalog.Cards.Count:N0} cards • {_catalog.FusionPairs.Count:N0} resolved fusion pairs");
@@ -190,6 +202,7 @@ public partial class MainWindow : Window
         var settings = DesktopSettingsStore.Load();
         _lastSavePath = settings.LastSavePath;
         _collectionSourceMode = settings.CollectionSourceMode;
+        _restoredManualQuantities = settings.ManualQuantities ?? new Dictionary<int, int>();
         _knownSaveLocations.AddRange(settings.KnownSaveLocations ?? []);
         _artworkFolder = settings.ArtworkFolder;
         foreach (var pair in settings.ArtworkOverrides ?? new Dictionary<int, string>()) _artworkOverrides[pair.Key] = pair.Value;
@@ -243,7 +256,9 @@ public partial class MainWindow : Window
                 _collectionSourceMode,
                 _knownSaveLocations,
                 _artworkFolder,
-                _artworkOverrides));
+                _artworkOverrides,
+                _collectionSourceMode == CollectionSourceMode.Manual
+                    ? _ownedCardRows.Where(row => row.Quantity > 0).ToDictionary(row => row.Card.Id, row => row.Quantity) : null));
         }
         catch (Exception exception)
         {
@@ -402,13 +417,13 @@ public partial class MainWindow : Window
 
         if (!_compactMode)
         {
-            LiveDeckGrid.ItemsSource = snapshot.ConstructedDeckCardIds
+            StableCardItems.Update(LiveDeckGrid, snapshot.ConstructedDeckCardIds
                 .Select((cardId, index) => new SaveDeckRow(index + 1, _catalog.GetCard(cardId)))
-                .ToArray();
+                .ToArray(), row => row.Slot);
             var deckQuantities = snapshot.ConstructedDeckCardIds
                 .GroupBy(cardId => cardId)
                 .ToDictionary(group => group.Key, group => group.Count());
-            LiveCollectionGrid.ItemsSource = snapshot.SaveDataAvailable ? _catalog.Cards
+            StableCardItems.Update(LiveCollectionGrid, snapshot.SaveDataAvailable ? _catalog.Cards
                 .OrderBy(card => card.Id)
                 .Select(card =>
                 {
@@ -417,7 +432,7 @@ public partial class MainWindow : Window
                     return new SaveCollectionRow(card, chestQuantity, deckQuantity, chestQuantity + deckQuantity, false);
                 })
                 .Where(row => row.Total > 0)
-                .ToArray() : [];
+                .ToArray() : [], row => row.Card.Id);
         }
 
         var liveHandRows = snapshot.HandCardIds
@@ -425,18 +440,18 @@ public partial class MainWindow : Window
             .Where(item => item.cardId is >= 1 and <= 722)
             .Select(item => ToLiveCardRow(item.index + 1, item.cardId, null))
             .ToArray();
-        LiveHandGrid.ItemsSource = liveHandRows;
+        StableCardItems.Update(LiveHandGrid, liveHandRows, row => row.Slot);
         if (!_compactMode)
         {
-            LivePlayerFieldGrid.ItemsSource = snapshot.PlayerField
+            StableCardItems.Update(LivePlayerFieldGrid, snapshot.PlayerField
                 .Select(fieldCard => ToLiveCardRow(fieldCard.Slot, fieldCard.CardId, fieldCard, snapshot.TerrainId))
-                .ToArray();
-            LivePlayerSpellTrapGrid.ItemsSource = snapshot.PlayerSpellTrapField
+                .ToArray(), row => row.Slot);
+            StableCardItems.Update(LivePlayerSpellTrapGrid, snapshot.PlayerSpellTrapField
                 .Select(fieldCard => ToLiveCardRow(fieldCard.Slot, fieldCard.CardId, fieldCard, snapshot.TerrainId))
-                .ToArray();
-            LiveOpponentFieldGrid.ItemsSource = snapshot.OpponentField
+                .ToArray(), row => row.Slot);
+            StableCardItems.Update(LiveOpponentFieldGrid, snapshot.OpponentField
                 .Select(fieldCard => ToLiveCardRow(fieldCard.Slot, fieldCard.CardId, fieldCard, snapshot.TerrainId))
-                .ToArray();
+                .ToArray(), row => row.Slot);
         }
 
         if (!snapshot.DuelActive)
@@ -476,8 +491,8 @@ public partial class MainWindow : Window
                     recommendation.EffectiveAttack,
                     guardianTargets)))
             .ToArray();
-        LiveAdviceGrid.ItemsSource = recommendations;
-        CompactAdviceGrid.ItemsSource = tacticalRecommendations
+        StableCardItems.Update(LiveAdviceGrid, recommendations, row => (row.Result, row.Route, row.Field));
+        StableCardItems.Update(CompactAdviceGrid, tacticalRecommendations
             .Take(20)
             .Select(recommendation => CompactLivePresentation.CreateRow(
                 recommendation,
@@ -485,7 +500,7 @@ public partial class MainWindow : Window
                     recommendation.FinalCard,
                     recommendation.EffectiveAttack,
                     guardianTargets)))
-            .ToArray();
+            .ToArray(), row => (row.Result, row.Route));
         LiveAdviceSummary.Text = recommendations.Length == 0
             ? "No valid fusion or final equip route is available from the current hand and active field."
             : $"{recommendations.Length:N0} best legal routes from the current hand order; updated automatically. Equips are applied only to the final monster. Guardian lines show each available star; F#? means the enemy's active star or battle position is not verified, so no result is guessed.";
@@ -633,7 +648,7 @@ public partial class MainWindow : Window
             ? selectedGoal
             : OptimizerGoal.GeneralCampaign;
         var isCampaignGoal = goal != OptimizerGoal.ManualCustom && _campaignContextBuilder is not null;
-        var hasSavedBudget = _saveSnapshot?.StarChips is not null;
+        var hasSavedBudget = _collectionSourceMode != CollectionSourceMode.Manual && _saveSnapshot?.StarChips is not null;
         var choosingSpecificOpponent = goal == OptimizerGoal.SpecificOpponent && isCampaignGoal;
         CampaignOpponentCombo.Visibility = choosingSpecificOpponent ? Visibility.Visible : Visibility.Collapsed;
         CampaignOpponentCombo.IsEnabled = choosingSpecificOpponent;
@@ -664,7 +679,7 @@ public partial class MainWindow : Window
     {
         for (var slot = 1; slot <= 40; slot++)
         {
-            var picker = new CardPicker { Width = 196, Margin = new Thickness(0, 0, 10, 8) };
+            var picker = new CardPicker { Width = 225, Margin = new Thickness(0, 0, 10, 8) };
             picker.Configure($"Deck {slot}", search);
             picker.CardChanged += Picker_CardChanged;
             picker.AdvanceRequested += Picker_AdvanceRequested;
@@ -689,6 +704,13 @@ public partial class MainWindow : Window
 
     private void Picker_CardChanged(object? sender, Card? card)
     {
+        if (sender is CardPicker picker && _deckPickers.Contains(picker) && _deckAnalysisCancellation is not null)
+        {
+            _deckAnalysisGeneration++;
+            _deckAnalysisCancellation.Cancel();
+            DeckAnalysisProgressBar.Value = 0;
+            DeckResultSummary.Text = "Deck changed; analyze again to evaluate these cards.";
+        }
         if (card is null || _catalog is null)
         {
             return;
@@ -717,7 +739,7 @@ public partial class MainWindow : Window
 
     private void LiveCard_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
-        if (_catalog is null || sender is not DataGrid grid || grid.SelectedItem is null)
+        if (_catalog is null || sender is not System.Windows.Controls.Primitives.Selector grid || grid.SelectedItem is null)
         {
             return;
         }
@@ -876,15 +898,20 @@ public partial class MainWindow : Window
             .Select(picker => picker.SelectedCard!.Id)
             .ToArray();
         var includeGlitches = DeckIncludeGlitchesCheckBox.IsChecked == true;
-        _deckAnalysisCancellation = new CancellationTokenSource();
+        _deckAnalysisCancellation = CancellationTokenSource.CreateLinkedTokenSource(_windowCancellation.Token);
+        var generation = ++_deckAnalysisGeneration;
+        var acceptingProgress = true;
         var cancellationToken = _deckAnalysisCancellation.Token;
         AnalyzeDeckButton.IsEnabled = false;
         CancelDeckButton.IsEnabled = true;
         DeckResultsGrid.ItemsSource = null;
         ResetDeckMetrics();
+        DeckAnalysisProgressBar.Value = 0;
 
         var progress = new Progress<DeckAnalysisProgress>(value =>
         {
+            if (!acceptingProgress || generation != _deckAnalysisGeneration) return;
+            DeckAnalysisProgressBar.Value = Math.Clamp(value.Fraction, 0, .99);
             DeckResultSummary.Text = string.Create(
                 CultureInfo.InvariantCulture,
                 $"Examining hand {value.CompletedHands:N0} of {value.TotalHands:N0} • {value.Fraction:P1}");
@@ -895,18 +922,24 @@ public partial class MainWindow : Window
             var report = await Task.Run(
                 () => analyzer.Analyze(deck, includeGlitches, progress, cancellationToken),
                 cancellationToken);
-            ShowDeckReport(report);
+            acceptingProgress = false;
+            if (generation == _deckAnalysisGeneration)
+            {
+                ShowDeckReport(report);
+                DeckAnalysisProgressBar.Value = 1;
+            }
         }
         catch (OperationCanceledException)
         {
-            DeckResultSummary.Text = "Deck analysis cancelled.";
+            if (generation == _deckAnalysisGeneration) DeckResultSummary.Text = "Deck analysis cancelled.";
         }
         catch (Exception exception)
         {
-            DeckResultSummary.Text = $"Deck analysis failed: {exception.Message}";
+            if (generation == _deckAnalysisGeneration) DeckResultSummary.Text = $"Deck analysis failed: {exception.Message}";
         }
         finally
         {
+            acceptingProgress = false;
             _deckAnalysisCancellation.Dispose();
             _deckAnalysisCancellation = null;
             AnalyzeDeckButton.IsEnabled = true;
@@ -919,6 +952,8 @@ public partial class MainWindow : Window
 
     private void ClearDeck_Click(object sender, RoutedEventArgs e)
     {
+        _deckAnalysisGeneration++;
+        DeckAnalysisProgressBar.Value = 0;
         _deckAnalysisCancellation?.Cancel();
         foreach (var picker in _deckPickers)
         {
@@ -1183,9 +1218,12 @@ public partial class MainWindow : Window
         ChangeCollectionSource(CollectionSourceMode.Manual);
         _collectionSnapshot = null;
         _saveSnapshot = null;
+        foreach (var row in _ownedCardRows) row.IsManual = true;
         OptimizerSourceTitle.Text = "MANUAL COLLECTION";
         OptimizerSourceSummary.Text = "Automatic saves will not overwrite these quantities. Choose Automatic newest to reconnect.";
         OptimizationStatus.Text = "Manual collection active. Add cards with autocomplete or edit quantities in the gallery.";
+        UpdateCampaignControls();
+        SaveDesktopSettings();
         RefreshOwnedGallery();
     }
 
@@ -1199,6 +1237,7 @@ public partial class MainWindow : Window
         {
             foreach (var row in _ownedCardRows)
             {
+                row.IsManual = false;
                 row.ChestCopies = collection.Save.GetChestQuantity(row.Card.Id);
                 row.DeckCopies = collection.Save.GetDeckQuantity(row.Card.Id);
                 row.Quantity = collection.OwnedQuantities[row.Card.Id - 1];
@@ -1210,7 +1249,7 @@ public partial class MainWindow : Window
         }
         ShowCollectionSource(collection);
         RefreshOwnedGallery();
-        if (!keepResult) ResetOptimizerResults();
+        if (!keepResult) DiscardOptimizerResult();
     }
 
     private void ChangeCollectionSource(CollectionSourceMode mode)
@@ -1462,6 +1501,11 @@ public partial class MainWindow : Window
                 }
             }
 
+            if (checkpoint is not null && NewProofCheckpointCheckBox.IsChecked == true)
+            {
+                ProofCheckpointFiles.PreserveAndRestart(checkpoint);
+                NewProofCheckpointCheckBox.IsChecked = false;
+            }
             var job = new DeckBuildJob(_catalog, request, checkpoint);
             if (_lastDeckBuildResult is not null)
             {
@@ -1486,6 +1530,8 @@ public partial class MainWindow : Window
         {
             OptimizationStatus.Text = $"Deck optimization failed: {exception.Message}";
             OptimizationProgressDetail.Text = exception.Message;
+            OptimizationStageText.Text = "FAILED • best completed result retained";
+            OptimizationProgressBar.IsIndeterminate = false;
         }
         finally
         {
@@ -1495,7 +1541,7 @@ public partial class MainWindow : Window
         }
     }
 
-    private async Task RunDeckBuildJobAsync(DeckBuildJob job, long generation)
+    private async Task RunDeckBuildJobAsync(DeckBuildJob job, long generation, bool verify = false)
     {
         SetOptimizerRunning(true);
         var acceptingProgress = true;
@@ -1507,23 +1553,22 @@ public partial class MainWindow : Window
         });
         try
         {
-            var result = await job.RunAsync(progress, _windowCancellation.Token);
+            var result = await (verify ? job.VerifyBestAsync(progress, _windowCancellation.Token)
+                : job.RunAsync(progress, _windowCancellation.Token));
             acceptingProgress = false;
             if (generation != _deckBuildGeneration) return;
-            _lastDeckBuildResult = result;
-            if (result.Best is not null)
+            InstallDeckBuildResult(result);
+        }
+        catch
+        {
+            acceptingProgress = false;
+            if (generation == _deckBuildGeneration)
             {
-                ShowOptimizationReport(result.Best.Report);
-                ShowBestSoFar(result.Best, result.State, result.ProvenOptimal);
-                UpdateProposedCopies(result.Best.Report);
+                if (job.LastResult is { } failed) InstallDeckBuildResult(failed);
+                OptimizationStageText.Text = "FAILED • best completed result retained";
+                OptimizationProgressBar.IsIndeterminate = false;
             }
-            OptimizationProgressBar.IsIndeterminate = false;
-            OptimizationProgressBar.Value = result.State == DeckBuildState.Completed ? 1 : OptimizationProgressBar.Value;
-            OptimizationStageText.Text = result.State == DeckBuildState.Completed
-                ? result.Best?.Report.ExactAnalysis.IsExact == true ? "PREPARE ✓  SEARCH ✓  VERIFY ✓  READY" : "PREPARE ✓  SEARCH ✓  READY • ESTIMATED"
-                : result.State.ToString().ToUpperInvariant();
-            VerifyOptimizationButton.IsEnabled = result.State is DeckBuildState.Completed or DeckBuildState.Cancelled &&
-                                                   result.Best?.Report.ExactAnalysis.IsExact != true;
+            throw;
         }
         finally
         {
@@ -1531,6 +1576,39 @@ public partial class MainWindow : Window
             SetOptimizerRunning(false);
             ApplyPendingCollection();
         }
+    }
+
+    private void InstallDeckBuildResult(DeckBuildResult result)
+    {
+        _lastDeckBuildResult = result;
+        if (result.Best is not null)
+        {
+            ShowOptimizationReport(result.Best.Report);
+            ShowBestSoFar(result.Best, result.State, result.ProvenOptimal);
+            UpdateProposedCopies(result.Best.Report);
+        }
+        else
+        {
+            ResetOptimizerResults();
+            OptimizationStatus.Text = $"{result.State}: no completed deck is available for this request.";
+        }
+        // Ready and 100% belong to the installed result, never to queued worker progress.
+        OptimizationProgressBar.IsIndeterminate = false;
+        OptimizationProgressBar.Value = result.State == DeckBuildState.Completed ? 1 : 0;
+        OptimizationStageText.Text = result.State == DeckBuildState.Completed
+            ? result.Best?.Report.ExactAnalysis.IsExact == true ? "PREPARE ✓  SEARCH ✓  VERIFY ✓  READY"
+                : result.Best?.Report.ExactAnalysis.TotalHands > 0 ? "PREPARE ✓  SEARCH ✓  READY • ESTIMATED"
+                : "READY • EVALUATION PENDING"
+            : result.State.ToString().ToUpperInvariant();
+        OptimizationProgressDetail.Text = result.State switch
+        {
+            DeckBuildState.Paused => _deckBuildJob?.HasDurableCheckpoint == true
+                ? "Paused and checkpointed to disk. Resume continues this proof; an unfinished deck evaluation may restart."
+                : "Paused in this window; keep the app open to resume. Completed work is retained; an unfinished evaluation may restart.",
+            DeckBuildState.Cancelled => "Stopped; best completed deck retained. Verify deck evaluates it without resuming the search.",
+            DeckBuildState.Completed => result.Methodology,
+            _ => "The operation failed; any completed best deck is retained. Start a new build to retry."
+        };
     }
 
     private void ShowDeckBuildProgress(DeckBuildProgress value)
@@ -1572,7 +1650,9 @@ public partial class MainWindow : Window
         StopOptimizationButton.IsEnabled = running || paused;
         OptimizerSpeedCombo.IsEnabled = !running && !paused;
         ProveOptimalCheckBox.IsEnabled = !running && !paused;
-        VerifyOptimizationButton.IsEnabled = !running && !paused && _lastDeckBuildResult?.Best is { Report.ExactAnalysis.IsExact: false };
+        NewProofCheckpointCheckBox.IsEnabled = !running && !paused;
+        VerifyOptimizationButton.IsEnabled = !running && _deckBuildJob?.State is (DeckBuildState.Completed or DeckBuildState.Cancelled) &&
+            _lastDeckBuildResult?.Best is { Report.ExactAnalysis.IsExact: false };
         OptimizerOwnedPane.IsEnabled = !running && !paused;
         OptimizerStrategyPane.IsEnabled = !running && !paused;
         OptimizerSourcePane.IsEnabled = !running && !paused;
@@ -1587,30 +1667,24 @@ public partial class MainWindow : Window
     {
         if (_preparationCancellation is { } preparation) { _preparationPauseRequested = false; preparation.Cancel(); }
         else _deckBuildJob?.StopAndKeepBest();
-        if (!_optimizerBusy) { SetOptimizerRunning(false); ApplyPendingCollection(); }
+        if (!_optimizerBusy)
+        {
+            if (_lastDeckBuildResult is { } previous && _deckBuildJob?.State == DeckBuildState.Cancelled)
+                InstallDeckBuildResult(previous with { State = DeckBuildState.Cancelled });
+            SetOptimizerRunning(false);
+            ApplyPendingCollection();
+        }
     }
 
     private async void VerifyOptimization_Click(object sender, RoutedEventArgs e)
     {
-        if (_deckBuildJob is null) return;
-        SetOptimizerRunning(true);
+        if (_optimizerBusy || _deckBuildJob?.State is not (DeckBuildState.Completed or DeckBuildState.Cancelled) ||
+            _lastDeckBuildResult?.Best is not { Report.ExactAnalysis.IsExact: false }) return;
         try
         {
-            var generation = ++_deckBuildGeneration;
-            var result = await _deckBuildJob.VerifyBestAsync(new Progress<DeckBuildProgress>(value =>
-            {
-                if (generation == _deckBuildGeneration) ShowDeckBuildProgress(value);
-            }), _windowCancellation.Token);
-            _lastDeckBuildResult = result;
-            if (result.Best is not null)
-            {
-                ShowOptimizationReport(result.Best.Report);
-                ShowBestSoFar(result.Best, result.State, result.ProvenOptimal);
-                UpdateProposedCopies(result.Best.Report);
-            }
+            await RunDeckBuildJobAsync(_deckBuildJob, ++_deckBuildGeneration, verify: true);
         }
         catch (Exception exception) { OptimizationStatus.Text = $"Verification failed: {exception.Message}"; }
-        finally { SetOptimizerRunning(false); ApplyPendingCollection(); }
     }
 
     private void ClearOwned_Click(object sender, RoutedEventArgs e)
@@ -1623,7 +1697,8 @@ public partial class MainWindow : Window
         ChangeCollectionSource(CollectionSourceMode.Manual);
         _collectionSnapshot = null;
         RefreshOwnedGallery();
-        ResetOptimizerResults();
+        DiscardOptimizerResult();
+        UseManualCollection_Click(this, new RoutedEventArgs());
         OptimizationStatus.Text = "Owned quantities cleared; manual collection mode is active.";
     }
 
@@ -1655,9 +1730,7 @@ public partial class MainWindow : Window
     private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
     {
         if (FullWorkspaceScroll is null) return;
-        FullWorkspaceScroll.HorizontalScrollBarVisibility = e.NewSize.Width < 1000
-            ? ScrollBarVisibility.Auto
-            : ScrollBarVisibility.Disabled;
+        FullWorkspaceScroll.HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled;
     }
 
     private void OwnedCards_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -1673,9 +1746,12 @@ public partial class MainWindow : Window
         if (_suppressManualCollectionChange) return;
         ChangeCollectionSource(CollectionSourceMode.Manual);
         _collectionSnapshot = null;
+        foreach (var item in _ownedCardRows) item.IsManual = true;
         OptimizerSourceTitle.Text = "MANUAL COLLECTION";
         OptimizerSourceSummary.Text = "Edited quantities are protected from automatic save refresh until Automatic newest is selected.";
-        ResetOptimizerResults();
+        DiscardOptimizerResult();
+        UpdateCampaignControls();
+        SaveDesktopSettings();
         RefreshOwnedGallery();
     }
 
@@ -1684,7 +1760,7 @@ public partial class MainWindow : Window
     {
         if (_ownedAddPicker?.SelectedCard is not { } card) return;
         var row = _ownedCardRows[card.Id - 1];
-        row.Quantity = Math.Min(99, row.Quantity + 1);
+        row.Quantity++;
         _ownedAddPicker.Clear();
         RefreshOwnedGallery();
     }
@@ -1847,6 +1923,7 @@ public partial class MainWindow : Window
 
     private void ResetOptimizerResults()
     {
+        foreach (var row in _ownedCardRows) row.ProposedCopies = 0;
         Optimizer2800Metric.Text = "—";
         Optimizer2500Metric.Text = "—";
         OptimizerExpectedMetric.Text = "—";
@@ -1862,6 +1939,18 @@ public partial class MainWindow : Window
         CampaignSafetySummary.Text = string.Empty;
         CampaignPurchaseSummary.Text = string.Empty;
         _lastPreviewKey = null;
+    }
+
+    private void DiscardOptimizerResult()
+    {
+        ResetOptimizerResults();
+        _lastDeckBuildResult = null;
+        _deckBuildJob = null;
+        SetOptimizerRunning(false);
+        OptimizationStageText.Text = "PREPARE → SEARCH → VERIFY → READY";
+        OptimizationProgressBar.IsIndeterminate = false;
+        OptimizationProgressBar.Value = 0;
+        OptimizationProgressDetail.Text = "Build a deck from the selected collection.";
     }
 
     private static CampaignOpponentScope ToCampaignOpponentScope(OptimizerGoal goal) => goal switch
@@ -2277,9 +2366,22 @@ public partial class MainWindow : Window
         long Remaining,
         string Rationale);
 
-    private sealed record SaveDeckRow(int Slot, Card Card);
+    private sealed record SaveDeckRow(int Slot, Card Card)
+    {
+        public string Name => Card.Name;
+        public string TileCaption => $"SLOT {Slot} • #{Card.Id:000}";
+        public string DetailLine => DescribeCard(Card);
+    }
 
-    private sealed record SaveCollectionRow(Card Card, int Chest, int Deck, int Total, bool Seen);
+    private sealed record SaveCollectionRow(Card Card, int Chest, int Deck, int Total, bool Seen)
+    {
+        public string Name => Card.Name;
+        public string TileCaption => $"#{Card.Id:000} • OWNED {Total} • chest {Chest} / deck {Deck}";
+        public string DetailLine => DescribeCard(Card);
+    }
+
+    private static string DescribeCard(Card card) => card.Level is null ? card.PrimaryType
+        : $"{card.PrimaryType} • ATK {card.Attack} / DEF {card.Defense} • {FormatGuardianStars(new[] { card.GuardianStar1, card.GuardianStar2 }.OfType<string>().ToArray())}";
 
     private sealed record LiveCardRow(
         int Slot,
@@ -2287,5 +2389,9 @@ public partial class MainWindow : Window
         string Name,
         string Type,
         int Attack,
-        int Defense);
+        int Defense)
+    {
+        public string TileCaption => $"SLOT {Slot} • #{CardId:000}";
+        public string DetailLine => $"{Type} • ATK {Attack} / DEF {Defense}";
+    }
 }

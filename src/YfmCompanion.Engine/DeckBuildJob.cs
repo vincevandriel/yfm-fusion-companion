@@ -63,6 +63,9 @@ public sealed class DeckBuildJob
     }
 
     public DeckBuildState State => _state;
+    public bool HasDurableCheckpoint => _proofCheckpoint is not null;
+    /// <summary>The last completed operation, including a failed operation's retained best deck.</summary>
+    public DeckBuildResult? LastResult { get; private set; }
 
     /// <summary>Legal unscored preview while campaign contexts are prepared.</summary>
     public static DeckBuildCandidate CreateLegalPreview(FusionCatalog catalog, DeckBuildRequest request,
@@ -174,7 +177,7 @@ public sealed class DeckBuildJob
             });
             lastReport.Restart();
         }
-        DeckBuildResult Finish(bool proven = false) => new(_state, Best(), proven, _candidates,
+        DeckBuildResult Finish(bool proven = false) => LastResult = new(_state, Best(), proven, _candidates,
             proven ? "Proven optimal for the frozen model and inputs; not a duel-win guarantee."
             : "Best found. Sampled statistics are estimates; exact hand verification does not prove deck optimality.", _identity)
         { SearchCache = _optimizer?.CacheDiagnostics, ProofLegalDecksEvaluated = proofProgress?.LegalDecksEvaluated };
@@ -293,6 +296,7 @@ public sealed class DeckBuildJob
         catch
         {
             _state = DeckBuildState.Failed;
+            Finish();
             Report("Failed; completed best deck retained", force: true);
             throw;
         }

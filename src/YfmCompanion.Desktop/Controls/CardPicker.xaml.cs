@@ -38,6 +38,9 @@ public partial class CardPicker : UserControl
     public void Clear()
     {
         SelectedCard = null;
+        _suggestions = [];
+        SuggestionList.ItemsSource = null;
+        CardDetails.Text = "Empty slot • optional";
         _internalTextChange = true;
         InputBox.Clear();
         _internalTextChange = false;
@@ -57,6 +60,7 @@ public partial class CardPicker : UserControl
         if (SelectedCard is not null && !InputBox.Text.Equals(SelectedCard.Name, StringComparison.OrdinalIgnoreCase))
         {
             SelectedCard = null;
+            CardDetails.Text = "Choose a card from the suggestions";
             CardChanged?.Invoke(this, null);
         }
 
@@ -116,6 +120,12 @@ public partial class CardPicker : UserControl
     private void SelectCard(Card card)
     {
         SelectedCard = card;
+        _suggestions = [];
+        SuggestionList.ItemsSource = null;
+        var stars = string.Join(" / ", new[] { card.GuardianStar1, card.GuardianStar2 }
+            .Where(star => !string.IsNullOrWhiteSpace(star))
+            .Select(star => GuardianStarRules.TryGetSymbol(star, out var symbol) ? symbol : "?"));
+        CardDetails.Text = $"#{card.Id:000} • {card.PrimaryType}" + (card.Level is not null ? $" • ATK {card.Attack} / DEF {card.Defense} • {stars}" : string.Empty);
         _internalTextChange = true;
         InputBox.Text = card.Name;
         InputBox.CaretIndex = InputBox.Text.Length;

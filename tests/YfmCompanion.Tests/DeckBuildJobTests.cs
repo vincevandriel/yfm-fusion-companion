@@ -118,6 +118,52 @@ public sealed class DeckBuildJobTests
     }
 
     [Fact]
+    public async Task VerificationPauseResumeAndStopRetainHonestStatistics()
+    {
+        var job = new DeckBuildJob(Catalog(), Request());
+        await job.RunAsync(new Callback<DeckBuildProgress>(p => { if (p.Best is not null) job.StopAndKeepBest(); }));
+        var paused = await job.VerifyBestAsync(new Callback<DeckBuildProgress>(p =>
+        {
+            if (p.State == DeckBuildState.Verifying) job.Pause();
+        }));
+        Assert.Equal(DeckBuildState.Paused, paused.State);
+        Assert.False(paused.Best!.Report.ExactAnalysis.IsExact);
+        Assert.Same(paused, job.LastResult);
+        job.StopAndKeepBest();
+        Assert.Equal(DeckBuildState.Cancelled, job.State);
+        var stopped = await job.VerifyBestAsync(new Callback<DeckBuildProgress>(p =>
+        {
+            if (p.State == DeckBuildState.Verifying) job.StopAndKeepBest();
+        }));
+        Assert.Equal(DeckBuildState.Cancelled, stopped.State);
+        Assert.False(stopped.Best!.Report.ExactAnalysis.IsExact);
+        await job.VerifyBestAsync(new Callback<DeckBuildProgress>(p =>
+        {
+            if (p.State == DeckBuildState.Verifying) job.Pause();
+        }));
+        var resumed = await job.RunAsync();
+        Assert.Equal(DeckBuildState.Completed, resumed.State);
+        Assert.True(resumed.Best!.Report.ExactAnalysis.IsExact);
+        Assert.Equal(658008, resumed.Best.Report.ExactAnalysis.TotalHands);
+        Assert.False(resumed.ProvenOptimal);
+        Assert.Same(resumed, job.LastResult);
+    }
+
+    [Fact]
+    public async Task FailureRetainsACompletedCandidateWithoutClaimingReadyOrExact()
+    {
+        var job = new DeckBuildJob(Catalog(), Request());
+        await Assert.ThrowsAsync<InvalidDataException>(() => job.RunAsync(new Callback<DeckBuildProgress>(p =>
+        {
+            if (p.Stage == "First legal deck found; evaluation pending") throw new InvalidDataException("Injected failure");
+        })));
+        Assert.Equal(DeckBuildState.Failed, job.LastResult!.State);
+        Assert.Equal(40, job.LastResult.Best!.Report.TotalCards);
+        Assert.Equal(0, job.LastResult.Best.Report.ExactAnalysis.TotalHands);
+        Assert.False(job.LastResult.ProvenOptimal);
+    }
+
+    [Fact]
     public async Task InfeasibleCollectionFailsWithoutPublishingAnIllegalDeck()
     {
         var job = new DeckBuildJob(Catalog(), Request() with { OwnedCards = [new(1, 3)] });

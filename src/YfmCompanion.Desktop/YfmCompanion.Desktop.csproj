@@ -20,6 +20,7 @@
     <DebugSymbols>false</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
+    <InternalsVisibleTo Include="YfmCompanion.UiAudit" />
     <ProjectReference Include="..\YfmCompanion.Data\YfmCompanion.Data.csproj" />
     <ProjectReference Include="..\YfmCompanion.Engine\YfmCompanion.Engine.csproj" />
     <ProjectReference Include="..\YfmCompanion.RetroArch\YfmCompanion.RetroArch.csproj" />

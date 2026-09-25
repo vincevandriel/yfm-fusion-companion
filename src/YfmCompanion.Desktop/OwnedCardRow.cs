@@ -16,6 +16,7 @@ internal sealed class OwnedCardRow : INotifyPropertyChanged
     private ThumbnailCache? _artworkCache;
     private int _chestCopies;
     private int _deckCopies;
+    private bool _isManual;
 
     public OwnedCardRow(Card card, Action<OwnedCardRow> changed)
     {
@@ -28,7 +29,8 @@ internal sealed class OwnedCardRow : INotifyPropertyChanged
     public int ChestCopies { get => _chestCopies; set { _chestCopies = value; Raise(nameof(QuantityLine)); } }
     public int DeckCopies { get => _deckCopies; set { _deckCopies = value; Raise(nameof(QuantityLine)); } }
     public string DetailLine => $"{Card.PrimaryType} • ATK {Card.Attack:N0} / DEF {Card.Defense:N0} • {FormatStars(Card)}";
-    public string QuantityLine => $"Owned {Quantity} • chest {ChestCopies} / deck {DeckCopies}";
+    public bool IsManual { get => _isManual; set { _isManual = value; Raise(nameof(QuantityLine)); } }
+    public string QuantityLine => IsManual ? $"Owned {Quantity} • manual quantity" : $"Owned {Quantity} • chest {ChestCopies} / deck {DeckCopies}";
     public string ProposedLine => ProposedCopies > 0 ? $"Proposed deck: {ProposedCopies}×" : string.Empty;
     public ImageSource? Artwork => _artworkCache?.Load(_artworkPath);
 
@@ -62,6 +64,7 @@ internal sealed class OwnedCardRow : INotifyPropertyChanged
     {
         _artworkPath = File.Exists(overridePath) ? overridePath : FindArtwork(folder, Card.Id);
         _artworkCache = cache;
+        if (_artworkPath is not null) cache.Invalidate(_artworkPath);
         Raise(nameof(Artwork));
     }
 

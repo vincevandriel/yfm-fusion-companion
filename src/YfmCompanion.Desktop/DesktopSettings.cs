@@ -16,7 +16,8 @@ internal sealed record DesktopSettings(
     CollectionSourceMode CollectionSourceMode = CollectionSourceMode.AutomaticNewest,
     IReadOnlyList<string>? KnownSaveLocations = null,
     string? ArtworkFolder = null,
-    IReadOnlyDictionary<int, string>? ArtworkOverrides = null);
+    IReadOnlyDictionary<int, string>? ArtworkOverrides = null,
+    IReadOnlyDictionary<int, int>? ManualQuantities = null);
 
 internal static class DesktopSettingsStore
 {

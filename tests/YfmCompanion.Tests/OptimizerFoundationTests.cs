@@ -124,6 +124,31 @@ public sealed class OptimizerFoundationTests
     }
 
     [Fact]
+    public void CampaignAnswerCoverageUsesFixedBinsBeforeGauntletAndExactMetricsAfterIt()
+    {
+        var report = new DeckAnalysisReport(40, 5, 1000, 500, 500, 500, 500, 0, 2000, []) { TotalBestFusionAttack = 2_000_000 };
+        DeckObjective Candidate(double coverage, double gauntlet) => new(report,
+            new("Primary", 100, 1, "Model", 1, 1, 100, coverage),
+            new("Gauntlet", gauntlet, 1, "Model", 1, 1, gauntlet, 0), [1, 2]);
+        var comparer = new DeckObjectiveComparer(true, true);
+        var lower = Candidate(.501, 200);
+        var higher = Candidate(.504, 100);
+        Assert.True(comparer.Compare(lower, higher) > 0); // Same 0.500–0.505 group, better gauntlet.
+        Assert.True(comparer.Compare(Candidate(.505, 100), lower) > 0); // Next primary group wins.
+        Assert.True(comparer.Compare(Candidate(.504, 200), lower) > 0); // Equal gauntlet: exact primary wins.
+        Assert.True(new DeckObjectiveComparer(true, false).Compare(higher, lower) > 0);
+        Assert.True(comparer.Compare(lower with { Safety = lower.Safety! with { SafeOpponentCount = 2 } }, higher) > 0);
+        var candidates = (from coverage in new[] { .499999, .5, .500001, .504999, .505 }
+                          from gauntlet in new[] { 100.0, 101.0, 200.0 }
+                          select Candidate(coverage, gauntlet)).ToArray();
+        foreach (var a in candidates)
+            foreach (var b in candidates)
+                foreach (var c in candidates)
+                    if (comparer.Compare(a, b) > 0 && comparer.Compare(b, c) > 0)
+                        Assert.True(comparer.Compare(a, c) > 0);
+    }
+
+    [Fact]
     public void QuantitySpaceMatchesIndependentVectorsAndBudgetPruning()
     {
         var cards = Enumerable.Range(1, 4).Select(id => TestCatalogFactory.Card(id, $"Card {id}") with { Password = "12345678", StarchipCost = id * 5 }).ToArray();
