@@ -1,6 +1,20 @@
 # Optimizer update checkpoint
 
-## Current status — Phase 3 interrupted within the audit
+## Current status — Phase 3 second repair batch verified; gate still open
+
+- **Phase 3 is IN PROGRESS. Its complete gate has NOT passed. Phase 4 has not started.**
+- Current repair/evidence commit: `ad3f0e8acd8cbce6d9789253cbd7f6ac0ba83ca0` (2026-09-25). This checkpoint-only commit follows it.
+- **Resume with GPT-6 Astra (`gpt-6-astra`), reasoning xhigh.**
+- Last completed subgate: verification lifecycle, manual collection restart, pending saves during pause, campaign coverage bins/transitivity, thumbnail replacement/bounds, adaptive layout components, live selection reconciliation, autocomplete clearing, gallery virtualization and desktop proof recovery/incompatible-input rejection.
+- Latest verification: full solution **200 passed / 0 failed / 0 skipped**; build `-warnaserror` **0 warnings / 0 errors**; formatting verification and whitespace check passed. UI contract audit passed; busy **9.63 ms**, first legal deck **1,788.42 ms**, pause **147.06 ms**, stop **184.45 ms**, all five tabs traversed forward/backward. Its final displayed error is the intentionally rejected incompatible proof request, not an unexplained failure. Evidence: `docs/audit/phase3-ui-lifecycle.json`.
+- Fresh synthetic matrix: **42/48 completed**, six cutoff cancellations, maximum progress gap **230.82 ms**, cancellation overrun **22.09 ms**. Balanced/read-only RetroArch coexistence: **68 successful / 0 failed reads**, max concurrency **1**, first legal preview **119.63 ms**, max progress gap **222.66 ms**, exact **658,008 hands**, **ProvenOptimal=false**. **ActiveDuelReads=0**, so current active-duel coverage remains unverified. See `docs/benchmarks/phase3-matrix.json` and `phase3-live-balanced.json`.
+- Completed changes and limitations are recorded under **Second repair checkpoint** in `docs/audit/PHASE3_AUDIT.md`. New comparator version is `campaign-lexicographic-v3`; incompatible old proof checkpoints fail closed. Explicit new-proof selection preserves the old file. Timed pause is labelled in-memory; proof pause is durable.
+- **Exact next action:** finish the independent all-tab visual/state matrix against the repaired layouts (empty, populated, loading, failure, completed; both resolutions and all scales; Compact Live). Then resolve remaining tab-view/controller separation and deck-copy/route inspection requirements, watcher/pinning races and active-work shutdown/confirmation workflows. Re-run affected tests. Do not equate the current UI contract smoke with final visual acceptance.
+- Required live follow-up: repeat changing-board/scroll checks and coexistence with an active duel when available; no controls or game/save writes are authorized. Native OS-DPI switching and proof confirmation-dialog automation remain unverified.
+- Usage guard triggered at **90% used / 10% remaining**. Pause now; recheck allowance on resume and every 60 seconds/after the current function. Do not redeem a reset without explicit authorization.
+- All agent-started tests, UI audits and benchmarks have exited. Synthetic temporary audit settings/save/artwork/proof directories were cleaned by the harness. Existing RetroArch process 29256 was not controlled or closed. `.vs/` is still untouched/untracked. No public push, release, installed-app replacement, personal artwork packaging, game-memory writes or personal save modifications occurred.
+
+## Previous first Phase 3 repair checkpoint (historical)
 
 - **Phase 3 is IN PROGRESS. Its gate has NOT passed. Phase 4 has not started.**
 - Current tested repair commit: `2a94570444d7294eba46c60d409b648e1f9e2c80` (2026-09-25). This checkpoint-only commit follows it.
