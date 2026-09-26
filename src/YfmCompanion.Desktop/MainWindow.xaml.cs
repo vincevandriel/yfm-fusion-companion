@@ -21,6 +21,7 @@ public partial class MainWindow : Window
 {
     private const double CompactWindowWidth = 272;
     private const double CompactWindowHeight = 1002;
+    private const int DuelInactiveGraceReads = 3;
     private readonly List<CardPicker> _turnPickers = [];
     private readonly List<CardPicker> _handPickers = [];
     private readonly List<CardPicker> _monsterPickers = [];
@@ -88,6 +89,8 @@ public partial class MainWindow : Window
     private bool _inspectorOpen;
     private bool _synchronizingTopmost;
     private bool _startupStarted;
+    private bool _hadStableDuelSnapshot;
+    private int _consecutiveInactiveDuelReads;
 
     public MainWindow() : this(true) { }
 
@@ -440,6 +443,28 @@ public partial class MainWindow : Window
         if (_catalog is null || _planner is null)
         {
             return;
+        }
+
+        if (snapshot.DuelActive)
+        {
+            _hadStableDuelSnapshot = true;
+            _consecutiveInactiveDuelReads = 0;
+        }
+        else if (_hadStableDuelSnapshot && ++_consecutiveInactiveDuelReads < DuelInactiveGraceReads)
+        {
+            SetLiveHealth(isHealthy: true);
+            SetLiveStateBadge(
+                "LIVE • READING",
+                "#805C1D",
+                "A transient duel-state read was incomplete; retaining the last verified recommendations.");
+            LiveConnectionText.Text = $"{snapshot.Status.GameBasename} • retaining last verified duel advice • {snapshot.MemoryCommand}";
+            LiveStatusText.Text = "A transient memory read did not prove that the duel ended. Recommendations remain from the last verified duel snapshot and will refresh automatically.";
+            return;
+        }
+        else if (!snapshot.DuelActive)
+        {
+            _hadStableDuelSnapshot = false;
+            _consecutiveInactiveDuelReads = 0;
         }
 
         SetLiveHealth(isHealthy: true);
