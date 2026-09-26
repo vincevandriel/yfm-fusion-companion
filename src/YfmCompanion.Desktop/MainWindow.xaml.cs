@@ -532,6 +532,13 @@ public partial class MainWindow : Window
                 GuardianBattlePosition.Unknown,
                 null))
             .ToArray();
+        var enemyGuardianStars = snapshot.OpponentField
+            .SelectMany(fieldCard =>
+            {
+                var card = _catalog.GetCard(fieldCard.CardId);
+                return new[] { card.GuardianStar1, card.GuardianStar2 };
+            })
+            .ToArray();
         var recommendations = tacticalRecommendations
             .Select(recommendation => ToLiveAdviceRow(
                 recommendation,
@@ -548,7 +555,8 @@ public partial class MainWindow : Window
                 GuardianStarPresentation.Create(
                     recommendation.FinalCard,
                     recommendation.EffectiveAttack,
-                    guardianTargets)))
+                    guardianTargets),
+                enemyGuardianStars))
             .ToArray(), row => (row.Result, row.Route));
         LiveAdviceSummary.Text = recommendations.Length == 0
             ? "No valid fusion or final equip route is available from the current hand and active field."

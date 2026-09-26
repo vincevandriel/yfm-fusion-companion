@@ -10,21 +10,37 @@ internal sealed record CompactLiveRouteRow(
     string GuardianStar1,
     string GuardianStar2,
     string GuardianOutcomes1,
-    string GuardianOutcomes2);
+    string GuardianOutcomes2,
+    string GuardianVisual1,
+    string GuardianVisual2);
 
 internal static class CompactLivePresentation
 {
     public static CompactLiveRouteRow CreateRow(
         TacticalRecommendation recommendation,
-        GuardianLiveAdvice? guardianAdvice = null) =>
-        new(
+        GuardianLiveAdvice? guardianAdvice = null,
+        IEnumerable<string?>? enemyGuardianStars = null)
+    {
+        var enemyStars = enemyGuardianStars?.Where(star => !string.IsNullOrWhiteSpace(star)).ToArray() ?? [];
+        return new(
             recommendation.FinalCard.Name,
             recommendation.EffectiveAttack,
             FormatRoute(recommendation),
             guardianAdvice?.FirstChoice ?? "?",
             guardianAdvice?.SecondChoice ?? "?",
             guardianAdvice?.FirstChoiceOutcomes ?? "—",
-            guardianAdvice?.SecondChoiceOutcomes ?? "—");
+            guardianAdvice?.SecondChoiceOutcomes ?? "—",
+            GuardianVisual(recommendation.FinalCard.GuardianStar1, enemyStars),
+            GuardianVisual(recommendation.FinalCard.GuardianStar2, enemyStars));
+    }
+
+    private static string GuardianVisual(string? playerStar, IReadOnlyList<string?> enemyStars)
+    {
+        if (!GuardianStarRules.TryGetSymbol(playerStar, out _)) return "Unknown";
+        return enemyStars.Any(enemyStar => GuardianStarRules.Resolve(playerStar, enemyStar) != GuardianStarOutcome.Unknown)
+            ? "Threat"
+            : "Warm";
+    }
 
     public static string FormatRoute(TacticalRecommendation recommendation)
     {

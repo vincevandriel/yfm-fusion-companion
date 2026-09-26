@@ -305,9 +305,9 @@ internal static class Program
             ?? throw new InvalidOperationException("Compact route grid was not found.");
         adviceGrid.ItemsSource = new[]
         {
-            new { Result = "Twin-headed Thunder Dragon", Attack = 2800, Route = "1+2+3", GuardianStar1 = "☉ > ☾ > ♀", GuardianOutcomes1 = "F1✓ F2?", GuardianStar2 = "♂ > ♃ > ♄", GuardianOutcomes2 = "F1= F2?" },
-            new { Result = "Pumpking the King of Ghosts", Attack = 1800, Route = "F(3)+2+5", GuardianStar1 = "☾ > ♀ > ☿", GuardianOutcomes1 = "F3?", GuardianStar2 = "♂ > ♃ > ♄", GuardianOutcomes2 = "F3?" },
-            new { Result = "Armored Zombie", Attack = 1500, Route = "F(8)+4", GuardianStar1 = "☉ > ☾ > ♀", GuardianOutcomes1 = "—", GuardianStar2 = "☾ > ♀ > ☿", GuardianOutcomes2 = "—" }
+            new { Result = "Twin-headed Thunder Dragon", Attack = 2800, Route = "1+2+3", GuardianStar1 = "☉ > ☾ > ♀", GuardianOutcomes1 = "F1✓ F2?", GuardianStar2 = "♂ > ♃ > ♄", GuardianOutcomes2 = "F1= F2?", GuardianVisual1 = "Warm", GuardianVisual2 = "Threat" },
+            new { Result = "Pumpking the King of Ghosts", Attack = 1800, Route = "F(3)+2+5", GuardianStar1 = "☾ > ♀ > ☿", GuardianOutcomes1 = "F3?", GuardianStar2 = "♂ > ♃ > ♄", GuardianOutcomes2 = "F3?", GuardianVisual1 = "Warm", GuardianVisual2 = "Warm" },
+            new { Result = "Armored Zombie", Attack = 1500, Route = "F(8)+4", GuardianStar1 = "☉ > ☾ > ♀", GuardianOutcomes1 = "—", GuardianStar2 = "☾ > ♀ > ☿", GuardianOutcomes2 = "—", GuardianVisual1 = "Threat", GuardianVisual2 = "Threat" }
         };
     }
 

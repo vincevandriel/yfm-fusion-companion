@@ -176,8 +176,30 @@
                             <DataTemplate>
                                 <StackPanel Margin="3,1">
                                     <TextBlock Text="{Binding Result}" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" ToolTip="{Binding Result}" />
-                                    <TextBlock Text="{Binding GuardianStar1}" FontSize="20" Foreground="{StaticResource MutedBrush}" TextTrimming="CharacterEllipsis" ToolTip="{Binding GuardianStar1}" />
-                                    <TextBlock Text="{Binding GuardianStar2}" FontSize="20" Foreground="{StaticResource MutedBrush}" TextTrimming="CharacterEllipsis" ToolTip="{Binding GuardianStar2}" />
+                                    <TextBlock Text="{Binding GuardianStar1}" FontSize="20" Foreground="{StaticResource MutedBrush}" TextTrimming="CharacterEllipsis" ToolTip="{Binding GuardianOutcomes1}">
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="Background" Value="Transparent" />
+                                                <Setter Property="Padding" Value="2,0" />
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding GuardianVisual1}" Value="Warm"><Setter Property="Background" Value="#665026" /></DataTrigger>
+                                                    <DataTrigger Binding="{Binding GuardianVisual1}" Value="Threat"><Setter Property="Background" Value="#702B35" /></DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
+                                    <TextBlock Text="{Binding GuardianStar2}" FontSize="20" Foreground="{StaticResource MutedBrush}" TextTrimming="CharacterEllipsis" ToolTip="{Binding GuardianOutcomes2}">
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="Background" Value="Transparent" />
+                                                <Setter Property="Padding" Value="2,0" />
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding GuardianVisual2}" Value="Warm"><Setter Property="Background" Value="#665026" /></DataTrigger>
+                                                    <DataTrigger Binding="{Binding GuardianVisual2}" Value="Threat"><Setter Property="Background" Value="#702B35" /></DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
                                 </StackPanel>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
