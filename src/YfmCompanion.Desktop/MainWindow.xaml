@@ -60,13 +60,6 @@
                         LiveCard_SelectionChangedRequested="LiveCard_SelectionChanged" />
                 </TabItem>
 
-                <TabItem x:Name="SaveSyncTab" Header="SAVE SNAPSHOT">
-                    <views:SaveSnapshotView x:Name="SaveSnapshotPaneView" RefreshSaveSnapshot_ClickRequested="RefreshSaveSnapshot_Click"
-                        SelectSave_ClickRequested="SelectSave_Click"
-                        ApplyDeckSnapshot_ClickRequested="ApplyDeckSnapshot_Click"
-                        ApplyOwnedSnapshot_ClickRequested="ApplyOwnedSnapshot_Click" />
-                </TabItem>
-
                 <TabItem x:Name="OwnedOptimizerTab" Header="OWNED-CARD OPTIMIZER">
                     <views:OwnedOptimizerView x:Name="OwnedOptimizerPaneView" RefreshSaveSnapshot_ClickRequested="RefreshSaveSnapshot_Click"
                         SelectSave_ClickRequested="SelectSave_Click"

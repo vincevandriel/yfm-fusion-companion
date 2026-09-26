@@ -14,9 +14,10 @@
                                 <StackPanel>
                                     <TextBlock x:Name="OptimizerSourceTitle" Text="AUTOMATIC — NEWEST SAVE" Foreground="{StaticResource GoldBrush}" FontWeight="SemiBold" />
                                     <TextBlock x:Name="OptimizerSourceSummary" Text="Looking for the newest supported Forbidden Memories save…" TextWrapping="Wrap" Foreground="{StaticResource MutedBrush}" Margin="0,3,0,0" />
+                                    <TextBlock x:Name="SaveSnapshotStatus" Text="Saved snapshot details will appear here." TextWrapping="Wrap" Foreground="{StaticResource MutedBrush}" Margin="0,3,0,0" />
                                 </StackPanel>
                                 <WrapPanel Margin="0,8,0,0">
-                                    <Button Content="REFRESH" Click="RefreshSaveSnapshot_Click" Padding="10,6" />
+                                    <Button x:Name="RefreshSaveButton" Content="REFRESH" Click="RefreshSaveSnapshot_Click" Padding="10,6" />
                                     <Button Content="CHOOSE SAVE FILE…" Click="SelectSave_Click" Padding="10,6" />
                                     <Button Content="AUTOMATIC NEWEST" Click="UseAutomaticSave_Click" Padding="10,6" />
                                     <Button Content="ENTER CARDS MANUALLY" Click="UseManualCollection_Click" Padding="10,6" />

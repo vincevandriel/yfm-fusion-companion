@@ -56,7 +56,6 @@ internal static class Program
             RenderWorkspaceTab(window, "DeckAnalyzerTab", "deck-analyzer.png", outputDirectory),
             RenderWorkspaceTab(window, "LiveDuelTab", "live-duel.png", outputDirectory),
             RenderOpenInspector(window, outputDirectory),
-            RenderWorkspaceTab(window, "SaveSyncTab", "save-snapshot.png", outputDirectory),
             RenderWorkspaceTab(window, "OwnedOptimizerTab", "owned-card-optimizer.png", outputDirectory),
             RenderCampaignPlan(window, outputDirectory)
         };
@@ -112,9 +111,7 @@ internal static class Program
         }
 
         RequireButtonContent(window, "LoadCurrentDeckButton", "LOAD CURRENT DECK FROM SAVE");
-        RequireButtonContent(window, "RefreshSaveButton", "REFRESH SAVED SNAPSHOT");
-        RequireButtonContent(window, "ApplyDeckButton", "LOAD THIS DECK INTO ANALYZER");
-        RequireButtonContent(window, "ApplyOwnedButton", "LOAD OWNED CARDS INTO OPTIMIZER");
+        RequireButtonContent(window, "RefreshSaveButton", "REFRESH");
         RequireText(window, "LiveUpdateHealthText", "ERROR");
         ValidateButtonPalette(window);
         ValidateTabPalette(window);
@@ -183,9 +180,9 @@ internal static class Program
     private static void ValidateTabPalette(MainWindow window)
     {
         var tabs = FindLogicalDescendants<TabItem>(window).ToArray();
-        if (tabs.Length < 5)
+        if (tabs.Length < 4)
         {
-            throw new InvalidOperationException($"Expected at least five application tabs; found {tabs.Length}.");
+            throw new InvalidOperationException($"Expected at least four application tabs; found {tabs.Length}.");
         }
 
         foreach (var tab in tabs)

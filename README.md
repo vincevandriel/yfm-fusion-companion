@@ -76,7 +76,7 @@ When a field card is used, it interacts with the first selected hand card and th
 
 ### DECK ANALYZER tab
 
-Enter up to 40 cards or choose **LOAD CURRENT DECK FROM SAVE** after validating a Save Snapshot. **ANALYZE ALL 5-CARD HANDS** checks every physical five-card combination; a full deck contains exactly 658,008 such hands. Copies are distinct and draws are without replacement. **CANCEL** safely stops a calculation and **CLEAR** empties the slots.
+Enter up to 40 cards or choose **LOAD CURRENT DECK FROM SAVE** to read the current validated memory-card save directly. **ANALYZE ALL 5-CARD HANDS** checks every physical five-card combination; a full deck contains exactly 658,008 such hands. Copies are distinct and draws are without replacement. **CANCEL** safely stops a calculation and **CLEAR** empties the slots. The save status shown below the controls reports the selected file and whether a complete 40-card deck was available.
 
 - **ANY FUSION / EQUIP:** chance of at least one modeled valid result.
 - **ATK >= 2500 / 2800 / 3000:** chance that the best obtainable result reaches the threshold.
@@ -99,20 +99,9 @@ Live Duel updates automatically every second. There is no refresh button. For th
 
 The client sends only status and read-memory commands to `127.0.0.1`. Keep Windows Firewall blocking unsolicited inbound UDP 55355 from other computers because RetroArch itself may listen beyond loopback.
 
-### SAVE SNAPSHOT tab
-
-This tab opens memory-card files read-only. **REFRESH SAVED SNAPSHOT** searches configured SwanStation locations and reads the newest supported save again. **CHOOSE SAVE FILE...** accepts raw 128 KiB or 256 KiB `.srm`/`.mcr` images. Source, File, Saved, and Validation explain exactly what was read.
-
-- **CONSTRUCTED DECK:** the 40 saved deck positions, when every position contains a valid card. A valid save with an empty or incomplete deck still imports its chest/collection; its Deck Analyzer load button stays disabled rather than treating empty slots as card IDs.
-- **COLLECTION:** chest quantity, copies in the deck, total owned, and Library-seen flag.
-- **LOAD THIS DECK INTO ANALYZER:** copies the saved deck into Deck Analyzer.
-- **LOAD OWNED CARDS INTO OPTIMIZER:** copies chest-plus-deck totals into Owned-card Optimizer.
-
-The load buttons transfer information only inside the companion; they never load or modify the game save. If recent progress is absent, save in-game, let the emulator flush the memory card (close content if necessary), and refresh again.
-
 ### OWNED-CARD OPTIMIZER tab
 
-Enter owned quantities manually or load them from Save Snapshot. The search filters by any name letters or card number. **SET VISIBLE TO 3** changes only currently filtered rows; **CLEAR OWNED** resets quantities. At least 40 usable copies are required, and output never exceeds ownership, the normal three-copy limit, or the one-copy Exodia-piece limits.
+Enter owned quantities manually or load them with **REFRESH** / **CHOOSE SAVE FILE…** in the optimizer's source panel. The same panel reports the selected save, owned totals, Star Chips, and validation status; no separate Save Snapshot tab is needed. The search filters by any name letters or card number. **SET VISIBLE TO 3** changes only currently filtered rows; **CLEAR OWNED** resets quantities. At least 40 usable copies are required, and output never exceeds ownership, the normal three-copy limit, or the one-copy Exodia-piece limits.
 
 For the campaign choices, select **General campaign**, **One specific opponent**, or **Final gauntlet**. The general plan favours the number of opponent threat sets with at least one modeled answer, then protects its weakest modeled matchup and its opening-hand answer coverage before power tie-breaks. This is matchup guidance, not a guaranteed win-rate or a claim about unverified CPU guardian-star choices. The threat model includes direct and material-limited chained fusion threats; unknown battle position, terrain behavior, or CPU star selection remains labeled as uncertain rather than inferred.
 

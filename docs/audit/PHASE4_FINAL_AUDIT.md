@@ -18,7 +18,7 @@ This is the fail-closed re-audit of the nine findings in the 2026-09-21 independ
 | Deterministic SQLite rebuild | 722 cards and 25,146 resolved pairs; byte-identical SHA-256 `9E24D9D5518E1B9FBEE87872121EC0A59D6ECDDEBC64096156179E55A1664E0C` | The runtime database is read-only and derived from the supplied SQL. |
 | Dependency vulnerability scan | No known vulnerable direct or transitive NuGet packages reported | Point-in-time NuGet advisory result, not a permanent security certification. |
 | Feature/integration audit | 14 passed, 2 environment-dependent checks skipped | The skipped checks require an explicitly supplied live save path or RetroArch configuration; no path was guessed. |
-| Desktop rendering | Five workspaces, closed/open Live inspector states, populated campaign purchase plan, and Compact Live rendered successfully | Deterministic rendered workflow evidence, not a claim about every display scale. |
+| Desktop rendering | Four workspaces, closed/open Live inspector states, populated campaign purchase plan, and Compact Live rendered successfully | Save snapshot controls are integrated into Deck Analyzer and Owned-card Optimizer; this is deterministic rendered workflow evidence, not a claim about every display scale. |
 | Self-contained publish | Exact published executable survived an isolated four-second startup smoke test | Confirms startup/database initialization for the packaged application. |
 | Package preflight | Run, Source, and Audit folders assembled; SHA-256 manifest produced; independently extracted archive matched byte-for-byte | No ROM, BIOS, save, RetroArch configuration, or user data is included. |
 | PDF manual | 11 pages regenerated and visually inspected page by page | The Markdown README remains text-only by design. |

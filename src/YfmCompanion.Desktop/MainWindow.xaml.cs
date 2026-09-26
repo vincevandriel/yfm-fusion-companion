@@ -1075,7 +1075,7 @@ public partial class MainWindow : Window
             var snapshot = await ReadCurrentSaveSnapshotAsync();
             if (snapshot is null)
             {
-                DeckResultSummary.Text = "No valid Forbidden Memories save was found. Open SAVE SNAPSHOT to refresh or choose the .srm/.mcr file manually.";
+                DeckResultSummary.Text = "No valid Forbidden Memories save was found. Use the optimizer's REFRESH or CHOOSE SAVE FILE controls, then load the deck again.";
                 return;
             }
 
@@ -1184,8 +1184,6 @@ public partial class MainWindow : Window
                 {
                     _collectionSnapshot = result.Snapshot;
                     _saveSnapshot = result.Snapshot.Save;
-                    SaveTimestampText.Text = string.Create(CultureInfo.InvariantCulture,
-                        $"{result.Snapshot.Save.LastWriteTimeUtc.ToLocalTime():yyyy-MM-dd HH:mm:ss zzz} local • {result.Snapshot.Save.LastWriteTimeUtc:yyyy-MM-dd HH:mm:ss} UTC");
                     ShowCollectionSource(result.Snapshot);
                     SaveSnapshotStatus.Text = result.Message;
                     if (result.Message.Contains("Warning:", StringComparison.Ordinal)) OptimizerSourceSummary.Text += $" • {result.Message}";
@@ -1406,12 +1404,7 @@ public partial class MainWindow : Window
         UpdateCampaignControls();
         SetStateBadge("SAVED SNAPSHOT", "#365A86", "Validated read-only saved snapshot selected.");
         _diagnostics.Add("Saved snapshot", "Loaded", "Remembered validated local save path.");
-        SaveSourceText.Text = $"Saved snapshot (not live) • {snapshot.SourceFormat} • bank {snapshot.MemoryCardBank}, block {snapshot.BlockNumber}";
-        SavePathText.Text = snapshot.FilePath;
         var localTime = snapshot.LastWriteTimeUtc.ToLocalTime();
-        SaveTimestampText.Text = string.Create(
-            CultureInfo.InvariantCulture,
-            $"{localTime:yyyy-MM-dd HH:mm:ss zzz} local • {snapshot.LastWriteTimeUtc:yyyy-MM-dd HH:mm:ss} UTC");
         var age = DateTime.UtcNow - snapshot.LastWriteTimeUtc;
         var ageText = age >= TimeSpan.Zero
             ? string.Create(CultureInfo.InvariantCulture, $"Snapshot age: {age.TotalDays:N1} days.")
@@ -1425,52 +1418,11 @@ public partial class MainWindow : Window
         var starChipState = snapshot.StarChips is uint starChips
             ? $"{starChips:N0} Star Chips"
             : "Star Chips unavailable (value failed validation)";
-        SaveValidationText.Text = string.Create(
+        var snapshotDetails = string.Create(
             CultureInfo.InvariantCulture,
-            $"Directory checksum valid • file identity {snapshot.DirectoryFileName} • both 0x680-byte save copies match • {deckState} • {starChipState} • {snapshot.UnlockedDuelistIds.Count:N0}/{Ps1MemoryCardReader.DuelistCount:N0} Free Duel opponents unlocked. {ageText} RetroArch may not flush a new save until the game closes, and the in-game Library must be opened before saving for its flags to refresh.{warnings}");
-        SaveSnapshotStatus.Text = $"Loaded {Path.GetFileName(snapshot.FilePath)} as a saved snapshot. No game or save data was modified.";
-        ApplyOwnedButton.IsEnabled = true;
-        ApplyDeckButton.IsEnabled = snapshot.HasCompleteDeck;
-        SaveDeckGrid.ItemsSource = snapshot.DeckCardIds
-            .Where(cardId => cardId is >= 1 and <= Ps1MemoryCardReader.CardCount)
-            .Select((cardId, index) => new SaveDeckRow(index + 1, _catalog.GetCard(cardId)))
-            .ToArray();
-        SaveCollectionGrid.ItemsSource = _catalog.Cards
-            .OrderBy(card => card.Id)
-            .Select(card => new SaveCollectionRow(
-                card,
-                snapshot.GetChestQuantity(card.Id),
-                snapshot.GetDeckQuantity(card.Id),
-                snapshot.GetTotalOwned(card.Id),
-                snapshot.LibraryCardIds.Contains(card.Id)))
-            .Where(row => row.Total > 0)
-            .ToArray();
-    }
-
-    private async void ApplyOwnedSnapshot_Click(object sender, RoutedEventArgs e)
-    {
-        if (_closeRequested) return;
-        using var activity = _activities.Begin();
-        if (_saveSnapshot is null)
-        {
-            return;
-        }
-
-        await SelectPinnedSaveAsync(_saveSnapshot.FilePath);
-        WorkspaceTabs.SelectedItem = OwnedOptimizerTab;
-    }
-
-    private void ApplyDeckSnapshot_Click(object sender, RoutedEventArgs e)
-    {
-        if (_saveSnapshot is null || _catalog is null || !_saveSnapshot.HasCompleteDeck)
-        {
-            DeckResultSummary.Text = "This saved snapshot does not contain a complete 40-card deck, so there is nothing safe to load into Deck Analyzer.";
-            return;
-        }
-
-        LoadDeckAnalyzerFromSnapshot(_saveSnapshot);
-        DeckResultSummary.Text = $"Loaded 40 cards from saved snapshot {Path.GetFileName(_saveSnapshot.FilePath)}. Ready for exact hand analysis.";
-        WorkspaceTabs.SelectedItem = DeckAnalyzerTab;
+            $"{snapshot.SourceFormat}, bank {snapshot.MemoryCardBank}, block {snapshot.BlockNumber} • {deckState} • {starChipState} • {snapshot.UnlockedDuelistIds.Count:N0}/{Ps1MemoryCardReader.DuelistCount:N0} Free Duel opponents unlocked • {ageText} RetroArch may not flush a new save until the game closes.{warnings}");
+        SaveSnapshotStatus.Text = $"Loaded {Path.GetFileName(snapshot.FilePath)} • {localTime:g} local • {snapshotDetails}";
+        DeckSaveStatus.Text = $"Saved snapshot: {Path.GetFileName(snapshot.FilePath)} • {deckState} • {starChipState}. Use LOAD CURRENT DECK FROM SAVE to copy its deck here.";
     }
 
     private void LoadDeckAnalyzerFromSnapshot(SaveSnapshot snapshot)
@@ -2337,10 +2289,6 @@ public partial class MainWindow : Window
         if (WorkspaceTabs.SelectedItem == LiveDuelTab)
         {
             SetStateBadge(_liveBadge, _liveBadgeColor, "Live workspace selected.");
-        }
-        else if (WorkspaceTabs.SelectedItem == SaveSyncTab)
-        {
-            SetStateBadge("SAVED SNAPSHOT", "#365A86", "Saved-snapshot workspace selected.");
         }
         else if (WorkspaceTabs.SelectedItem == OwnedOptimizerTab)
         {
