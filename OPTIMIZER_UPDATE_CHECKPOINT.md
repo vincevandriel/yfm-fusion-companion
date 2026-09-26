@@ -1,6 +1,17 @@
 # Optimizer update checkpoint
 
-## Current status — Phase 3 automated repairs verified; live sign-off outstanding
+## Current status — Phase 3 PASSED; paused before Phase 4
+
+- **Phase 3 gate passed on 2026-09-26. Phase 4 has not started.** Gate record: `docs/audit/PHASE3_GATE.md`.
+- Live gameplay sign-off: 51 unpaused reads, 15 actual board changes, 52 selection/scroll checks, and seven safely withheld mid-read transitions with browsing preserved. No failures. Evidence: `docs/audit/phase3-playing-ui-repaired/real-live-presentation.json`.
+- Real play exposed a collection-browsing reset in the transient-read path. Fixed it by retaining the last validated deck/collection, explicitly labelling the refresh as awaiting a stable read, and clearing unvalidated live hand/field/advice. Disconnect still clears all rows. Targeted production-WPF synthetic regression passed after the final label change.
+- Concurrent Balanced/live engine run: 36 unpaused active-duel reads and eight state changes; 63 successful reads and four intentional inconsistent-snapshot rejections, no transport failures or overlapping reads. Exact 658,008-hand result, not proven optimal. Evidence: `docs/benchmarks/phase3-playing-balanced.json`.
+- Validation: 200 tests passed, none failed/skipped; final UI-audit/desktop build passed with zero warnings/errors. The repaired real-live run preceded the final status-text/color-only change; that final change passed the targeted WPF transition/recovery/disconnect regression.
+- Retained coverage limit: logical/scaled 125/150/200% rendering was reviewed; actual Windows OS-DPI changes were not tested. Carry this limitation into Phase 4 documentation.
+- **Next action/model gate:** resume Phase 4 with GPT-5.6 Luna (`gpt-5.6-luna`), reasoning Medium, following `OPTIMIZER_UPDATE_PLAN.md`. Update documentation, screenshots/PDF and release packaging, then perform independent public-download verification. No Phase 4 work or publication has occurred in this recovery/audit turn.
+- Current source changes and sanitized audit artifacts are committed locally. No installed-release replacement, game inputs, game/save/config writes, public push or release. All audit processes have exited; the user's RetroArch remains running. `.vs/` remains untracked and untouched.
+
+## Previous live-sign-off checkpoint (historical)
 
 - **Phase 3 remains IN PROGRESS; Phase 4 has not started. Resume with GPT-6 Astra (`gpt-6-astra`), reasoning xhigh.**
 - Repair/evidence commit: `c15a7e1b75afe14c7bfcb335ba88aaee1fa8f2e8` (2026-09-26). This checkpoint commit follows it.

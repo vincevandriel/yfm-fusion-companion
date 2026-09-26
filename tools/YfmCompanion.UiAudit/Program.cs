@@ -34,7 +34,8 @@ internal static class Program
 
     private static int Run(string[] args, string fixtureDirectory)
     {
-        DesktopContractAudit.Run(fixtureDirectory);
+        var realLive = args.Contains("--real-live", StringComparer.Ordinal);
+        if (!realLive) DesktopContractAudit.Run(fixtureDirectory);
         var output = args.Length > 0 ? Path.GetFullPath(args[0]) : Path.GetFullPath("phase2-ui");
         Directory.CreateDirectory(output);
         var settingsPath = Path.Combine(fixtureDirectory, "settings.json");
@@ -68,6 +69,19 @@ internal static class Program
         };
         window.Show();
         Pump(TimeSpan.FromSeconds(3));
+        if (realLive) return RealLivePresentationAudit.Run(window, output);
+        if (args.Contains("--live-interaction", StringComparer.Ordinal))
+        {
+            DesktopInteractionAudit.Run(window);
+            File.WriteAllText(Path.Combine(output, "live-interaction.json"), JsonSerializer.Serialize(new
+            {
+                Passed = true,
+                Synthetic = true,
+                Checks = "Changing snapshots, transient read/advice withholding, recovery, deck selection/scroll retention, disconnect clearing, fixed optimizer progress and read-only gallery"
+            }, new JsonSerializerOptions { WriteIndented = true }));
+            window.Close();
+            return 0;
+        }
         if (args.Contains("--states", StringComparer.Ordinal)) return VisualStateAudit.Run(window, fixtureSave, output);
         var fullWorkspace = (FrameworkElement)window.FindName("FullWorkspace");
         if (fullWorkspace.Visibility != Visibility.Visible)

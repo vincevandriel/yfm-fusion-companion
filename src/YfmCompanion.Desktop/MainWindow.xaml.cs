@@ -369,12 +369,7 @@ public partial class MainWindow : Window
         }
         catch (RetroArchTransientStateException exception)
         {
-            SetLiveUnavailable(
-                "The duel changed during this refresh.",
-                $"{exception.Message} The companion will retry automatically in one second.",
-                "UPDATING",
-                "#805C1D",
-                updateSucceeded: true);
+            SetLiveTransient(exception.Message);
         }
         catch (RetroArchProtocolException exception)
         {
@@ -390,12 +385,23 @@ public partial class MainWindow : Window
         }
     }
 
+    private void SetLiveTransient(string detail)
+    {
+        SetLiveUnavailable(
+            "The duel changed during this refresh.",
+            $"{detail} Retaining the last validated deck and collection while retrying in one second.",
+            "UPDATING", "#805C1D", updateSucceeded: true, preserveCollection: true);
+        LiveUpdateHealthText.Text = "AWAITING STABLE READ";
+        LiveUpdateHealthText.Foreground = (Brush)FindResource("GoldBrush");
+    }
+
     private void SetLiveUnavailable(
         string headline,
         string detail,
         string badge,
         string badgeColor,
-        bool updateSucceeded = false)
+        bool updateSucceeded = false,
+        bool preserveCollection = false)
     {
         SetLiveHealth(updateSucceeded);
         SetLiveStateBadge(badge, badgeColor, detail);
@@ -409,8 +415,11 @@ public partial class MainWindow : Window
         LivePlayerFieldGrid.ItemsSource = null;
         LivePlayerSpellTrapGrid.ItemsSource = null;
         LiveOpponentFieldGrid.ItemsSource = null;
-        LiveDeckGrid.ItemsSource = null;
-        LiveCollectionGrid.ItemsSource = null;
+        if (!preserveCollection)
+        {
+            LiveDeckGrid.ItemsSource = null;
+            LiveCollectionGrid.ItemsSource = null;
+        }
         LiveAdviceGrid.ItemsSource = null;
         CompactAdviceGrid.ItemsSource = null;
     }

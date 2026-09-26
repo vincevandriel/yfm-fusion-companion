@@ -1,0 +1,396 @@
+{
+  "SchemaVersion": 1,
+  "CapturedUtc": "2026-09-26T03:37:36.1616955+00:00",
+  "Passed": false,
+  "Privacy": "Only timing/status/change counts and assertion failures; no screenshots, cards, personal paths, saves or raw memory.",
+  "Scope": "Actual read-only RetroArch snapshots through production WPF ShowLiveSnapshot; selected constructed-deck row and nonzero internal scroll retained. Optimizer coexistence measured separately.",
+  "SuccessfulReads": 53,
+  "PlayingReads": 53,
+  "DuelStateChanges": 8,
+  "SelectionAndScrollChecks": 45,
+  "ChangedSnapshotSelectionAndScrollChecks": 8,
+  "MaximumScrollOffset": 27,
+  "MaximumPresentationMillisecondsIncludingPump": 95.3298,
+  "Failures": [
+    "RetroArchTransientStateException",
+    "RetroArchTransientStateException",
+    "RetroArchTransientStateException",
+    "RetroArchTransientStateException",
+    "RetroArchTransientStateException",
+    "RetroArchTransientStateException",
+    "RetroArchTransientStateException"
+  ],
+  "Polls": [
+    {
+      "StartedMilliseconds": 45.6191,
+      "DurationMilliseconds": 790.8874,
+      "DuelActive": true,
+      "Playback": "Playing",
+      "Changed": false
+    },
+    {
+      "StartedMilliseconds": 1057.7294,
+      "DurationMilliseconds": 503.5013000000001,
+      "DuelActive": true,
+      "Playback": "Playing",
+      "Changed": false
+    },
+    {
+      "StartedMilliseconds": 2065.2546,
+      "DurationMilliseconds": 522.8935999999999,
+      "DuelActive": true,
+      "Playback": "Playing",
+      "Changed": false
+    },
+    {
+      "StartedMilliseconds": 3075.4828,
+      "DurationMilliseconds": 503.3263999999999,
+      "DuelActive": true,
+      "Playback": "Playing",
+      "Changed": false
+    },
+    {
+      "StartedMilliseconds": 4080.1717,
+      "DurationMilliseconds": 530.5124999999998,
+      "DuelActive": true,
+      "Playback": "Playing",
+      "Changed": true
+    },
+    {
+      "StartedMilliseconds": 5085.372,
+      "DurationMilliseconds": 537.0726999999997,
+      "DuelActive": true,
+      "Playback": "Playing",
+      "Changed": false
+    },
+    {
+      "StartedMilliseconds": 6093.8148,
+      "DurationMilliseconds": 536.0789999999997,
+      "DuelActive": true,
+      "Playback": "Playing",
+      "Changed": false
+    },
+    {
+      "StartedMilliseconds": 8109.6943,
+      "DurationMilliseconds": 697.5366999999997,
+      "DuelActive": true,
+      "Playback": "Playing",
+      "Changed": false
+    },
+    {
+      "StartedMilliseconds": 9122.3513,
+      "DurationMilliseconds": 503.85039999999935,
+      "DuelActive": true,
+      "Playback": "Playing",
+      "Changed": true
+    },
+    {
+      "StartedMilliseconds": 10135.111,
+      "DurationMilliseconds": 508.66199999999844,
+      "DuelActive": true,
+      "Playback": "Playing",
+      "Changed": false
+    },
+    {
+      "StartedMilliseconds": 11142.4103,
+      "DurationMilliseconds": 525.4323999999997,
+      "DuelActive": true,
+      "Playback": "Playing",
+      "Changed": true
+    },
+    {
+      "StartedMilliseconds": 12164.8431,
+      "DurationMilliseconds": 539.8351999999995,
+      "DuelActive": true,
+      "Playback": "Playing",
+      "Changed": false
+    },
+    {
+      "StartedMilliseconds": 14187.4233,
+      "DurationMilliseconds": 721.9743999999992,
+      "DuelActive": true,
+      "Playback": "Playing",
+      "Changed": false
+    },
+    {
+      "StartedMilliseconds": 16210.6879,
+      "DurationMilliseconds": 723.2648999999983,
+      "DuelActive": true,
+      "Playback": "Playing",
+      "Changed": false
+    },
+    {
+      "StartedMilliseconds": 17223.3419,
+      "DurationMilliseconds": 527.9308000000019,
+      "DuelActive": true,
+      "Playback": "Playing",
+      "Changed": false
+    },
+    {
+      "StartedMilliseconds": 18237.6341,
+      "DurationMilliseconds": 520.8398000000016,
+      "DuelActive": true,
+      "Playback": "Playing",
+      "Changed": false
+    },
+    {
+      "StartedMilliseconds": 19257.4063,
+      "DurationMilliseconds": 512.1799000000028,
+      "DuelActive": true,
+      "Playback": "Playing",
+      "Changed": true
+    },
+    {
+      "StartedMilliseconds": 20268.2383,
+      "DurationMilliseconds": 526.9686000000002,
+      "DuelActive": true,
+      "Playback": "Playing",
+      "Changed": true
+    },
+    {
+      "StartedMilliseconds": 21281.7662,
+      "DurationMilliseconds": 522.515000000003,
+      "DuelActive": true,
+      "Playback": "Playing",
+      "Changed": false
+    },
+    {
+      "StartedMilliseconds": 22299.6744,
+      "DurationMilliseconds": 527.0790000000015,
+      "DuelActive": true,
+      "Playback": "Playing",
+      "Changed": true
+    },
+    {
+      "StartedMilliseconds": 23315.2468,
+      "DurationMilliseconds": 528.752199999999,
+      "DuelActive": true,
+      "Playback": "Playing",
+      "Changed": false
+    },
+    {
+      "StartedMilliseconds": 25354.5979,
+      "DurationMilliseconds": 725.4448999999986,
+      "DuelActive": true,
+      "Playback": "Playing",
+      "Changed": false
+    },
+    {
+      "StartedMilliseconds": 26373.0218,
+      "DurationMilliseconds": 507.34159999999974,
+      "DuelActive": true,
+      "Playback": "Playing",
+      "Changed": false
+    },
+    {
+      "StartedMilliseconds": 27374.8145,
+      "DurationMilliseconds": 524.8287999999993,
+      "DuelActive": true,
+      "Playback": "Playing",
+      "Changed": false
+    },
+    {
+      "StartedMilliseconds": 28391.7925,
+      "DurationMilliseconds": 505.59110000000146,
+      "DuelActive": true,
+      "Playback": "Playing",
+      "Changed": false
+    },
+    {
+      "StartedMilliseconds": 29404.6749,
+      "DurationMilliseconds": 533.9824999999983,
+      "DuelActive": true,
+      "Playback": "Playing",
+      "Changed": false
+    },
+    {
+      "StartedMilliseconds": 30416.1974,
+      "DurationMilliseconds": 510.03919999999925,
+      "DuelActive": true,
+      "Playback": "Playing",
+      "Changed": false
+    },
+    {
+      "StartedMilliseconds": 31438.1484,
+      "DurationMilliseconds": 528.0828000000001,
+      "DuelActive": true,
+      "Playback": "Playing",
+      "Changed": false
+    },
+    {
+      "StartedMilliseconds": 32455.4918,
+      "DurationMilliseconds": 504.77020000000266,
+      "DuelActive": true,
+      "Playback": "Playing",
+      "Changed": false
+    },
+    {
+      "StartedMilliseconds": 33470.7216,
+      "DurationMilliseconds": 510.5469000000012,
+      "DuelActive": true,
+      "Playback": "Playing",
+      "Changed": false
+    },
+    {
+      "StartedMilliseconds": 34485.0398,
+      "DurationMilliseconds": 535.3702000000048,
+      "DuelActive": true,
+      "Playback": "Playing",
+      "Changed": false
+    },
+    {
+      "StartedMilliseconds": 35485.6731,
+      "DurationMilliseconds": 524.7269000000015,
+      "DuelActive": true,
+      "Playback": "Playing",
+      "Changed": false
+    },
+    {
+      "StartedMilliseconds": 36501.7293,
+      "DurationMilliseconds": 534.0498999999982,
+      "DuelActive": true,
+      "Playback": "Playing",
+      "Changed": false
+    },
+    {
+      "StartedMilliseconds": 37502.9036,
+      "DurationMilliseconds": 523.6919000000053,
+      "DuelActive": true,
+      "Playback": "Playing",
+      "Changed": false
+    },
+    {
+      "StartedMilliseconds": 38516.1689,
+      "DurationMilliseconds": 534.3735000000015,
+      "DuelActive": true,
+      "Playback": "Playing",
+      "Changed": false
+    },
+    {
+      "StartedMilliseconds": 39520.1629,
+      "DurationMilliseconds": 521.7307999999975,
+      "DuelActive": true,
+      "Playback": "Playing",
+      "Changed": true
+    },
+    {
+      "StartedMilliseconds": 40537.5906,
+      "DurationMilliseconds": 521.7603999999992,
+      "DuelActive": true,
+      "Playback": "Playing",
+      "Changed": false
+    },
+    {
+      "StartedMilliseconds": 41549.3012,
+      "DurationMilliseconds": 534.1065999999992,
+      "DuelActive": true,
+      "Playback": "Playing",
+      "Changed": false
+    },
+    {
+      "StartedMilliseconds": 42547.1234,
+      "DurationMilliseconds": 529.5909000000029,
+      "DuelActive": true,
+      "Playback": "Playing",
+      "Changed": false
+    },
+    {
+      "StartedMilliseconds": 43563.3612,
+      "DurationMilliseconds": 531.7834000000003,
+      "DuelActive": true,
+      "Playback": "Playing",
+      "Changed": false
+    },
+    {
+      "StartedMilliseconds": 44577.4895,
+      "DurationMilliseconds": 525.8950999999943,
+      "DuelActive": true,
+      "Playback": "Playing",
+      "Changed": false
+    },
+    {
+      "StartedMilliseconds": 46586.3138,
+      "DurationMilliseconds": 726.3424999999988,
+      "DuelActive": true,
+      "Playback": "Playing",
+      "Changed": false
+    },
+    {
+      "StartedMilliseconds": 47599.6844,
+      "DurationMilliseconds": 536.3597999999984,
+      "DuelActive": true,
+      "Playback": "Playing",
+      "Changed": false
+    },
+    {
+      "StartedMilliseconds": 48609.4369,
+      "DurationMilliseconds": 524.559699999998,
+      "DuelActive": true,
+      "Playback": "Playing",
+      "Changed": false
+    },
+    {
+      "StartedMilliseconds": 49624.26,
+      "DurationMilliseconds": 507.3293999999951,
+      "DuelActive": true,
+      "Playback": "Playing",
+      "Changed": false
+    },
+    {
+      "StartedMilliseconds": 50638.4799,
+      "DurationMilliseconds": 508.02300000000105,
+      "DuelActive": true,
+      "Playback": "Playing",
+      "Changed": false
+    },
+    {
+      "StartedMilliseconds": 51636.3968,
+      "DurationMilliseconds": 507.48539999999775,
+      "DuelActive": true,
+      "Playback": "Playing",
+      "Changed": false
+    },
+    {
+      "StartedMilliseconds": 52631.7299,
+      "DurationMilliseconds": 538.5771999999997,
+      "DuelActive": true,
+      "Playback": "Playing",
+      "Changed": false
+    },
+    {
+      "StartedMilliseconds": 53640.8209,
+      "DurationMilliseconds": 502.747000000003,
+      "DuelActive": true,
+      "Playback": "Playing",
+      "Changed": false
+    },
+    {
+      "StartedMilliseconds": 55649.6543,
+      "DurationMilliseconds": 723.4812999999995,
+      "DuelActive": true,
+      "Playback": "Playing",
+      "Changed": false
+    },
+    {
+      "StartedMilliseconds": 56653.5168,
+      "DurationMilliseconds": 504.9432000000015,
+      "DuelActive": true,
+      "Playback": "Playing",
+      "Changed": true
+    },
+    {
+      "StartedMilliseconds": 58647.7462,
+      "DurationMilliseconds": 728.4563999999955,
+      "DuelActive": true,
+      "Playback": "Playing",
+      "Changed": false
+    },
+    {
+      "StartedMilliseconds": 59658.3472,
+      "DurationMilliseconds": 504.31290000000445,
+      "DuelActive": true,
+      "Playback": "Playing",
+      "Changed": false
+    }
+  ]
+}

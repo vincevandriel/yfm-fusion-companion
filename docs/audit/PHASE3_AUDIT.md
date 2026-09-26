@@ -1,5 +1,13 @@
 # Phase 3 independent audit
 
+## Final gameplay sign-off — 2026-09-26
+
+**Phase 3 PASSED; Phase 4 remains unopened.** See `PHASE3_GATE.md` for the final evidence and limitations. All following repair sections are historical checkpoints.
+
+Unpaused normal gameplay produced real hand/field/life transitions. The first live benchmark reported four `RetroArchTransientStateException` results: deliberate rejection when two reads disagree, not UDP transport failures. Source review showed the transient UI path also cleared the last validated constructed deck and collection, resetting browsing. The repaired path retains those rows with explicit last-validated/awaiting-stable-read messaging while withholding live advice and dynamic cards. Disconnect/wrong-game/unavailable paths still clear all rows.
+
+The repaired real-snapshot WPF audit passed 51 unpaused reads, 15 board changes, 52 selection/scroll checks and seven transient-read preservation checks, with zero failures. The first audit's seven transient exceptions remain in its failed artifact for traceability. The final status-label/color addition was covered by the targeted synthetic production-WPF transition/recovery/disconnect regression. Full regression suite: 200 passed. Final build: zero warnings/errors.
+
 ## Fourth repair checkpoint — 2026-09-26
 
 **Automated desktop/engine checks pass; Phase 3 remains open for live changing-board sign-off. Phase 4 has not started.**

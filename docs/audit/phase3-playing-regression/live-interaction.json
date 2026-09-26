@@ -1,0 +1,5 @@
+{
+  "Passed": true,
+  "Synthetic": true,
+  "Checks": "Changing snapshots, transient read/advice withholding, recovery, deck selection/scroll retention, disconnect clearing, fixed optimizer progress and read-only gallery"
+}

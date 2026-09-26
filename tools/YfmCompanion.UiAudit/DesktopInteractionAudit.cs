@@ -59,6 +59,19 @@ internal static class DesktopInteractionAudit
                 Math.Abs(internalScroll.VerticalOffset - offset) > .1)
                 throw new InvalidOperationException("Changing synthetic live snapshots reset selection/scroll.");
         }
+        Invoke(window, "SetLiveTransient", "Synthetic mid-read transition");
+        Pump(TimeSpan.FromMilliseconds(20));
+        if (!ReferenceEquals(items, grid.ItemsSource) || grid.SelectedIndex != 20 ||
+            Math.Abs(internalScroll.VerticalOffset - offset) > .1 ||
+            ((ListBox)window.FindName("LiveHandGrid")).Items.Count != 0 ||
+            ((DataGrid)window.FindName("LiveAdviceGrid")).Items.Count != 0 ||
+            ((TextBlock)window.FindName("LiveUpdateHealthText")).Text != "AWAITING STABLE READ")
+            throw new InvalidOperationException("A transient read must preserve collection browsing and withhold live advice.");
+        Invoke(window, "ShowLiveSnapshot", snapshot);
+        Pump(TimeSpan.FromMilliseconds(20));
+        if (!ReferenceEquals(items, grid.ItemsSource) || grid.SelectedIndex != 20 ||
+            Math.Abs(internalScroll.VerticalOffset - offset) > .1)
+            throw new InvalidOperationException("Recovery after a transient read reset collection browsing.");
         Invoke(window, "SetLiveUnavailable", "Offline fixture", "Synthetic disconnect", "ERROR", "#7B3B45");
         if (grid.Items.Count != 0) throw new InvalidOperationException("Disconnect left stale live rows.");
     }
