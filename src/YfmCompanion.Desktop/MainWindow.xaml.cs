@@ -19,6 +19,8 @@ namespace YfmCompanion.Desktop;
 
 public partial class MainWindow : Window
 {
+    private const double CompactWindowWidth = 272;
+    private const double CompactWindowHeight = 1002;
     private readonly List<CardPicker> _turnPickers = [];
     private readonly List<CardPicker> _handPickers = [];
     private readonly List<CardPicker> _monsterPickers = [];
@@ -245,8 +247,8 @@ public partial class MainWindow : Window
         CompactTopmostCheckBox.IsChecked = settings.AlwaysOnTop;
         Topmost = settings.AlwaysOnTop;
 
-        var minimumSavedWidth = settings.CompactMode ? 160 : 620;
-        var minimumSavedHeight = settings.CompactMode ? 160 : 420;
+        var minimumSavedWidth = settings.CompactMode ? CompactWindowWidth : 620;
+        var minimumSavedHeight = settings.CompactMode ? CompactWindowHeight : 420;
         if (settings.Width >= minimumSavedWidth && settings.Width <= 10000 &&
             settings.Height >= minimumSavedHeight && settings.Height <= 10000 &&
             settings.Left is double left && settings.Top is double top)
@@ -2204,8 +2206,10 @@ public partial class MainWindow : Window
         AppHeader.Visibility = compact ? Visibility.Collapsed : Visibility.Visible;
         DatabaseStatus.Visibility = compact ? Visibility.Collapsed : Visibility.Visible;
         RootLayout.Margin = compact ? new Thickness(5) : new Thickness(20);
-        MinWidth = compact ? 0 : 620;
-        MinHeight = compact ? 0 : 360;
+        MinWidth = compact ? CompactWindowWidth : 620;
+        MaxWidth = compact ? CompactWindowWidth : double.PositiveInfinity;
+        MinHeight = compact ? CompactWindowHeight : 360;
+        MaxHeight = compact ? CompactWindowHeight : double.PositiveInfinity;
         if (compact)
         {
             SetStateBadge(_liveBadge, _liveBadgeColor, "Compact live adviser selected.");
@@ -2222,11 +2226,13 @@ public partial class MainWindow : Window
 
         if (compact)
         {
-            const double compactWidth = 320;
-            Width = Math.Min(compactWidth, SystemParameters.WorkArea.Width);
-            Height = SystemParameters.WorkArea.Height;
-            Left = SystemParameters.WorkArea.Right - Width;
-            Top = SystemParameters.WorkArea.Top;
+            Width = CompactWindowWidth;
+            Height = CompactWindowHeight;
+            if (resizeWindow)
+            {
+                Left = SystemParameters.WorkArea.Right - Width;
+                Top = SystemParameters.WorkArea.Top;
+            }
         }
         else if (!_normalModeBounds.IsEmpty)
         {

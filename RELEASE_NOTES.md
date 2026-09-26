@@ -1,3 +1,11 @@
+# YFM Fusion Companion v2.0.0
+
+## Compact Live window specification
+
+The Windows x64 2.0 build bounds Compact Live to exactly **272 × 1002 pixels**, matching the supplied reference. Its visible grid uses the three compact columns `RESULT`, `ATK`, and `ROUTE` at the reference proportions, with one-line rows and route details available from the cell tooltip. The self-contained executable starts normally and can switch to Compact Live from the header.
+
+The v2.0 executable is published as `YFM Fusion Companion.exe` with file and product version `2.0.0.0`.
+
 # YFM Fusion Companion v1.1.0
 
 This public Windows x64 release completes the campaign-planning work and fixes the startup path that could incorrectly report a database failure.

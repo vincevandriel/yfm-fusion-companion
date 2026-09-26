@@ -64,7 +64,7 @@ internal static class Program
         compactMethod.Invoke(window, [true, false]);
         ValidateCompactWorkspace(window);
         SeedCompactRoutes(window);
-        renders.Add(Render(window, 320, 1040, Path.Combine(outputDirectory, "compact.png")));
+        renders.Add(Render(window, 272, 1002, Path.Combine(outputDirectory, "compact.png")));
         File.WriteAllText(
             Path.Combine(outputDirectory, "ui-render-audit.json"),
             JsonSerializer.Serialize(renders, JsonOptions));
@@ -261,9 +261,9 @@ internal static class Program
 
     private static void ValidateCompactWorkspace(MainWindow window)
     {
-        if (window.MinWidth != 0 || window.MinHeight != 0)
+        if (window.MinWidth != 272 || window.MaxWidth != 272 || window.MinHeight != 1002 || window.MaxHeight != 1002)
         {
-            throw new InvalidOperationException("Compact Live must not impose a minimum window size.");
+            throw new InvalidOperationException("Compact Live must stay bounded to the exact 272x1002 window dimensions.");
         }
 
         if (window.FindName("AppHeader") is not FrameworkElement header || header.Visibility != Visibility.Collapsed)
@@ -295,7 +295,7 @@ internal static class Program
             ?? throw new InvalidOperationException("Compact guardian information must remain inside the route column.");
         if (templateColumn.CellTemplate is null)
         {
-            throw new InvalidOperationException("Compact guardian route template is missing.");
+            throw new InvalidOperationException("Compact route template is missing.");
         }
     }
 

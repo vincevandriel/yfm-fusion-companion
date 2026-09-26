@@ -169,26 +169,24 @@
                 <CheckBox x:Name="CompactTopmostCheckBox" Grid.Column="1" Content="PIN" Checked="AlwaysOnTop_Changed" Unchecked="AlwaysOnTop_Changed" Margin="4,0" VerticalAlignment="Center" />
                 <Button Grid.Column="2" Content="FULL" Click="CompactMode_Click" Background="#263E50" Foreground="{StaticResource TextBrush}" Padding="8,4" Margin="4,0,0,0" />
             </Grid>
-            <DataGrid x:Name="CompactAdviceGrid" Grid.Row="1" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True" FontSize="12" RowHeaderWidth="0" HeadersVisibility="Column">
+            <DataGrid x:Name="CompactAdviceGrid" Grid.Row="1" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True" FontSize="12" RowHeaderWidth="0" HeadersVisibility="Column" RowHeight="42" ColumnHeaderHeight="32" GridLinesVisibility="All">
                 <DataGrid.Columns>
-                    <DataGridTemplateColumn Header="RESULT" Width="*" MinWidth="50">
+                    <DataGridTemplateColumn Header="RESULT" Width="135">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <TextBlock Text="{Binding Result}" TextWrapping="Wrap" ToolTip="{Binding Result}" Padding="3,2" />
+                                <StackPanel Margin="3,1">
+                                    <TextBlock Text="{Binding Result}" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" ToolTip="{Binding Result}" />
+                                    <TextBlock Text="{Binding GuardianStar1}" FontSize="10" Foreground="{StaticResource MutedBrush}" TextTrimming="CharacterEllipsis" ToolTip="{Binding GuardianStar1}" />
+                                    <TextBlock Text="{Binding GuardianStar2}" FontSize="10" Foreground="{StaticResource MutedBrush}" TextTrimming="CharacterEllipsis" ToolTip="{Binding GuardianStar2}" />
+                                </StackPanel>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
-                    <DataGridTextColumn Header="ATK" Binding="{Binding Attack}" Width="44" />
-                    <DataGridTemplateColumn Header="ROUTE" Width="92">
+                    <DataGridTextColumn Header="ATK" Binding="{Binding Attack}" Width="49" />
+                    <DataGridTemplateColumn Header="ROUTE" Width="77">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <StackPanel Margin="3,2">
-                                    <TextBlock Text="{Binding Route}" TextWrapping="Wrap" ToolTip="{Binding Route}" />
-                                    <TextBlock Text="{Binding GuardianStar1}" Foreground="{StaticResource MutedBrush}" FontSize="10" />
-                                    <TextBlock Text="{Binding GuardianOutcomes1}" Foreground="{StaticResource MutedBrush}" FontSize="10" />
-                                    <TextBlock Text="{Binding GuardianStar2}" Foreground="{StaticResource MutedBrush}" FontSize="10" />
-                                    <TextBlock Text="{Binding GuardianOutcomes2}" Foreground="{StaticResource MutedBrush}" FontSize="10" />
-                                </StackPanel>
+                                <TextBlock Text="{Binding Route}" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" ToolTip="{Binding Route}" Padding="3,2" />
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
