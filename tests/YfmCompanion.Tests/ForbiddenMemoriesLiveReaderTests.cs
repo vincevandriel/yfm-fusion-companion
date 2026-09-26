@@ -52,6 +52,20 @@ public sealed class ForbiddenMemoriesLiveReaderTests
     }
 
     [Fact]
+    public async Task RecognizesDuelWhileShuffledDeckIsStillSettlingAtStartup()
+    {
+        var memory = CreateValidMemory();
+        memory.AsSpan(0x177FE8, 80).Clear();
+
+        var snapshot = await new ForbiddenMemoriesLiveReader(new MemoryClient(memory, coreMemoryAvailable: false))
+            .ReadSnapshotAsync();
+
+        Assert.True(snapshot.DuelActive);
+        Assert.Empty(snapshot.ShuffledDeckCardIds);
+        Assert.Equal([101, 102, 103, 104, 105], snapshot.HandCardIds);
+    }
+
+    [Fact]
     public async Task WithholdsSnapshotWhenHandChangesAcrossSeparateMemoryReads()
     {
         var memory = CreateValidMemory();

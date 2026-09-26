@@ -55,8 +55,9 @@ public sealed class ForbiddenMemoriesLiveReader(IRetroArchReadClient client)
             // 0x8004 on the normal interactive board), so it cannot identify the
             // surrounding screen. The mode byte at 0x9B26C is 0xC3 for the duel
             // screen and changes when the campaign/title screen owns this memory.
+            // The shuffled deck can be briefly incomplete while a duel is opening,
+            // so it is diagnostic data rather than a second gate for duel detection.
             var duelActive = duelMode[0] == 0xC3 &&
-                deckCards.Count(IsValidCardId) >= 35 &&
                 playerLifePoints > 0 &&
                 opponentLifePoints > 0;
             IReadOnlyList<int> handCards = [0, 0, 0, 0, 0];
@@ -95,7 +96,7 @@ public sealed class ForbiddenMemoriesLiveReader(IRetroArchReadClient client)
                 opponentFieldCards,
                 opponentSpellTrapCards,
                 terrainId,
-                duelActive ? deckCards : [],
+                duelActive ? deckCards.Where(IsValidCardId).ToArray() : [],
                 saveDataAvailable ? constructedDeckCards : [],
                 saveDataAvailable ? chest.Select(value => (int)value).ToArray() : [],
                 saveDataAvailable,
