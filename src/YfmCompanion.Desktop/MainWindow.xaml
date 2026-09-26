@@ -169,15 +169,15 @@
                 <CheckBox x:Name="CompactTopmostCheckBox" Grid.Column="1" Content="PIN" Checked="AlwaysOnTop_Changed" Unchecked="AlwaysOnTop_Changed" Margin="4,0" VerticalAlignment="Center" />
                 <Button Grid.Column="2" Content="FULL" Click="CompactMode_Click" Background="#263E50" Foreground="{StaticResource TextBrush}" Padding="8,4" Margin="4,0,0,0" />
             </Grid>
-            <DataGrid x:Name="CompactAdviceGrid" Grid.Row="1" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True" FontSize="12" RowHeaderWidth="0" HeadersVisibility="Column" RowHeight="48" ColumnHeaderHeight="32" GridLinesVisibility="All">
+            <DataGrid x:Name="CompactAdviceGrid" Grid.Row="1" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True" FontSize="12" RowHeaderWidth="0" HeadersVisibility="Column" RowHeight="72" ColumnHeaderHeight="32" GridLinesVisibility="All">
                 <DataGrid.Columns>
                     <DataGridTemplateColumn Header="RESULT" Width="135">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <StackPanel Margin="3,1">
                                     <TextBlock Text="{Binding Result}" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" ToolTip="{Binding Result}" />
-                                    <TextBlock Text="{Binding GuardianStar1}" FontSize="12" Foreground="{StaticResource MutedBrush}" TextTrimming="CharacterEllipsis" ToolTip="{Binding GuardianStar1}" />
-                                    <TextBlock Text="{Binding GuardianStar2}" FontSize="12" Foreground="{StaticResource MutedBrush}" TextTrimming="CharacterEllipsis" ToolTip="{Binding GuardianStar2}" />
+                                    <TextBlock Text="{Binding GuardianStar1}" FontSize="20" Foreground="{StaticResource MutedBrush}" TextTrimming="CharacterEllipsis" ToolTip="{Binding GuardianStar1}" />
+                                    <TextBlock Text="{Binding GuardianStar2}" FontSize="20" Foreground="{StaticResource MutedBrush}" TextTrimming="CharacterEllipsis" ToolTip="{Binding GuardianStar2}" />
                                 </StackPanel>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
