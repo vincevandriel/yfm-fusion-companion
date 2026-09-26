@@ -30,7 +30,7 @@ public sealed class DeckQuantitySpace
             owned[entry.CardId] = checked(owned.GetValueOrDefault(entry.CardId) + entry.Quantity);
         }
         var excluded = (options.AlreadyRedeemedCardNames ?? new HashSet<string>()).ToHashSet(StringComparer.OrdinalIgnoreCase);
-        _cards = catalog.Cards.OrderBy(c => c.Id).Select(card =>
+        _cards = [.. catalog.Cards.OrderBy(c => c.Id).Select(card =>
         {
             var copies = owned.GetValueOrDefault(card.Id);
             var canBuy = useStarChips && !excluded.Contains(card.Name) && card.StarchipCost is > 0 and <= 999999 &&
@@ -38,7 +38,7 @@ public sealed class DeckQuantitySpace
             var limit = OwnedDeckOptimizer.LegalCopyLimitForCard(card.Id, options.CopyLimit);
             return new DeckQuantityCapacity(card.Id, copies, (int)Math.Min(limit, (long)copies + (canBuy ? 1 : 0)),
                 canBuy ? card.StarchipCost : null);
-        }).Where(c => c.Capacity > 0).ToArray();
+        }).Where(c => c.Capacity > 0)];
         foreach (var card in _cards) _byId[card.CardId] = card;
         _suffix = new BigInteger[_cards.Length + 1, 41];
         _suffix[_cards.Length, 0] = BigInteger.One;
@@ -79,7 +79,7 @@ public sealed class DeckQuantitySpace
             }
         }
         if (remaining != 0 || ordinal != 0) throw new InvalidDataException("Quantity-space rank did not resolve to a complete deck.");
-        return new(deck.ToArray(), cost, originalOrdinal + 1);
+        return new([.. deck], cost, originalOrdinal + 1);
     }
 
     public bool IsLegal(IReadOnlyList<int> deck, out long spend)

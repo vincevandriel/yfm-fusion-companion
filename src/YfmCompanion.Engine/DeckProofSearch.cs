@@ -165,7 +165,7 @@ public sealed class DeckProofSearch(FusionCatalog catalog)
         }
     }
 
-    private static int[] Expand(DeckOptimizationReport report) => report.Deck.SelectMany(e => Enumerable.Repeat(e.Card.Id, e.Copies)).ToArray();
+    private static int[] Expand(DeckOptimizationReport report) => [.. report.Deck.SelectMany(e => Enumerable.Repeat(e.Card.Id, e.Copies))];
     private static string Hash(string value) => Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(value)));
     private static void WriteCheckpoint(string path, ProofCheckpoint checkpoint)
     {

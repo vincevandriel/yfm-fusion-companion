@@ -384,6 +384,7 @@ public partial class MainWindow : Window
             _liveReadInProgress = false;
         }
     }
+    private static readonly string[] first = new[] { "All types" };
 
     private void SetLiveTransient(string detail)
     {
@@ -613,7 +614,7 @@ public partial class MainWindow : Window
             new SearchModeChoice(DeckSearchMode.Thorough, "Thorough • 15 minutes")
         };
         OptimizerSpeedCombo.SelectedIndex = 1;
-        OwnedTypeFilterCombo.ItemsSource = new[] { "All types" }.Concat(catalog.Cards.Select(card => card.PrimaryType).Distinct().Order()).ToArray();
+        OwnedTypeFilterCombo.ItemsSource = first.Concat(catalog.Cards.Select(card => card.PrimaryType).Distinct().Order()).ToArray();
         OwnedTypeFilterCombo.SelectedIndex = 0;
         OwnedSortCombo.ItemsSource = new[] { "Name", "Quantity", "ATK", "In proposed deck" };
         OwnedSortCombo.SelectedIndex = 0;
@@ -1226,7 +1227,7 @@ public partial class MainWindow : Window
         foreach (var watcher in _saveWatchers) watcher.Dispose();
         _saveWatchers.Clear();
         var directories = _knownSaveLocations
-            .Concat(new[] { Path.GetDirectoryName(selectedFile)! })
+            .Concat([Path.GetDirectoryName(selectedFile)!])
             .Select(path => File.Exists(path) ? Path.GetDirectoryName(path)! : path)
             .Where(Directory.Exists)
             .Distinct(StringComparer.OrdinalIgnoreCase);
@@ -2031,7 +2032,7 @@ public partial class MainWindow : Window
     private OptimizedDeckDisplayRow[] BuildDeckDisplay(DeckOptimizationReport report)
     {
         var ownedById = _resultOwned;
-        return report.Deck.Select(entry =>
+        return [.. report.Deck.Select(entry =>
         {
             var owned = ownedById.GetValueOrDefault(entry.Card.Id);
             var purchase = Math.Max(0, entry.Copies - owned);
@@ -2039,7 +2040,7 @@ public partial class MainWindow : Window
                 ? $" Purchase {purchase} for {(long)purchase * (entry.Card.StarchipCost ?? 0):N0} Star Chips."
                 : string.Empty;
             return new OptimizedDeckDisplayRow(entry.Card, entry.Copies, owned, purchase, entry.ContributionReason + purchaseNote);
-        }).ToArray();
+        })];
     }
 
     private void ResetOptimizerResults()
@@ -2502,7 +2503,7 @@ public partial class MainWindow : Window
     }
 
     private static string DescribeCard(Card card) => card.Level is null ? card.PrimaryType
-        : $"{card.PrimaryType} • ATK {card.Attack} / DEF {card.Defense} • {FormatGuardianStars(new[] { card.GuardianStar1, card.GuardianStar2 }.OfType<string>().ToArray())}";
+        : $"{card.PrimaryType} • ATK {card.Attack} / DEF {card.Defense} • {FormatGuardianStars([.. new[] { card.GuardianStar1, card.GuardianStar2 }.OfType<string>()])}";
 
     private sealed record LiveCardRow(
         int Slot,

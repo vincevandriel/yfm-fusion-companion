@@ -3,28 +3,21 @@ using YfmCompanion.Data;
 
 namespace YfmCompanion.Engine;
 
-public sealed class OwnedDeckOptimizer
+public sealed class OwnedDeckOptimizer(FusionCatalog catalog)
 {
     private const int FirstExodiaPieceId = 17;
     private const int LastExodiaPieceId = 21;
-    private static readonly ConditionalWeakTable<FusionCatalog, PreparedHeuristics> SharedHeuristics = new();
-    private static readonly object HeuristicsLock = new();
-    private readonly FusionCatalog _catalog;
+    private static readonly ConditionalWeakTable<FusionCatalog, PreparedHeuristics> SharedHeuristics = [];
+    private static readonly Lock HeuristicsLock = new();
+    private readonly FusionCatalog _catalog = catalog;
     // One combined 256 MiB retained-search-cache budget, including prepared scores.
-    private readonly DeckAnalyzer _analyzer;
+    private readonly DeckAnalyzer _analyzer = new(catalog, 224L * 1024 * 1024);
     private readonly BoundedAnalysisCache _assessmentCache = new(32L * 1024 * 1024);
     private PreparedHeuristics? _heuristics;
-    private readonly ForbiddenMemoriesStrategyEvaluator _strategyEvaluator;
+    private readonly ForbiddenMemoriesStrategyEvaluator _strategyEvaluator = new(catalog);
     private DeckOptimizationOptions? _assessmentOptions;
     private readonly Dictionary<OpponentSafetyContext, string> _contextKeys = new(ReferenceEqualityComparer.Instance);
     private CancellationToken _assessmentToken;
-
-    public OwnedDeckOptimizer(FusionCatalog catalog)
-    {
-        _catalog = catalog;
-        _analyzer = new(catalog, 224L * 1024 * 1024);
-        _strategyEvaluator = new(catalog);
-    }
 
     private PreparedHeuristics PrepareHeuristics()
     {
@@ -718,9 +711,9 @@ public sealed class OwnedDeckOptimizer
             {
                 _assessmentToken.ThrowIfCancellationRequested();
                 var standalone = deckCards.Max(card => card.Values[target.Index]);
-                foreach (var card in deckCards.Where(card => card.Values[target.Index] > 0))
+                foreach (var (Id, Values) in deckCards.Where(card => card.Values[target.Index] > 0))
                 {
-                    answerCardIds.Add(card.Id);
+                    answerCardIds.Add(Id);
                 }
 
                 var fusionValue = fusionCounters

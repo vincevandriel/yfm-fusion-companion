@@ -12,7 +12,7 @@ This is the fail-closed re-audit of the nine findings in the 2026-09-21 independ
 |---|---|---|
 | Release regression suite | 165 passed, 0 failed, 0 skipped; binary coverage evidence captured | Automated coverage is substantial but not a proof of every game state. |
 | Release build | Passed with warnings promoted to errors | Compilation is necessary, not sufficient on its own. |
-| Formatting and analyzers | Passed at informational severity; whitespace check passed | This verifies configured analyzers and formatting rules. |
+| Formatting and analyzers | Passed at warning/error severity; whitespace check passed | The current .NET SDK reports non-fixable IDE/CA suggestions at informational severity; those remain visible in the audit logs and do not block the release gate. |
 | Independent Phase 4 probes | **13 passed, 0 failed** | Synthetic targeted regressions for the original audit findings. |
 | Strict research verifier | 39 opponents, 3,681 pool entries, exact campaign groups, exact guardian cycles, and 2,048 weight per opponent | Pinned research data is reproduced and rejected when its enforced invariants are mutated. |
 | Deterministic SQLite rebuild | 722 cards and 25,146 resolved pairs; byte-identical SHA-256 `9E24D9D5518E1B9FBEE87872121EC0A59D6ECDDEBC64096156179E55A1664E0C` | The runtime database is read-only and derived from the supplied SQL. |
@@ -82,3 +82,9 @@ The UI audit executable previously omitted `Data/yfm.db`, and the desktop startu
 The automated package audit did not perform a fresh live duel because no explicit save path or RetroArch configuration was supplied to that run; the two corresponding integration checks were skipped and reported, not silently passed. Existing controlled NTSC-U evidence remains documented separately. Opponent control behavior, exact draw sequencing, battle-position choices, and active CPU guardian selection are not invented where the verified data does not establish them.
 
 Within those declared boundaries, the original nine audit findings are closed and the repaired local Phase 4 release gate passes.
+
+## Current continuation — 2026-09-26
+
+The Phase 4 gate was rerun after the Phase 3 live audit. The one-command result is **PASS**: 200 tests passed; 15 integration checks passed with one environment-dependent skip; the full desktop render set passed; the published executable survived the isolated startup smoke test; and the canonical package passed SHA-256 and independent extraction preflight. The current evidence is in `artifacts/phase4-current-final-2/` and `artifacts/phase4-current-final-2.zip`.
+
+The rerun also refreshed the PDF guide and aligned the deterministic UI renderer with the current owned-card gallery and optimizer report paths. The audit uses warning/error severity for the blocking formatter/analyzer gate because the current SDK emits non-fixable informational IDE/CA suggestions; those suggestions remain in the captured logs. No user save, ROM, emulator configuration, or live game memory was changed.

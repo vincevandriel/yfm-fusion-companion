@@ -7,9 +7,9 @@ using YfmCompanion.Engine;
 
 namespace YfmCompanion.Desktop;
 
-internal sealed class OwnedCardRow : INotifyPropertyChanged
+internal sealed class OwnedCardRow(Card card, Action<OwnedCardRow> changed) : INotifyPropertyChanged
 {
-    private readonly Action<OwnedCardRow> _changed;
+    private readonly Action<OwnedCardRow> _changed = changed;
     private int _quantity;
     private int _proposedCopies;
     private string? _artworkPath;
@@ -18,14 +18,8 @@ internal sealed class OwnedCardRow : INotifyPropertyChanged
     private int _deckCopies;
     private bool _isManual;
 
-    public OwnedCardRow(Card card, Action<OwnedCardRow> changed)
-    {
-        Card = card;
-        _changed = changed;
-    }
-
     public event PropertyChangedEventHandler? PropertyChanged;
-    public Card Card { get; }
+    public Card Card { get; } = card;
     public int ChestCopies { get => _chestCopies; set { _chestCopies = value; Raise(nameof(QuantityLine)); } }
     public int DeckCopies { get => _deckCopies; set { _deckCopies = value; Raise(nameof(QuantityLine)); } }
     public string DetailLine => $"{Card.PrimaryType} • ATK {Card.Attack:N0} / DEF {Card.Defense:N0} • {FormatStars(Card)}";

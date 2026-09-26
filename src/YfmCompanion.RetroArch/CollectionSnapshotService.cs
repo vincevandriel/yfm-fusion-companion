@@ -27,9 +27,9 @@ public sealed class CollectionSnapshotService
             return new(mode, previous, [], "Manual collection is active; automatic saves will not overwrite it.", previous is not null);
         try
         {
-            var stable = await StableDiscoverAsync(mode, pinnedFile, knownLocations, cancellationToken).ConfigureAwait(false);
-            var discovery = stable.Discovery;
-            var selected = stable.Selected;
+            var (Discovery, Selected, Identity) = await StableDiscoverAsync(mode, pinnedFile, knownLocations, cancellationToken).ConfigureAwait(false);
+            var discovery = Discovery;
+            var selected = Selected;
             if (selected is null)
             {
                 var detail = discovery.Inspections.Count == 0
@@ -37,7 +37,7 @@ public sealed class CollectionSnapshotService
                     : string.Join(" • ", discovery.Inspections.Select(i => $"{Path.GetFileName(i.FilePath)}: {i.Error}"));
                 return Retain(mode, previous, discovery.Inspections, detail);
             }
-            var identity = stable.Identity!;
+            var identity = Identity!;
             var rejectedNewer = discovery.Inspections
                 .Where(item => !item.IsValid && File.Exists(item.FilePath) && File.GetLastWriteTimeUtc(item.FilePath) >= selected.LastWriteTimeUtc)
                 .Select(item => $"{Path.GetFileName(item.FilePath)} was newer but rejected: {item.Error}")

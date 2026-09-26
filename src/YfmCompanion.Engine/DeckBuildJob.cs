@@ -28,13 +28,13 @@ public sealed record DeckBuildResult(DeckBuildState State, DeckBuildCandidate? B
 /// <summary>Single-worker frozen job; Pause/Resume retains timed-search state in this instance.</summary>
 public sealed class DeckBuildJob
 {
-    private static readonly ConditionalWeakTable<FusionCatalog, CatalogIdentityBox> CatalogIdentities = new();
-    private static readonly object CatalogIdentityLock = new();
+    private static readonly ConditionalWeakTable<FusionCatalog, CatalogIdentityBox> CatalogIdentities = [];
+    private static readonly Lock CatalogIdentityLock = new();
     private readonly FusionCatalog _catalog;
     private readonly DeckBuildRequest _request;
     private readonly DeckObjectiveComparer _comparer;
     private readonly List<DeckBuildCandidate> _shortlist = [];
-    private readonly object _control = new();
+    private readonly Lock _control = new();
     private readonly string? _proofCheckpoint;
     private string _identity;
     private bool _catalogIdentityKnown;
@@ -206,7 +206,7 @@ public sealed class DeckBuildJob
             Report("Catalog identity validated", force: true);
             token.ThrowIfCancellationRequested();
             _space ??= new(_catalog, _request.OwnedCards, _request.Options, _request.UseStarChips, _request.StarChips, token);
-            _available = _space.Capacities.Select(c => new OwnedCardQuantity(c.CardId, c.Capacity)).ToArray();
+            _available = [.. _space.Capacities.Select(c => new OwnedCardQuantity(c.CardId, c.Capacity))];
             Report("Inventory and scoring prepared", force: true);
             if (_estimated is null)
             {
@@ -274,7 +274,7 @@ public sealed class DeckBuildJob
             {
                 _state = DeckBuildState.Verifying;
                 var finalists = _request.Mode == DeckSearchMode.Quick || _shortlist.Count == 0
-                    ? new[] { _estimated! } : _shortlist.ToArray();
+                    ? new[] { _estimated! } : [.. _shortlist];
                 foreach (var finalist in finalists)
                 {
                     stageClock.Restart();
@@ -405,7 +405,7 @@ public sealed class DeckBuildJob
         _shortlist.Sort((a, b) => -Compare(a, b));
         if (_shortlist.Count > limit) _shortlist.RemoveRange(limit, _shortlist.Count - limit);
     }
-    private static int[] Expand(DeckBuildCandidate candidate) => candidate.Report.Deck.SelectMany(e => Enumerable.Repeat(e.Card.Id, e.Copies)).Order().ToArray();
+    private static int[] Expand(DeckBuildCandidate candidate) => [.. candidate.Report.Deck.SelectMany(e => Enumerable.Repeat(e.Card.Id, e.Copies)).Order()];
     private int Next(int bound)
     {
         _random ^= _random << 13; _random ^= _random >> 17; _random ^= _random << 5;

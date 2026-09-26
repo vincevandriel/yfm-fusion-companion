@@ -10,7 +10,7 @@ public sealed class ProofRealCatalogRecoveryTests(DatabaseFixture fixture)
     public async Task InterruptedLeafIsReplayedRatherThanCountedAsComplete()
     {
         var cards = fixture.Catalog.Cards.Where(c => c.Attack > 0).OrderBy(c => c.Id).Take(40).Select(c => c.Id).ToArray();
-        var request = new DeckBuildRequest(cards.Select(id => new OwnedCardQuantity(id, 1)).ToArray(), new(), DeckSearchMode.ProveOptimal);
+        var request = new DeckBuildRequest([.. cards.Select(id => new OwnedCardQuantity(id, 1))], new(), DeckSearchMode.ProveOptimal);
         var path = Path.Combine(Path.GetTempPath(), "yfm-proof-partial", Guid.NewGuid().ToString("N"), "checkpoint.json");
         using var cancel = new CancellationTokenSource();
         var delay = new Stopwatch();

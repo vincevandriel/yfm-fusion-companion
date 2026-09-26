@@ -21,7 +21,7 @@ public sealed class OptimizerFoundationTests
         Assert.Equal(first.TotalBestFusionAttack, repeated.TotalBestFusionAttack);
         Assert.Single(first.FusionResults);
         Assert.Equal(82251, first.HandsWithAnyFusion);
-        Assert.Equal(new[] { 1, 2 }, first.FusionResults[0].RepresentativeRoute.Materials.Select(c => c.Id));
+        Assert.Equal([1, 2], first.FusionResults[0].RepresentativeRoute.Materials.Select(c => c.Id));
     }
 
     [Fact]
@@ -122,6 +122,7 @@ public sealed class OptimizerFoundationTests
         Assert.True(comparer.Compare(same with { Cards = [2] }, same with { Cards = [10] }) > 0);
         Assert.True(comparer.Compare(same with { RequiredStarChips = 0 }, same with { RequiredStarChips = 1 }) > 0);
     }
+    private static readonly double[] sourceArray = new[] { .499999, .5, .500001, .504999, .505 };
 
     [Fact]
     public void CampaignAnswerCoverageUsesFixedBinsBeforeGauntletAndExactMetricsAfterIt()
@@ -138,7 +139,7 @@ public sealed class OptimizerFoundationTests
         Assert.True(comparer.Compare(Candidate(.504, 200), lower) > 0); // Equal gauntlet: exact primary wins.
         Assert.True(new DeckObjectiveComparer(true, false).Compare(higher, lower) > 0);
         Assert.True(comparer.Compare(lower with { Safety = lower.Safety! with { SafeOpponentCount = 2 } }, higher) > 0);
-        var candidates = (from coverage in new[] { .499999, .5, .500001, .504999, .505 }
+        var candidates = (from coverage in sourceArray
                           from gauntlet in new[] { 100.0, 101.0, 200.0 }
                           select Candidate(coverage, gauntlet)).ToArray();
         foreach (var a in candidates)
@@ -233,7 +234,7 @@ public sealed class OptimizerFoundationTests
         }
         Assert.Equal(105, independentlyEnumerated.Count);
         // Closed-form oracle for the only recipe, independent of hand enumeration and shared comparator.
-        long Score(int[] deck)
+        static long Score(int[] deck)
         {
             var first = deck.Count(id => id == 1);
             var second = deck.Count(id => id == 2);

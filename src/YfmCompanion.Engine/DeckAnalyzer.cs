@@ -138,7 +138,7 @@ public sealed class DeckAnalyzer
         for (var start = 0; start < hand.Length; start++) Explore(hand[start], 1 << start, 1, (ulong)hand[start], 0, false);
         // Empty hands are cheap to recompute and common in sparse starter inventories.
         // Do not spend an LRU node/key on each of hundreds of thousands of empty outcomes.
-        var value = _outcomes.Count == 0 ? Array.Empty<HandRoute>() : new HandRoute[_outcomes.Count];
+        var value = _outcomes.Count == 0 ? [] : new HandRoute[_outcomes.Count];
         for (var i = 0; i < value.Length; i++) value[i] = _routes[_outcomes[i]];
         if (value.Length > 0) _cache.Add(key, value, 32L + value.Length * 40L);
         return value;

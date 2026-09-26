@@ -35,7 +35,7 @@ public sealed class DeckObjectiveComparer(bool campaign, bool gauntletTieBreak) 
 
     public static DeckObjective FromReport(DeckOptimizationReport report, long spent = 0) => new(
         report.ExactAnalysis, report.SafetyAssessment, report.SecondarySafetyAssessment,
-        report.Deck.SelectMany(e => Enumerable.Repeat(e.Card.Id, e.Copies)).ToArray(), spent);
+        [.. report.Deck.SelectMany(e => Enumerable.Repeat(e.Card.Id, e.Copies))], spent);
 
     private static int CompareSafety(DeckSafetyAssessment? x, DeckSafetyAssessment? y, bool binnedCoverage = false)
     {

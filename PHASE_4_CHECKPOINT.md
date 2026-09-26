@@ -26,3 +26,9 @@ The nine findings from the independent Phase 4 audit have been repaired and re-a
 - The repair itself did not alter a save, emulator configuration, ROM, or game memory. Its subsequently verified public publication is recorded in `PUBLIC_RELEASE_CHECKPOINT.md`.
 
 The verified source/candidate was subsequently published as v1.1.0. See `PUBLIC_RELEASE_CHECKPOINT.md` for the remote workflow, asset hashes, and independent fresh-download verification.
+
+## Current continuation — 2026-09-26
+
+Phase 4 was rerun against the post-Phase-3 working tree. The current one-command audit passed all 12 checks: restore, warning/error formatting and analyzers, architecture, Release build, vulnerability scan, 200 automated tests, deterministic database rebuild, 15 integration checks with one environment-dependent skip, full UI rendering, isolated published-app startup, canonical packaging, and independent SHA-256/preflight verification. The final evidence is staged in `artifacts/phase4-current-final-2/` and the portable archive is `artifacts/phase4-current-final-2.zip`.
+
+The UI render harness was updated to follow the current owned-card gallery and optimizer report presentation paths. The illustrated user guide was regenerated. Informational IDE/CA suggestions remain recorded by the audit logs; the blocking warning/error gate is clean. No save, ROM, RetroArch configuration, game memory, or GitHub release was modified by this continuation.

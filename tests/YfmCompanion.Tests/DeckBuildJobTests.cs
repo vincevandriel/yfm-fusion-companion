@@ -8,7 +8,7 @@ public sealed class DeckBuildJobTests
         Enumerable.Range(1, 14).Select(id => TestCatalogFactory.Card(id, $"Card {id}", id * 50))
             .Append(TestCatalogFactory.Card(100, "Fusion", 2800)), [TestCatalogFactory.Pair(1, 2, 100)]);
     private static DeckBuildRequest Request(DeckSearchMode mode = DeckSearchMode.Quick) => new(
-        Enumerable.Range(1, 14).Select(id => new OwnedCardQuantity(id, 3)).ToArray(), new(SampleHands: 24), mode);
+        [.. Enumerable.Range(1, 14).Select(id => new OwnedCardQuantity(id, 3))], new(SampleHands: 24), mode);
 
     [Fact]
     public async Task StopKeepsEarlyLegalDeckAndVerifyDoesNotClaimOptimality()

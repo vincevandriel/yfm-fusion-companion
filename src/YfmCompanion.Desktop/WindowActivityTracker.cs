@@ -1,9 +1,10 @@
+
 namespace YfmCompanion.Desktop;
 
 /// <summary>Keep the dispatcher alive until cancelled background operations finish their cleanup/checkpoints.</summary>
 internal sealed class WindowActivityTracker
 {
-    private readonly object _gate = new();
+    private readonly Lock _gate = new();
     private int _active;
     private TaskCompletionSource _idle = CompletedSource();
     public IDisposable Begin()

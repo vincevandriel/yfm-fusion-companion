@@ -91,12 +91,11 @@ internal static class Program
         RequireChildCount(window, "MonsterPickerPanel", 5);
         RequireChildCount(window, "SpellPickerPanel", 5);
         RequireChildCount(window, "DeckPickerPanel", 40);
-        var ownedCards = window.FindName("OwnedCardsGrid") as DataGrid
+        var ownedCards = window.FindName("OwnedCardsGallery") as ListBox
             ?? throw new InvalidOperationException("Owned-card grid was not found.");
-        if (ownedCards.Items.Count != 722)
-        {
-            throw new InvalidOperationException($"Expected 722 owned-card rows; found {ownedCards.Items.Count}.");
-        }
+        var ownedRows = typeof(MainWindow).GetField("_ownedCardRows", BindingFlags.Instance | BindingFlags.NonPublic)?.GetValue(window) as System.Collections.ICollection
+            ?? throw new InvalidOperationException("Owned-card source rows were not found.");
+        if (ownedRows.Count != 722) throw new InvalidOperationException($"Expected 722 owned-card source rows; found {ownedRows.Count}.");
 
         var timerField = typeof(MainWindow).GetField("_liveTimer", BindingFlags.Instance | BindingFlags.NonPublic)
             ?? throw new InvalidOperationException("Live update timer was not found.");
@@ -386,10 +385,10 @@ internal static class Program
                 Profile: DeckStrategyProfile.ControlAndSafety));
         var showReport = typeof(MainWindow).GetMethod("ShowOptimizationReport", BindingFlags.Instance | BindingFlags.NonPublic)
             ?? throw new InvalidOperationException("Campaign-plan report presenter was not found.");
-        var showPlan = typeof(MainWindow).GetMethod("ShowCampaignPlan", BindingFlags.Instance | BindingFlags.NonPublic)
-            ?? throw new InvalidOperationException("Campaign-plan presenter was not found.");
+        var activeContext = typeof(MainWindow).GetField("_activeCampaignContext", BindingFlags.Instance | BindingFlags.NonPublic)
+            ?? throw new InvalidOperationException("Campaign context field was not found.");
+        activeContext.SetValue(window, plan.Context);
         showReport.Invoke(window, [plan.DeckPlan.ResultingDeck]);
-        showPlan.Invoke(window, [plan]);
 
         var panel = window.FindName("CampaignPlanPanel") as Border
             ?? throw new InvalidOperationException("Campaign-result panel was not found.");
@@ -421,9 +420,11 @@ internal static class Program
     private static void SeedOwnedInventory(MainWindow window, IEnumerable<OwnedCardQuantity> owned)
     {
         var quantities = owned.ToDictionary(entry => entry.CardId, entry => entry.Quantity);
-        var grid = window.FindName("OwnedCardsGrid") as DataGrid
+        var grid = window.FindName("OwnedCardsGallery") as ListBox
             ?? throw new InvalidOperationException("Owned-card grid was not found.");
-        foreach (var row in grid.Items)
+        var sourceRows = typeof(MainWindow).GetField("_ownedCardRows", BindingFlags.Instance | BindingFlags.NonPublic)?.GetValue(window) as System.Collections.IEnumerable
+            ?? throw new InvalidOperationException("Owned-card source rows were not found.");
+        foreach (var row in sourceRows)
         {
             var cardProperty = row.GetType().GetProperty("Card")
                 ?? throw new InvalidOperationException("Owned-card row card property was not found.");
@@ -434,7 +435,9 @@ internal static class Program
             quantityProperty.SetValue(row, quantities.GetValueOrDefault(card.Id));
         }
 
-        grid.Items.Refresh();
+        var refresh = typeof(MainWindow).GetMethod("RefreshOwnedGallery", BindingFlags.Instance | BindingFlags.NonPublic)
+            ?? throw new InvalidOperationException("Owned-card gallery refresh method was not found.");
+        refresh.Invoke(window, null);
     }
 
     private static IEnumerable<T> FindLogicalDescendants<T>(DependencyObject parent)
