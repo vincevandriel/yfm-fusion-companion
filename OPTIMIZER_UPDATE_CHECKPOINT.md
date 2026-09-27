@@ -1,10 +1,11 @@
 # Optimizer update checkpoint
 
-## GitHub synchronization — user-authorized publication (2026-09-27)
+## GitHub synchronization — published and independently verified (2026-09-27)
 
 - User requested that all completed updates be pushed to GitHub. Synchronization includes the 23 existing local commits plus the CPU/scoring/artwork/deck-library/card-order changes and their source, tests, research, attribution and validation records. Personal settings, emulator saves, IDE state and generated runtime folders are excluded; local copies remain intact.
-- Public release target: `v2.0.0`. The verified portable CardOrder package above/below is the local release payload; its SHA256 is unchanged. Source and package checks passed: 226 tests, 13 current acceptance probes, production artwork/deck-library/sorting assertions and independent package extraction. Refreshed the illustrated guide and all 11 pages were visually checked. CI now verifies production UI, bundled artwork and sorting before packaging.
-- GitHub push and public-download verification are pending at this commit. Retain the source/package/live-gameplay evidence distinctions recorded below; local runtime binaries are unchanged by this documentation/publication step.
+- Published release: https://github.com/vincevandriel/yfm-fusion-companion/releases/tag/v2.0.0. Release source/tag: `b74e5e07e0fbded1afcb7b36447c4f0060ecb7c8`. The verified portable CardOrder ZIP, refreshed PDF and checksums are public. Unauthenticated downloads of the ZIP and guide matched local SHA256 hashes; release tag matched the source commit. Evidence: `docs/audit/releases/v2.0.0/public-download-verification.json`.
+- Source and package checks passed: 226 tests, 13 current acceptance probes, production artwork/deck-library/sorting assertions and independent package extraction. Refreshed the illustrated guide and all 11 pages were visually checked. GitHub build/test/UI/publish/package workflow passed on the release source: https://github.com/vincevandriel/yfm-fusion-companion/actions/runs/36297527349.
+- User preference: push completed project updates to GitHub as part of finishing them. Current `main` includes the completed updates and this publication record; future source changes should include their applicable validation evidence. Retain source/package/live-gameplay distinctions below. This publication step did not replace the installed app or change game/save access.
 
 ## Current status — suggested-card ordering validated and packaged (2026-09-27)
 

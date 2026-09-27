@@ -1,0 +1,9 @@
+{
+  "Release": "https://github.com/vincevandriel/yfm-fusion-companion/releases/tag/v2.0.0",
+  "SourceCommit": "b74e5e07e0fbded1afcb7b36447c4f0060ecb7c8",
+  "PublicZIPMatches": true,
+  "ArchiveSHA256": "465EDEF53CF2C45351F799E9E42043990C2514823FE412A83B9F01FCBF0FD3A1",
+  "PublicGuideMatches": true,
+  "GitHubCI": "success",
+  "GitHubCIURL": "https://github.com/vincevandriel/yfm-fusion-companion/actions/runs/36297527349"
+}
