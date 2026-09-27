@@ -1,4 +1,5 @@
 using System.Text.Json;
+using YfmCompanion.Data;
 using System.Text.Json.Serialization;
 
 namespace YfmCompanion.Engine;
@@ -39,7 +40,7 @@ public sealed record CampaignResearchData(
     private static readonly int[] RequiredFinalGauntletDuelistIds = [33, 34, 35, 36, 37, 38];
 
     public static CampaignResearchData LoadBundled(string baseDirectory) =>
-        Load(Path.Combine(Path.GetFullPath(baseDirectory), BundledDirectoryName));
+        Load(Path.Combine(RuntimeResources.FindRoot(baseDirectory), BundledDirectoryName));
 
     public static CampaignResearchData Load(string researchDataDirectory)
     {

@@ -1,4 +1,4 @@
-name: Build and test
+name: Build and audit Windows release
 
 on:
   push:
@@ -9,88 +9,57 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   windows:
     runs-on: windows-latest
+    timeout-minutes: 45
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-dotnet@v6
         with:
-          # Keep implicit framework/linker dependencies aligned with the audited lock files.
           dotnet-version: 9.0.316
           cache: true
           cache-dependency-path: '**/packages.lock.json'
       - uses: actions/setup-python@v7
         with:
           python-version: '3.12'
-      - name: Restore
-        run: dotnet restore YfmFusionCompanion.sln --locked-mode
-      - name: Test
-        run: dotnet test YfmFusionCompanion.sln --configuration Release --no-restore
-      - name: Validate campaign research invariants
+      - name: Verify release tag matches application version
+        if: startsWith(github.ref, 'refs/tags/v')
         shell: pwsh
-        run: powershell -NoProfile -ExecutionPolicy Bypass -File tools/Phase1Research/Verify-Phase1ResearchData.ps1 docs/research/data
-      - name: Run Phase 4 acceptance probes
-        run: dotnet run --project tools/YfmCompanion.Phase4Audit --configuration Release -- . phase4-acceptance-results.json
-      - name: Regenerate current user guide
-        shell: pwsh
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
         run: |
-          python -m pip install --disable-pip-version-check reportlab==4.4.4
-          python tools/CreateUserGuide.py
-          if (-not (Test-Path -LiteralPath output/pdf/YFM-Fusion-Companion-User-Guide.pdf -PathType Leaf)) {
-            throw 'The regenerated PDF user guide was not created.'
-          }
-      - name: Check production UI, artwork and suggested-card ordering
+          [xml]$project = Get-Content src/YfmCompanion.Desktop/YfmCompanion.Desktop.csproj -Raw
+          if ($env:RELEASE_TAG -ne "v$($project.Project.PropertyGroup.Version)") { throw 'Tag/version mismatch.' }
+      - name: Install documentation dependencies
+        run: python -m pip install --disable-pip-version-check -r tools/requirements-docs.txt
+      - name: Audit and assemble portable package
         shell: pwsh
-        run: |
-          $env:YFM_COMPANION_SETTINGS_DIRECTORY = Join-Path $env:RUNNER_TEMP 'yfm-release-ui-settings'
-          dotnet run --project tools/YfmCompanion.UiRender --configuration Release -- artifacts/github-ui
-          if ($LASTEXITCODE -ne 0) { throw 'Production UI verification failed.' }
-      - name: Publish Windows x64
-        run: dotnet publish src/YfmCompanion.Desktop/YfmCompanion.Desktop.csproj --configuration Release --runtime win-x64 --self-contained true --output publish
-      - name: Assemble portable package
-        shell: pwsh
-        run: |
-          New-Item -ItemType Directory -Path package | Out-Null
-          Copy-Item publish/* package -Recurse
-          foreach ($requiredPublishFile in @(
-            'YFM Fusion Companion.exe',
-            'Data/yfm.db',
-            'ResearchData/guardian_star_rules.json',
-            'ResearchData/opponent_reference.json',
-            'ResearchData/optimizer_policy.json',
-            'ResearchData/source_manifest.json',
-            'ResearchData/fan_deck_sources.json',
-            'Artwork/manifest.json'
-          )) {
-            if (-not (Test-Path -LiteralPath (Join-Path 'publish' $requiredPublishFile) -PathType Leaf)) {
-              throw "Required published file is missing: $requiredPublishFile"
-            }
-          }
-          Copy-Item install_dependencies.ps1, install_dependencies.cmd, README.md, RELEASE_NOTES.md, LICENSE, THIRD_PARTY_NOTICES.md package
-          New-Item -ItemType Directory -Path package/Documentation | Out-Null
-          Copy-Item docs/SETUP.md, docs/LIMITATIONS.md, output/pdf/YFM-Fusion-Companion-User-Guide.pdf package/Documentation
-          Copy-Item docs/CPU_PARALLELISM.md, docs/research/FAN_DECK_RESEARCH.md, docs/research/GUIDE_SCORING.md, docs/benchmarks/CAMPAIGN_DECK_RESULTS.md package/Documentation
-          Copy-Item artifacts/github-ui/suggested-deck-sorting.json, artifacts/github-ui/deck-library-ui-audit.json package/Documentation
-          if (-not (Test-Path -LiteralPath 'package/Data/yfm.db' -PathType Leaf)) {
-            throw 'The portable package is missing Data/yfm.db.'
-          }
-          Compress-Archive -Path package/* -DestinationPath yfm_companion_windows_x64_${{ github.ref_name }}.zip
-          $zipHash = (Get-FileHash -Algorithm SHA256 yfm_companion_windows_x64_${{ github.ref_name }}.zip).Hash
-          $pdfHash = (Get-FileHash -Algorithm SHA256 output/pdf/YFM-Fusion-Companion-User-Guide.pdf).Hash
-          @(
-            "$zipHash  yfm_companion_windows_x64_${{ github.ref_name }}.zip"
-            "$pdfHash  YFM-Fusion-Companion-User-Guide.pdf"
-          ) | Set-Content -Encoding ascii yfm_companion_windows_x64_${{ github.ref_name }}_SHA256.txt
-      - uses: actions/upload-artifact@v7
+        run: ./tools/Publish-Release.ps1
+      - name: Upload audited package
+        uses: actions/upload-artifact@v7
         with:
-          name: yfm_companion_windows_x64
+          name: windows-x64-release
+          retention-days: 7
+          if-no-files-found: error
           path: |
-            yfm_companion_windows_x64_${{ github.ref_name }}.zip
-            yfm_companion_windows_x64_${{ github.ref_name }}_SHA256.txt
-            output/pdf/YFM-Fusion-Companion-User-Guide.pdf
+            artifacts/releases/*.zip
+            artifacts/releases/*.sha256
+      - name: Preserve compact audit evidence
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: audit-evidence
+          retention-days: 14
+          path: |
+            artifacts/release-audit/**/*.log
+            artifacts/release-audit/**/release-audit.json
+            artifacts/release-audit/**/packaged-self-check.json
+            artifacts/release-audit/**/*.trx
       - name: Publish tagged GitHub release
         if: startsWith(github.ref, 'refs/tags/v')
         uses: softprops/action-gh-release@v3
@@ -99,6 +68,5 @@ jobs:
           body_path: RELEASE_NOTES.md
           fail_on_unmatched_files: true
           files: |
-            yfm_companion_windows_x64_${{ github.ref_name }}.zip
-            yfm_companion_windows_x64_${{ github.ref_name }}_SHA256.txt
-            output/pdf/YFM-Fusion-Companion-User-Guide.pdf
+            artifacts/releases/*.zip
+            artifacts/releases/*.sha256

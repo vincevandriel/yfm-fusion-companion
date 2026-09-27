@@ -42,12 +42,12 @@ public sealed class GuideSupportScoringTests
                           { HandsWith3500Setup = count, HandsWith3500SetupOrBoardClear = count, HandsWithBroadRemoval = count }, null, null, [1])
                           { GuideStructurePoints = structure }).ToArray();
         foreach (var a in candidates)
-        foreach (var b in candidates)
-        {
-            Assert.Equal(Math.Sign(comparer.Compare(a, b)), -Math.Sign(comparer.Compare(b, a)));
-            foreach (var c in candidates)
-                if (comparer.Compare(a, b) > 0 && comparer.Compare(b, c) > 0) Assert.True(comparer.Compare(a, c) > 0);
-        }
+            foreach (var b in candidates)
+            {
+                Assert.Equal(Math.Sign(comparer.Compare(a, b)), -Math.Sign(comparer.Compare(b, a)));
+                foreach (var c in candidates)
+                    if (comparer.Compare(a, b) > 0 && comparer.Compare(b, c) > 0) Assert.True(comparer.Compare(a, c) > 0);
+            }
     }
 
     [Fact]

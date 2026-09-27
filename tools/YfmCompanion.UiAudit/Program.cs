@@ -98,7 +98,7 @@ internal static class Program
         }
         var tabs = (TabControl)window.FindName("WorkspaceTabs");
 
-        var normalTabs = new[] { "turn-adviser", "deck-analyzer", "live-duel", "save-snapshot", "owned-optimizer" };
+        var normalTabs = new[] { "turn-adviser", "deck-analyzer", "live-duel", "owned-optimizer" };
         for (var index = 0; index < normalTabs.Length; index++)
         {
             tabs.SelectedIndex = index;
@@ -106,7 +106,7 @@ internal static class Program
             Capture(window, Path.Combine(output, $"1920x1080-150-{normalTabs[index]}.png"), 1280, 720, 1.5);
         }
 
-        tabs.SelectedIndex = 4;
+        tabs.SelectedItem = (TabItem)window.FindName("OwnedOptimizerTab");
         foreach (var scenario in new[]
         {
             (1366, 768, 1.25), (1366, 768, 1.5), (1366, 768, 2.0),
@@ -455,7 +455,7 @@ internal static class Program
 
     private static void AuditGallery(MainWindow window)
     {
-        ((TabControl)window.FindName("WorkspaceTabs")).SelectedIndex = 4;
+        ((TabControl)window.FindName("WorkspaceTabs")).SelectedItem = (TabItem)window.FindName("OwnedOptimizerTab");
         var gallery = (ListBox)window.FindName("OwnedCardsGallery");
         var source = gallery.ItemsSource;
         gallery.SelectedIndex = 3;

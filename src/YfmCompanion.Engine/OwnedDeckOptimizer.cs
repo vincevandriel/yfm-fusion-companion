@@ -204,7 +204,8 @@ public sealed class OwnedDeckOptimizer(FusionCatalog catalog, int analysisWorker
             options.Profile,
             options.RandomSeed,
             winner.Safety,
-            winner.SecondarySafety) { SupportStructure = GuideSupportStructure.Evaluate(_catalog, Deck, Report) };
+            winner.SecondarySafety)
+        { SupportStructure = GuideSupportStructure.Evaluate(_catalog, Deck, Report) };
     }
 
     public DeckOptimizationReport EvaluateDeck(IEnumerable<int> cardIds, IEnumerable<OwnedCardQuantity> ownedCards,
@@ -235,7 +236,7 @@ public sealed class OwnedDeckOptimizer(FusionCatalog catalog, int analysisWorker
         var entries = deck.GroupBy(id => id).Select(g => new OptimizedDeckEntry(_catalog.GetCard(g.Key), g.Count(), "")).ToArray();
         return new(entries, report, [], [], [], null, options.Profile, options.RandomSeed,
             BuildSafetyAssessment(deck, report, options.SafetyContext), BuildSafetyAssessment(deck, report, options.SecondarySafetyContext))
-            { SupportStructure = GuideSupportStructure.Evaluate(_catalog, deck, report) };
+        { SupportStructure = GuideSupportStructure.Evaluate(_catalog, deck, report) };
     }
 
     internal DeckOptimizationReport DescribeCandidate(DeckOptimizationReport report,
@@ -469,7 +470,7 @@ public sealed class OwnedDeckOptimizer(FusionCatalog catalog, int analysisWorker
                 deck,
                 new DeckObjective(report, BuildSafetyAssessment(deck, report, options.SafetyContext),
                     BuildSafetyAssessment(deck, report, options.SecondarySafetyContext), deck)
-                    { GuideStructurePoints = GuideSupportStructure.Evaluate(_catalog, deck, report).Points, UseGuideSupport = options.Profile is DeckStrategyProfile.Balanced or DeckStrategyProfile.ControlAndSafety or DeckStrategyProfile.FieldAndType }));
+                { GuideStructurePoints = GuideSupportStructure.Evaluate(_catalog, deck, report).Points, UseGuideSupport = options.Profile is DeckStrategyProfile.Balanced or DeckStrategyProfile.ControlAndSafety or DeckStrategyProfile.FieldAndType }));
         }
 
         progress?.Report(new DeckOptimizationProgress("Sampled candidate analysis", candidates.Length, candidates.Length));
@@ -786,7 +787,7 @@ public sealed class OwnedDeckOptimizer(FusionCatalog catalog, int analysisWorker
     {
         var comparer = new DeckObjectiveComparer(options.SafetyContext is not null, options.SecondarySafetyContext is not null);
         return comparer.Compare(new(candidate.Report, candidate.Safety, candidate.SecondarySafety, candidate.Deck)
-            { GuideStructurePoints = GuideSupportStructure.Evaluate(_catalog, candidate.Deck, candidate.Report).Points, UseGuideSupport = options.Profile is DeckStrategyProfile.Balanced or DeckStrategyProfile.ControlAndSafety or DeckStrategyProfile.FieldAndType },
+        { GuideStructurePoints = GuideSupportStructure.Evaluate(_catalog, candidate.Deck, candidate.Report).Points, UseGuideSupport = options.Profile is DeckStrategyProfile.Balanced or DeckStrategyProfile.ControlAndSafety or DeckStrategyProfile.FieldAndType },
             new(incumbent.Report, incumbent.Safety, incumbent.SecondarySafety, incumbent.Deck)
             { GuideStructurePoints = GuideSupportStructure.Evaluate(_catalog, incumbent.Deck, incumbent.Report).Points, UseGuideSupport = options.Profile is DeckStrategyProfile.Balanced or DeckStrategyProfile.ControlAndSafety or DeckStrategyProfile.FieldAndType }) > 0;
     }

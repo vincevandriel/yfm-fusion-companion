@@ -11,7 +11,7 @@ internal static class DesktopInteractionAudit
     internal static void Run(MainWindow window)
     {
         var tabs = (TabControl)window.FindName("WorkspaceTabs");
-        tabs.SelectedIndex = 4;
+        tabs.SelectedItem = (TabItem)window.FindName("OwnedOptimizerTab");
         Invoke(window, "SetOptimizerRunning", true);
         var gallery = (ListBox)window.FindName("OwnedCardsGallery");
         gallery.BringIntoView();

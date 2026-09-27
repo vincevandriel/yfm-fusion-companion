@@ -425,12 +425,22 @@ public sealed class DeckAnalyzer
                 .ThenByDescending(r => r.Probability).ThenBy(r => r.Result.Name, StringComparer.OrdinalIgnoreCase).ToArray();
             return new(deckSize, handSize, _total, _any, _at2000, _at2500, _at2800, _at3000,
                 _total == 0 ? 0 : (double)_sum / _total, Array.AsReadOnly(results))
-            { TotalBestFusionAttack = _sum, IsExact = samples is null, SampleCount = samples ?? 0,
-                HandsWith3500Setup = _setup3500, HandsWith4500Setup = _setup4500,
-                HandsWithBoardClear = _clear, HandsWithBroadRemoval = _removal,
-                HandsWith3500SetupOrBoardClear = _setupOrClear, TotalBestSetupAttack = _setupSum, MaximumSetupAttack = _maximumSetup,
-                HandsWithEndgamePower = _endgame, HandsWithEndgamePowerOrBoardClear = _endgameOrClear,
-                HandsWith2800Body = _body2800, HandsWithNoMonster = _noMonster };
+            {
+                TotalBestFusionAttack = _sum,
+                IsExact = samples is null,
+                SampleCount = samples ?? 0,
+                HandsWith3500Setup = _setup3500,
+                HandsWith4500Setup = _setup4500,
+                HandsWithBoardClear = _clear,
+                HandsWithBroadRemoval = _removal,
+                HandsWith3500SetupOrBoardClear = _setupOrClear,
+                TotalBestSetupAttack = _setupSum,
+                MaximumSetupAttack = _maximumSetup,
+                HandsWithEndgamePower = _endgame,
+                HandsWithEndgamePowerOrBoardClear = _endgameOrClear,
+                HandsWith2800Body = _body2800,
+                HandsWithNoMonster = _noMonster
+            };
         }
     }
 }

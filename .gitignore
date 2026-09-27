@@ -8,3 +8,5 @@ tmp/
 .vs/
 /artifacts/*
 !/artifacts/yfm.db
+/output/docs/
+**/__pycache__/

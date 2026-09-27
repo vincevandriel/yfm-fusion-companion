@@ -172,11 +172,11 @@ public partial class MainWindow : Window
             return;
         }
 
-        var databasePath = Path.Combine(AppContext.BaseDirectory, "Data", "yfm.db");
+        var databasePath = Path.Combine(RuntimeResources.FindRoot(AppContext.BaseDirectory), "Data", "yfm.db");
         if (!File.Exists(databasePath))
         {
             throw new FileNotFoundException(
-                $"The required database was not found at '{databasePath}'. Keep the Data folder beside the executable and extract the entire release archive before starting the companion.",
+                $"The required database was not found at '{databasePath}'. Keep the Resources folder beside the executable and extract the entire release archive before starting the companion.",
                 databasePath);
         }
 
@@ -1476,7 +1476,8 @@ public partial class MainWindow : Window
             id => _ownedCardRows.First(r => r.Card.Id == id).Artwork,
             () => OptimizerSourceTitle.Text + " • " + OptimizerSourceSummary.Text,
             build => { _recommendedBuildId = build.Id; UpdateRecommendedStrategyLabel(); SaveDesktopSettings(); },
-            CanChangeRecommendedStrategy) { Owner = this };
+            CanChangeRecommendedStrategy)
+        { Owner = this };
         _deckLibraryWindow.Closed += (_, _) => _deckLibraryWindow = null;
         _deckLibraryWindow.Show();
     }

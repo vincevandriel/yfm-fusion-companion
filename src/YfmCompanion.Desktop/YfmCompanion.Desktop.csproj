@@ -3,13 +3,13 @@
     <OutputType>WinExe</OutputType>
     <TargetFramework>net9.0-windows</TargetFramework>
     <UseWPF>true</UseWPF>
-    <ApplicationIcon />
+    <ApplicationIcon>..\..\assets\branding\app-icon.ico</ApplicationIcon>
     <AssemblyName>YFM Fusion Companion</AssemblyName>
     <RootNamespace>YfmCompanion.Desktop</RootNamespace>
-    <Version>2.0.0</Version>
-    <AssemblyVersion>2.0.0.0</AssemblyVersion>
-    <FileVersion>2.0.0.0</FileVersion>
-    <InformationalVersion>2.0.0</InformationalVersion>
+    <Version>2.0.1</Version>
+    <AssemblyVersion>2.0.1.0</AssemblyVersion>
+    <FileVersion>2.0.1.0</FileVersion>
+    <InformationalVersion>2.0.1</InformationalVersion>
     <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
     <!-- This is a personal English-only application. Do not publish the
          framework and package satellite assemblies for unrelated cultures. -->
@@ -25,6 +25,7 @@
     <DebugSymbols>false</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
+    <Resource Include="..\..\assets\branding\app-icon.ico" Link="Branding\app-icon.ico" />
     <InternalsVisibleTo Include="YfmCompanion.UiAudit" />
     <ProjectReference Include="..\YfmCompanion.Data\YfmCompanion.Data.csproj" />
     <ProjectReference Include="..\YfmCompanion.Engine\YfmCompanion.Engine.csproj" />

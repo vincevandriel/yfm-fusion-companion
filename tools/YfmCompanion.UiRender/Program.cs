@@ -155,9 +155,18 @@ internal static class Program
         typeof(CampaignDeckLibraryWindow).GetMethod("UseBuild_Click", BindingFlags.NonPublic | BindingFlags.Instance)!.Invoke(window, [use, new RoutedEventArgs()]);
         if (chosen?.Id != "sand-mercury") throw new InvalidDataException("Adapt button did not select the displayed strategy.");
         File.WriteAllText(Path.Combine(outputDirectory, "deck-library-ui-audit.json"), JsonSerializer.Serialize(new
-        { DeckTiles = tiles.Items.Count, UniqueHeroIcons = builds.Select(b => b.HeroCardId).Distinct().Count(), RequiredCopyCount = true,
-            LiveRefresh = true, MissingCardDetails = true, BusyStrategyProtected = true, ExactReferenceCheck = true,
-            ReferenceCancellation = true, VerticalScrolling = true, AdaptStrategySelected = chosen.Id }, JsonOptions));
+        {
+            DeckTiles = tiles.Items.Count,
+            UniqueHeroIcons = builds.Select(b => b.HeroCardId).Distinct().Count(),
+            RequiredCopyCount = true,
+            LiveRefresh = true,
+            MissingCardDetails = true,
+            BusyStrategyProtected = true,
+            ExactReferenceCheck = true,
+            ReferenceCancellation = true,
+            VerticalScrolling = true,
+            AdaptStrategySelected = chosen.Id
+        }, JsonOptions));
     }
 
     private static void PumpUntil(Func<bool> condition, TimeSpan timeout)
@@ -399,8 +408,10 @@ internal static class Program
             throw new InvalidOperationException("Compact columns exceed the available viewport.");
         File.WriteAllText(Path.Combine(outputDirectory, evidenceName), JsonSerializer.Serialize(new
         {
-            HorizontalScrollWidth = viewer.ScrollableWidth, VerticalScrollHeight = viewer.ScrollableHeight,
-            ResultColumnWidth = grid.Columns[0].ActualWidth, ViewportWidth = viewer.ViewportWidth,
+            HorizontalScrollWidth = viewer.ScrollableWidth,
+            VerticalScrollHeight = viewer.ScrollableHeight,
+            ResultColumnWidth = grid.Columns[0].ActualWidth,
+            ViewportWidth = viewer.ViewportWidth,
             NameHeights = names.Select(t => t.ActualHeight).ToArray()
         }, JsonOptions));
     }

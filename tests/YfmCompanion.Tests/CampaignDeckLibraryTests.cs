@@ -109,18 +109,18 @@ public sealed class CampaignDeckLibraryTests(DatabaseFixture fixture)
         var serial = new DeckAnalyzer(Catalog).Analyze(deck, false);
         var counted = new long[4];
         for (var a = 0; a < deck.Length - 4; a++)
-        for (var b = a + 1; b < deck.Length - 3; b++)
-        for (var c = b + 1; c < deck.Length - 2; c++)
-        for (var d = c + 1; d < deck.Length - 1; d++)
-        for (var e = d + 1; e < deck.Length; e++)
-        {
-            var hand = new[] { deck[a], deck[b], deck[c], deck[d], deck[e] };
-            var body = hand.Contains(713);
-            var attack = body ? 3500 + hand.Count(id => id == 657) * 1000 + hand.Count(id => id == 668) * 500 : 0;
-            if (attack > 4500) counted[0]++;
-            if (attack > 4500 || hand.Any(id => id is 336 or 337)) counted[1]++;
-            if (body) counted[2]++; else counted[3]++;
-        }
+            for (var b = a + 1; b < deck.Length - 3; b++)
+                for (var c = b + 1; c < deck.Length - 2; c++)
+                    for (var d = c + 1; d < deck.Length - 1; d++)
+                        for (var e = d + 1; e < deck.Length; e++)
+                        {
+                            var hand = new[] { deck[a], deck[b], deck[c], deck[d], deck[e] };
+                            var body = hand.Contains(713);
+                            var attack = body ? 3500 + hand.Count(id => id == 657) * 1000 + hand.Count(id => id == 668) * 500 : 0;
+                            if (attack > 4500) counted[0]++;
+                            if (attack > 4500 || hand.Any(id => id is 336 or 337)) counted[1]++;
+                            if (body) counted[2]++; else counted[3]++;
+                        }
         Assert.Equal(counted, new[] { serial.HandsWithEndgamePower, serial.HandsWithEndgamePowerOrBoardClear, serial.HandsWith2800Body, serial.HandsWithNoMonster });
         var build = CampaignDeckLibrary.ForCatalog(Catalog).Single(b => b.Id == "natural-bosses");
         var exact = new DeckAnalyzer(Catalog).Analyze(build.Expand(), false);

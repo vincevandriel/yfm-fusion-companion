@@ -4,6 +4,7 @@
         xmlns:controls="clr-namespace:YfmCompanion.Desktop.Controls"
         xmlns:views="clr-namespace:YfmCompanion.Desktop.Views"
         Title="YFM Fusion Companion"
+        Icon="Branding/app-icon.ico"
         Width="1420" Height="900" MinWidth="620" MinHeight="360"
         Background="{StaticResource WindowBrush}"
         Foreground="{StaticResource TextBrush}"

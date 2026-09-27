@@ -100,7 +100,7 @@ def draw_bullets(
     for item in items:
         pdf.setFillColor(CYAN)
         pdf.circle(x + 3, y + 2, 2.2, fill=1, stroke=0)
-        y = draw_text_block(pdf, x + 13, y + 6, width - 13, item, size=size, leading=size * 1.3)
+        y = draw_text_block(pdf, x + 13, y, width - 13, item, size=size, leading=size * 1.3)
         y -= gap
     return y
 
@@ -198,18 +198,18 @@ def installation_page(pdf: canvas.Canvas) -> None:
     draw_bullets(pdf, 58, 461, 325, [
         "Download a Windows x64 ZIP from the latest release on the Releases page.",
         "Extract the entire ZIP. Never run the program from inside the ZIP preview.",
-        "Keep Artwork, Data and ResearchData beside the executable. The optional install_dependencies.cmd checks placement when included.",
+        "Keep Resources, Documentation and Licenses beside the executable. Resources contains the database, artwork and research.",
         "Start YFM Fusion Companion.exe. The bottom line should report 722 cards and 25,146 resolved fusion pairs.",
     ], size=10)
     draw_panel(pdf, 420, 275, 383, 245)
     pdf.setFillColor(GOLD)
     pdf.setFont("Helvetica-Bold", 15)
-    pdf.drawString(440, 492, "What the dependency check means")
+    pdf.drawString(440, 492, "What is included")
     draw_bullets(pdf, 440, 461, 343, [
         "The portable program is self-contained. Ordinary users do not install .NET.",
         "RetroArch/SwanStation is optional. It is only needed for Live Duel and automatic save discovery.",
         "Windows 10 or 11 x64 is required. The release is not code-signed, so SmartScreen may appear.",
-        "Developers can run install_dependencies.ps1 -InstallBuildTools to check or install the .NET 9 SDK.",
+        "Documentation includes the illustrated manual, searchable design guide and a source-code index. See CONTRIBUTING.md online to build from source.",
     ], size=10)
     draw_panel(pdf, 38, 68, 765, 180)
     pdf.setFillColor(CYAN)
@@ -312,7 +312,7 @@ def safety_page(pdf: canvas.Canvas) -> None:
 
 def build() -> None:
     OUTPUT.parent.mkdir(parents=True, exist_ok=True)
-    pdf = canvas.Canvas(str(OUTPUT), pagesize=(PAGE_W, PAGE_H), pageCompression=1)
+    pdf = canvas.Canvas(str(OUTPUT), pagesize=(PAGE_W, PAGE_H), pageCompression=1, invariant=1)
     pdf.setTitle("YFM Fusion Companion - Illustrated User Guide")
     pdf.setAuthor("Vincent van Driel")
     pdf.setSubject("Public user manual for YFM Fusion Companion")

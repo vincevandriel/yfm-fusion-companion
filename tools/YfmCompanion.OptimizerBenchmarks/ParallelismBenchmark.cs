@@ -32,9 +32,17 @@ internal static class ParallelismBenchmark
                     var hash = Convert.ToHexString(SHA256.HashData(JsonSerializer.SerializeToUtf8Bytes(report)));
                     baseline ??= hash;
                     if (hash != baseline || report.TotalHands != 658008) throw new InvalidDataException("Parallel results differ from serial baseline.");
-                    measurements.Add(new { Fixture = fixture.Key, Workers = workers, Repeat = repeat, Milliseconds = clock.Elapsed.TotalMilliseconds,
-                        CpuMilliseconds = (Process.GetCurrentProcess().TotalProcessorTime - cpu).TotalMilliseconds, ReportHash = hash,
-                        report.TotalHands, Cache = analyzer.CacheDiagnostics });
+                    measurements.Add(new
+                    {
+                        Fixture = fixture.Key,
+                        Workers = workers,
+                        Repeat = repeat,
+                        Milliseconds = clock.Elapsed.TotalMilliseconds,
+                        CpuMilliseconds = (Process.GetCurrentProcess().TotalProcessorTime - cpu).TotalMilliseconds,
+                        ReportHash = hash,
+                        report.TotalHands,
+                        Cache = analyzer.CacheDiagnostics
+                    });
                     Console.WriteLine($"{fixture.Key}: {workers} workers, {clock.Elapsed.TotalMilliseconds:F0} ms, identical report");
                 }
         }
@@ -48,21 +56,34 @@ internal static class ParallelismBenchmark
             ["campaign"] = new(IncludeGlitches: false, Profile: DeckStrategyProfile.ControlAndSafety, SafetyContext: context)
         };
         foreach (var settings in searchOptions)
-        foreach (var workers in counts)
-            for (var repeat = 0; repeat < 2; repeat++)
-            {
-                var job = new DeckBuildJob(catalog, new(owned, settings.Value, DeckSearchMode.Quick), workerCount: workers);
-                var clock = Stopwatch.StartNew();
-                var result = await job.RunAsync();
-                clock.Stop();
-                if (result.State != DeckBuildState.Completed || result.Best?.Report.Deck.Sum(e => e.Copies) != 40)
-                    throw new InvalidDataException("Search did not complete with a legal deck.");
-                search.Add(new { Fixture = settings.Key, Workers = workers, Repeat = repeat, Milliseconds = clock.Elapsed.TotalMilliseconds,
-                    result.CandidatesExamined, result.SearchCache, result.ProvenOptimal, result.Best.Report.ExactAnalysis.IsExact });
-                Console.WriteLine($"{settings.Key} search: {workers} workers, {result.CandidatesExamined} candidates in {clock.Elapsed.TotalSeconds:F2}s");
-            }
+            foreach (var workers in counts)
+                for (var repeat = 0; repeat < 2; repeat++)
+                {
+                    var job = new DeckBuildJob(catalog, new(owned, settings.Value, DeckSearchMode.Quick), workerCount: workers);
+                    var clock = Stopwatch.StartNew();
+                    var result = await job.RunAsync();
+                    clock.Stop();
+                    if (result.State != DeckBuildState.Completed || result.Best?.Report.Deck.Sum(e => e.Copies) != 40)
+                        throw new InvalidDataException("Search did not complete with a legal deck.");
+                    search.Add(new
+                    {
+                        Fixture = settings.Key,
+                        Workers = workers,
+                        Repeat = repeat,
+                        Milliseconds = clock.Elapsed.TotalMilliseconds,
+                        result.CandidatesExamined,
+                        result.SearchCache,
+                        result.ProvenOptimal,
+                        result.Best.Report.ExactAnalysis.IsExact
+                    });
+                    Console.WriteLine($"{settings.Key} search: {workers} workers, {result.CandidatesExamined} candidates in {clock.Elapsed.TotalSeconds:F2}s");
+                }
         Directory.CreateDirectory(Path.GetDirectoryName(output)!);
-        File.WriteAllText(output, JsonSerializer.Serialize(new { LogicalProcessors = Environment.ProcessorCount,
-            ExactAnalysis = measurements, TimedSearch = search }, new JsonSerializerOptions { WriteIndented = true }));
+        File.WriteAllText(output, JsonSerializer.Serialize(new
+        {
+            LogicalProcessors = Environment.ProcessorCount,
+            ExactAnalysis = measurements,
+            TimedSearch = search
+        }, new JsonSerializerOptions { WriteIndented = true }));
     }
 }

@@ -47,9 +47,12 @@ internal static class ArtworkAudit
         if (!ReferenceEquals(selected.Artwork, cache.Load(bundled))) throw new InvalidDataException("Absent custom image did not use bundled art.");
         File.WriteAllText(Path.Combine(output, "artwork-verification.json"), JsonSerializer.Serialize(new
         {
-            Passed = true, AutomaticImagesDecodedAndHashVerified = count,
-            CustomAndExplicitOverridePrecedence = true, MissingAndUnreadableOverrideRecovery = true,
-            RetainedCacheBytes = cache.AccountedBytes, CacheLimitBytes = cache.LimitBytes,
+            Passed = true,
+            AutomaticImagesDecodedAndHashVerified = count,
+            CustomAndExplicitOverridePrecedence = true,
+            MissingAndUnreadableOverrideRecovery = true,
+            RetainedCacheBytes = cache.AccountedBytes,
+            CacheLimitBytes = cache.LimitBytes,
             SourceRevision = manifest.RootElement.GetProperty("Revision").GetString()
         }, new JsonSerializerOptions { WriteIndented = true }));
     }

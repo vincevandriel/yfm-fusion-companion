@@ -3,7 +3,7 @@
 ## Start the companion
 
 1. Extract the complete ZIP to a normal folder. Do not run the executable from inside the ZIP.
-2. Keep `YFM Fusion Companion.exe`, `Data`, `Artwork` and `ResearchData` together.
+2. Keep `YFM Fusion Companion.exe`, `Resources`, `Documentation` and `Licenses` together.
 3. Double-click `YFM Fusion Companion.exe`.
 
 The program is a self-contained Windows x64 application. It does not require a separate .NET installation and does not use a browser.
@@ -23,7 +23,7 @@ RetroArch may listen beyond this computer even though the companion connects onl
 
 ## Display modes
 
-- **COMPACT LIVE** switches to a bounded 272 × 1002 pixel sidecar. Card names wrap to two lines without sideways scrolling, and 20px guardian symbols sit beneath Result. Warm glow marks selectable stars; red glow marks known opponent relationships. ATK shows effective attack after legal terminal equips, and route uses hand-slot numbers. `F(1)` through `F(5)` are monster positions; `F(6)` through `F(10)` are spell/trap positions.
+- **COMPACT LIVE** switches to a bounded 272 × 1002 logical-pixel sidecar (physical size follows Windows display scaling). Card names wrap to two lines without sideways scrolling, and 20px guardian symbols sit beneath Result. Warm glow marks selectable stars; red glow marks known opponent relationships. ATK shows effective attack after legal terminal equips, and route uses hand-slot numbers. `F(1)` through `F(5)` are monster positions; `F(6)` through `F(10)` are spell/trap positions.
 - **FULL** returns to the manual, deck, live, and optimizer workspaces.
 - **Always on top** keeps the companion above the game when desired.
 

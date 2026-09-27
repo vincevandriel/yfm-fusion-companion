@@ -36,14 +36,26 @@ internal static class GuideScoringBenchmark
         var report = verified.Best.Report;
         if (report.Deck.Sum(e => e.Copies) != 40 || report.Deck.Any(e => e.Copies > 3) ||
             verified.SearchCache!.AccountedBytes > verified.SearchCache.LimitBytes) throw new InvalidDataException("Legality/cache check failed.");
-        File.WriteAllText(output, JsonSerializer.Serialize(new { ObjectiveVersion = DeckObjectiveComparer.Version,
-            RulesVersion = DeckProofSearch.RulesVersion, job.SearchWorkerCount, AnalysisWorkers = job.WorkerCount,
-            CompareBefore = before, CompareAfter = after,
+        File.WriteAllText(output, JsonSerializer.Serialize(new
+        {
+            ObjectiveVersion = DeckObjectiveComparer.Version,
+            RulesVersion = DeckProofSearch.RulesVersion,
+            job.SearchWorkerCount,
+            AnalysisWorkers = job.WorkerCount,
+            CompareBefore = before,
+            CompareAfter = after,
             RecoveryBefore = comparer.Compare(DeckObjectiveComparer.FromReport(recovery) with { UseGuideSupport = false }, DeckObjectiveComparer.FromReport(plain) with { UseGuideSupport = false }),
-            RecoveryAfter = comparer.Compare(DeckObjectiveComparer.FromReport(recovery), DeckObjectiveComparer.FromReport(plain)), Recovery = recovery, FixtureExactMilliseconds = clock.Elapsed.TotalMilliseconds,
-            Plain = plain, Supported = package, TimedCandidates = timed.CandidatesExamined,
-            ExactMilliseconds = exactClock.Elapsed.TotalMilliseconds, Verified = verified,
-            BestFoundDeck = report.Deck.Select(e => new { e.Card.Name, e.Copies }), owned }, new JsonSerializerOptions { WriteIndented = true }));
+            RecoveryAfter = comparer.Compare(DeckObjectiveComparer.FromReport(recovery), DeckObjectiveComparer.FromReport(plain)),
+            Recovery = recovery,
+            FixtureExactMilliseconds = clock.Elapsed.TotalMilliseconds,
+            Plain = plain,
+            Supported = package,
+            TimedCandidates = timed.CandidatesExamined,
+            ExactMilliseconds = exactClock.Elapsed.TotalMilliseconds,
+            Verified = verified,
+            BestFoundDeck = report.Deck.Select(e => new { e.Card.Name, e.Copies }),
+            owned
+        }, new JsonSerializerOptions { WriteIndented = true }));
         Console.WriteLine($"Old ranking: {before}; guide ranking: {after}; {timed.CandidatesExamined} candidates; exact {exactClock.Elapsed.TotalMilliseconds:F0} ms; setup {report.ExactAnalysis.Setup3500Probability:P1}; clear {report.ExactAnalysis.BoardClearProbability:P1}");
         foreach (var e in report.Deck) Console.WriteLine($"{e.Copies} x {e.Card.Name}");
     }

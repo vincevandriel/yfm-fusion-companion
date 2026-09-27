@@ -28,9 +28,18 @@ internal static class CampaignLibraryBenchmark
                 15.0 * r.HandsWithEndgamePowerOrBoardClear + 10.0 * r.HandsWithBroadRemoval +
                 10.0 * r.HandsWith3500Setup + 5.0 * r.HandsWithEndgamePower + 5.0 * r.HandsWithBoardClear -
                 15.0 * r.HandsWithNoMonster) / r.TotalHands + structure.Points;
-            reports.Add(new { build.Id, build.Name, SerialMilliseconds = serialMs, ParallelMilliseconds = parallelMs,
-                ExactSerialParallelIdentical = true, OldHeuristicScore = oldScore, NewHeuristicScore = newScore,
-                structure, Analysis = serial });
+            reports.Add(new
+            {
+                build.Id,
+                build.Name,
+                SerialMilliseconds = serialMs,
+                ParallelMilliseconds = parallelMs,
+                ExactSerialParallelIdentical = true,
+                OldHeuristicScore = oldScore,
+                NewHeuristicScore = newScore,
+                structure,
+                Analysis = serial
+            });
             Console.WriteLine($"{build.Name}: body {r.Body2800Probability:P1}, >4500 {r.EndgamePowerProbability:P1}, clear {r.BoardClearProbability:P1}, no monster {r.NoMonsterProbability:P1}; exact 1/{DeckBuildJob.AutoAnalysisWorkerCount} workers identical.");
         }
         var owned = builds.SelectMany(b => b.Entries).GroupBy(e => e.CardId).Select(g => new OwnedCardQuantity(g.Key, g.Max(e => e.Copies))).ToArray();
@@ -43,11 +52,21 @@ internal static class CampaignLibraryBenchmark
         var capacities = owned.ToDictionary(e => e.CardId, e => e.Quantity);
         if (verified.Best.Report.Deck.Any(e => e.Copies > capacities.GetValueOrDefault(e.Card.Id)))
             throw new InvalidDataException("Search used missing cards.");
-        File.WriteAllText(output, JsonSerializer.Serialize(new { CampaignDeckLibrary.Version, ObjectiveVersion = DeckObjectiveComparer.Version,
-            RulesVersion = DeckProofSearch.RulesVersion, CatalogIdentity = catalog.ContentIdentity, References = reports,
-            job.SearchWorkerCount, AnalysisWorkers = job.WorkerCount, TimedCandidates = result.CandidatesExamined,
-            SearchStages = stages.Order().ToArray(), BestFound = verified, WinRateMeasured = false,
-            Scope = "Vanilla opening-hand availability; multi-turn setups, no opponent-response or full-duel simulation." }, new JsonSerializerOptions { WriteIndented = true }));
+        File.WriteAllText(output, JsonSerializer.Serialize(new
+        {
+            CampaignDeckLibrary.Version,
+            ObjectiveVersion = DeckObjectiveComparer.Version,
+            RulesVersion = DeckProofSearch.RulesVersion,
+            CatalogIdentity = catalog.ContentIdentity,
+            References = reports,
+            job.SearchWorkerCount,
+            AnalysisWorkers = job.WorkerCount,
+            TimedCandidates = result.CandidatesExamined,
+            SearchStages = stages.Order().ToArray(),
+            BestFound = verified,
+            WinRateMeasured = false,
+            Scope = "Vanilla opening-hand availability; multi-turn setups, no opponent-response or full-duel simulation."
+        }, new JsonSerializerOptions { WriteIndented = true }));
     }
 
     private sealed class InlineProgress(Action<DeckBuildProgress> report) : IProgress<DeckBuildProgress>

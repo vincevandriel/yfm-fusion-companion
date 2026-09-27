@@ -57,7 +57,7 @@ internal sealed class OwnedCardRow(Card card, Action<OwnedCardRow> changed) : IN
 
     public void RefreshArtwork(string? folder, ThumbnailCache cache, string? overridePath = null)
     {
-        _bundledArtworkPath = FindArtwork(Path.Combine(AppContext.BaseDirectory, "Artwork"), Card.Id);
+        _bundledArtworkPath = FindArtwork(Path.Combine(RuntimeResources.FindRoot(AppContext.BaseDirectory), "Artwork"), Card.Id);
         _artworkPath = File.Exists(overridePath) ? overridePath : FindArtwork(folder, Card.Id);
         _artworkCache = cache;
         if (_artworkPath is not null) cache.Invalidate(_artworkPath);

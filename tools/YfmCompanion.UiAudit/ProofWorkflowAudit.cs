@@ -73,7 +73,7 @@ internal static class ProofWorkflowAudit
     }
     private static void Configure(MainWindow window)
     {
-        ((TabControl)window.FindName("WorkspaceTabs")).SelectedIndex = 4;
+        ((TabControl)window.FindName("WorkspaceTabs")).SelectedItem = (TabItem)window.FindName("OwnedOptimizerTab");
         ((ComboBox)window.FindName("CampaignScopeCombo")).SelectedIndex = 3;
         ((ComboBox)window.FindName("OptimizerProfileCombo")).SelectedValue = DeckStrategyProfile.Balanced;
         ((CheckBox)window.FindName("OptimizerIncludeGlitchesCheckBox")).IsChecked = false;

@@ -21,9 +21,9 @@ internal static class VisualStateAudit
         var collection = (CollectionSnapshot)Field(window, "_collectionSnapshot")!;
         var tabs = (TabControl)window.FindName("WorkspaceTabs");
         var scroll = (ScrollViewer)window.FindName("FullWorkspaceScroll");
-        var names = new[] { "turn", "deck", "live", "save", "optimizer" };
-        var details = new[] { "TurnResultsGrid", "DeckResultsGrid", "LiveAdviceGrid", "SaveDeckGrid", "OwnedCardsGallery" };
-        var middle = new[] { "MonsterPickerPanel", "AnyFusionMetric", "LivePlayerLpText", "SaveTimestampText", "OptimizerSpeedCombo" };
+        var names = new[] { "turn", "deck", "live", "optimizer" };
+        var details = new[] { "TurnResultsGrid", "DeckResultsGrid", "LiveAdviceGrid", "OwnedCardsGallery" };
+        var middle = new[] { "MonsterPickerPanel", "AnyFusionMetric", "LivePlayerLpText", "OptimizerSpeedCombo" };
         var manifest = new List<object>();
         var pair = catalog.FusionPairs.First(pair => pair.IsIntended && !pair.IsGlitch && pair.MaterialLowId != pair.MaterialHighId);
         var hand = new[] { pair.MaterialLowId, pair.MaterialHighId, 1, 2, 3 };
@@ -48,10 +48,6 @@ internal static class VisualStateAudit
                 Invoke(window, "ClearTurn_Click", window, new RoutedEventArgs());
                 Invoke(window, "ClearDeck_Click", window, new RoutedEventArgs());
                 Invoke(window, "ClearOwned_Click", window, new RoutedEventArgs());
-                ((ItemsControl)window.FindName("SaveDeckGrid")).ItemsSource = null;
-                ((ItemsControl)window.FindName("SaveCollectionGrid")).ItemsSource = null;
-                Text("SaveSnapshotStatus", "No supported save selected. Choose a save file or enter cards manually.");
-                Text("SaveSourceText", "No saved data"); Text("SaveTimestampText", "—");
                 Invoke(window, "SetLiveUnavailable", "No live snapshot", "Start RetroArch to connect. Manual analysis is available.", "DISCONNECTED", "#7B3B45");
             }
             else if (state == "populated")
@@ -71,7 +67,6 @@ internal static class VisualStateAudit
                 ((ProgressBar)window.FindName("DeckAnalysisProgressBar")).Value = 213472d / 658008;
                 ((Button)window.FindName("AnalyzeDeckButton")).IsEnabled = false;
                 ((Button)window.FindName("CancelDeckButton")).IsEnabled = true;
-                Text("SaveSnapshotStatus", "Reading and validating the selected save… previous data retained until validation finishes.");
                 Text("LiveStatusText", "Waiting for the next validated read; previous snapshot retained.");
             }
             else if (state == "error")
@@ -80,10 +75,9 @@ internal static class VisualStateAudit
                 Text("OptimizationStatus", "Build failed: synthetic I/O failure. Best completed deck retained.");
                 Text("DeckResultSummary", "Analysis failed: synthetic cancellation/error state. Retry is available.");
                 Invoke(window, "ShowCollectionSource", collection with { IsStale = true, StaleReason = "Selected file is temporarily unavailable." });
-                Text("SaveSnapshotStatus", "STALE: selected file unavailable. Retaining the last validated snapshot.");
                 Invoke(window, "SetLiveUnavailable", "Read failed", "The next one-second refresh will retry. No game data was modified.", "ERROR", "#7B3B45");
             }
-            for (var tab = 0; tab < 5; tab++)
+            for (var tab = 0; tab < names.Length; tab++)
             {
                 tabs.SelectedIndex = tab;
                 foreach (var (width, height, scale) in sizes)
@@ -123,7 +117,7 @@ internal static class VisualStateAudit
             Console.WriteLine($"Visual state audit captured {state} across all tabs/sizes.");
         }
         Populate();
-        tabs.SelectedIndex = 4;
+        tabs.SelectedItem = (TabItem)window.FindName("OwnedOptimizerTab");
         ((FrameworkElement)window.FindName("CampaignScopeCombo")).BringIntoView();
         var combo = (ComboBox)window.FindName("CampaignScopeCombo");
         combo.IsDropDownOpen = true;
@@ -140,9 +134,9 @@ internal static class VisualStateAudit
         Invoke(window, "ApplyCompactMode", true, false);
         Invoke(window, "ShowLiveSnapshot", snapshot);
         foreach (var scale in new[] { 1d, 1.25, 1.5, 2d })
-            Capture(window, Path.Combine(output, $"compact-{scale.ToString("0.##", CultureInfo.InvariantCulture)}.png"), 260, 650, scale);
-        if (window.MinWidth != 0 || window.MinHeight != 0 || ((FrameworkElement)window.FindName("FullWorkspace")).Visibility == Visibility.Visible)
-            throw new InvalidOperationException("Compact mode did not preserve unrestricted resizing and hidden full content.");
+            Capture(window, Path.Combine(output, $"compact-{scale.ToString("0.##", CultureInfo.InvariantCulture)}.png"), 272, 1002, scale);
+        if (window.MinWidth != 272 || window.MinHeight != 1002 || window.MaxWidth != 272 || window.MaxHeight != 1002 || ((FrameworkElement)window.FindName("FullWorkspace")).Visibility == Visibility.Visible)
+            throw new InvalidOperationException("Compact mode did not preserve its bounded dimensions and hidden full content.");
         File.WriteAllText(Path.Combine(output, "visual-states.json"), JsonSerializer.Serialize(new
         {
             SyntheticOnly = true,
