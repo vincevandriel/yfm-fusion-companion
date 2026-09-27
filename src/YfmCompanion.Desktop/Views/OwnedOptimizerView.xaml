@@ -53,6 +53,10 @@
                                  <StackPanel><TextBlock Text="OPPONENT TYPES • comma separated" Foreground="{StaticResource MutedBrush}" FontSize="11" />
                                     <TextBox x:Name="OpponentTypesTextBox" ToolTip="Raises relevant type-removal cards; example: Dragon, Warrior" /></StackPanel>
                                 </controls:AdaptiveColumnsPanel>
+                                <StackPanel Margin="0,8,0,0">
+                                    <TextBlock Text="CPU WORKERS" Foreground="{StaticResource MutedBrush}" FontSize="11" />
+                                    <ComboBox x:Name="CpuWorkersCombo" DisplayMemberPath="Label" SelectedValuePath="Count" ToolTip="Auto uses up to four workers for searches and eight for exact analysis. Counts are reduced on smaller CPUs. A manual count applies to both optimizer stages. One worker uses serial search. Proof traversal remains serial." />
+                                </StackPanel>
                                 <TextBlock x:Name="OptimizerProfileDescription" TextWrapping="Wrap" Foreground="{StaticResource MutedBrush}" Margin="0,8,0,8" />
                                 <CheckBox x:Name="OptimizerIncludeGlitchesCheckBox" Content="Include documented glitch fusions" IsChecked="True" />
                                 <StackPanel Margin="0,8,0,0">
@@ -83,11 +87,16 @@
                             </StackPanel>
                           </Border>
                           <WrapPanel>
+                            <Button x:Name="RecommendedDecksButton" Content="RECOMMENDED DECKS" Click="RecommendedDecks_Click" />
                             <Button x:Name="OptimizeDeckButton" Content="BUILD DECK" Click="OptimizeDeck_Click" />
                             <Button x:Name="PauseOptimizationButton" Grid.Column="1" Content="PAUSE" Click="PauseOptimization_Click" IsEnabled="False" />
                             <Button x:Name="StopOptimizationButton" Grid.Column="2" Content="STOP AND KEEP BEST" Click="StopOptimization_Click" IsEnabled="False" />
                             <Button x:Name="VerifyOptimizationButton" Grid.Column="3" Content="VERIFY DECK" Click="VerifyOptimization_Click" IsEnabled="False" />
                             <Button Grid.Column="4" Content="CLEAR OWNED" Click="ClearOwned_Click" IsEnabled="{Binding CanEdit}" />
+                          </WrapPanel>
+                          <WrapPanel Margin="0,2,0,4">
+                            <TextBlock x:Name="RecommendedStrategyText" Text="Starting strategy: automatic • compare all six builds" VerticalAlignment="Center" Foreground="{StaticResource MutedBrush}" TextWrapping="Wrap"/>
+                            <Button Content="RESET STRATEGY" Click="ResetRecommendedStrategy_Click" FontSize="11" Padding="7,3" IsEnabled="{Binding CanEdit}"/>
                           </WrapPanel>
                           <TextBlock x:Name="OptimizationStatus" Text="Owned cards load automatically from the newest save." TextWrapping="Wrap" Foreground="{StaticResource MutedBrush}" Margin="0,8,0,0" />
                         </StackPanel>
@@ -117,8 +126,8 @@
                                     <StackPanel x:Name="OwnedAddPickerPanel" Grid.Row="1" Margin="0,0,0,8" />
                                     <WrapPanel Grid.Row="2" Margin="0,0,0,8">
                                         <Button Content="ADD CARD" Click="AddOwnedCard_Click" Padding="10,5" IsEnabled="{Binding CanEdit}" />
-                                        <Button Content="ARTWORK FOLDER…" Click="ChooseArtworkFolder_Click" Padding="10,5" />
-                                        <Button Content="ASSIGN SELECTED ART…" Click="AssignSelectedArtwork_Click" Padding="10,5" />
+                                        <Button Content="CUSTOM ART FOLDER…" ToolTip="Optional overrides. All 722 card images are included automatically." Click="ChooseArtworkFolder_Click" Padding="10,5" />
+                                        <Button Content="CUSTOM SELECTED ART…" ToolTip="Optional image override for the selected card." Click="AssignSelectedArtwork_Click" Padding="10,5" />
                                         <TextBlock x:Name="OwnedCollectionCount" VerticalAlignment="Center" Foreground="{StaticResource MutedBrush}" Margin="8,0,0,0" />
                                     </WrapPanel>
                                     <ListBox x:Name="OwnedCardsGallery" Grid.Row="3" Height="440" SelectionChanged="OwnedCards_SelectionChanged"
@@ -132,8 +141,15 @@
                                                     <Grid.ColumnDefinitions><ColumnDefinition Width="58"/><ColumnDefinition Width="*"/><ColumnDefinition Width="52"/></Grid.ColumnDefinitions>
                                                     <Border Background="#0A172B" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" Margin="0,0,8,0">
                                                         <Grid>
-                                                            <Image Source="{Binding Artwork}" Stretch="UniformToFill" />
-                                                            <TextBlock Text="{Binding Card.Id}" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{StaticResource GoldBrush}" FontWeight="Bold" />
+                                                            <Image Source="{Binding Artwork}" Stretch="Uniform" />
+                                                            <TextBlock Text="{Binding Card.Id}" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{StaticResource GoldBrush}" FontWeight="Bold">
+                                                                <TextBlock.Style>
+                                                                    <Style TargetType="TextBlock">
+                                                                        <Setter Property="Visibility" Value="Collapsed" />
+                                                                        <Style.Triggers><DataTrigger Binding="{Binding Artwork}" Value="{x:Null}"><Setter Property="Visibility" Value="Visible" /></DataTrigger></Style.Triggers>
+                                                                    </Style>
+                                                                </TextBlock.Style>
+                                                            </TextBlock>
                                                         </Grid>
                                                     </Border>
                                                     <StackPanel Grid.Column="1" MinWidth="0">
@@ -172,17 +188,25 @@
                                 </Border>
                                 <TabControl Grid.Row="3">
                                     <TabItem Header="DECK">
+                                      <DockPanel>
+                                        <WrapPanel DockPanel.Dock="Top" Margin="0,8,0,0">
+                                            <TextBlock Text="CARD ORDER" VerticalAlignment="Center" Foreground="{StaticResource MutedBrush}" Margin="0,0,8,0" />
+                                            <ComboBox x:Name="SuggestedDeckSortCombo" Width="170" SelectionChanged="SuggestedDeckSort_Changed" ToolTip="Alphabetical: A–Z. Card number: lowest first. ATK and DEF: highest first." />
+                                        </WrapPanel>
                                         <DataGrid x:Name="OptimizedDeckGrid" MaxHeight="{Binding ActualHeight, RelativeSource={RelativeSource AncestorType=ScrollViewer}}" ScrollViewer.HorizontalScrollBarVisibility="Auto" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True" AlternationCount="2" Margin="0,8,0,0">
                                             <DataGrid.Columns>
                                                 <DataGridTextColumn ElementStyle="{StaticResource ResultCellText}" Header="COPIES" Binding="{Binding Copies}" Width="60" MinWidth="60" />
                                                 <DataGridTextColumn ElementStyle="{StaticResource ResultCellText}" Header="CARD" Binding="{Binding Card.Name}" Width="180" MinWidth="180" />
-                                                <DataGridTextColumn ElementStyle="{StaticResource ResultCellText}" Header="OWNED" Binding="{Binding Owned}" Width="60" MinWidth="60" />
+                                                <DataGridTextColumn ElementStyle="{StaticResource ResultCellText}" Header="NO." Binding="{Binding Card.Id}" Width="48" MinWidth="48" />
+                                                <DataGridTextColumn ElementStyle="{StaticResource ResultCellText}" Header="OWNED" Binding="{Binding Owned}" Width="70" MinWidth="70" />
                                                 <DataGridTextColumn ElementStyle="{StaticResource ResultCellText}" Header="BUY" Binding="{Binding Purchase}" Width="48" MinWidth="48" />
                                                 <DataGridTextColumn ElementStyle="{StaticResource ResultCellText}" Header="TYPE" Binding="{Binding Card.PrimaryType}" Width="95" MinWidth="95" />
                                                 <DataGridTextColumn ElementStyle="{StaticResource ResultCellText}" Header="ATK" Binding="{Binding Card.Attack}" Width="60" MinWidth="60" />
+                                                <DataGridTextColumn ElementStyle="{StaticResource ResultCellText}" Header="DEF" Binding="{Binding Card.Defense}" Width="60" MinWidth="60" />
                                                 <DataGridTextColumn ElementStyle="{StaticResource ResultCellText}" Header="WHY INCLUDED" Binding="{Binding Reason}" Width="260" MinWidth="260" />
                                             </DataGrid.Columns>
                                         </DataGrid>
+                                      </DockPanel>
                                     </TabItem>
                                     <TabItem Header="OUTCOMES">
                                         <DataGrid x:Name="OptimizationTargetsGrid" MaxHeight="{Binding ActualHeight, RelativeSource={RelativeSource AncestorType=ScrollViewer}}" ScrollViewer.HorizontalScrollBarVisibility="Auto" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True" AlternationCount="2" Margin="0,8,0,0">

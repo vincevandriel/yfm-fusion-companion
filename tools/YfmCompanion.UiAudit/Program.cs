@@ -34,6 +34,13 @@ internal static class Program
 
     private static int Run(string[] args, string fixtureDirectory)
     {
+        if (args.Contains("--artwork-only", StringComparer.Ordinal))
+        {
+            var artworkOutput = args.Length > 0 ? Path.GetFullPath(args[0]) : Path.GetFullPath("artifacts/artwork-audit");
+            Directory.CreateDirectory(artworkOutput);
+            ArtworkAudit.Run(fixtureDirectory, artworkOutput);
+            return 0;
+        }
         var realLive = args.Contains("--real-live", StringComparer.Ordinal);
         if (!realLive) DesktopContractAudit.Run(fixtureDirectory);
         var output = args.Length > 0 ? Path.GetFullPath(args[0]) : Path.GetFullPath("phase2-ui");

@@ -69,6 +69,9 @@
                         CampaignStarChipSetting_ChangedRequested="CampaignStarChipSetting_Changed"
                         OptimizerProfile_SelectionChangedRequested="OptimizerProfile_SelectionChanged"
                         OptimizeDeck_ClickRequested="OptimizeDeck_Click"
+                        SuggestedDeckSort_ChangedRequested="SuggestedDeckSort_Changed"
+                        RecommendedDecks_ClickRequested="RecommendedDecks_Click"
+                        ResetRecommendedStrategy_ClickRequested="ResetRecommendedStrategy_Click"
                         PauseOptimization_ClickRequested="PauseOptimization_Click"
                         StopOptimization_ClickRequested="StopOptimization_Click"
                         VerifyOptimization_ClickRequested="VerifyOptimization_Click"
@@ -162,13 +165,13 @@
                 <CheckBox x:Name="CompactTopmostCheckBox" Grid.Column="1" Content="PIN" Checked="AlwaysOnTop_Changed" Unchecked="AlwaysOnTop_Changed" Margin="4,0" VerticalAlignment="Center" />
                 <Button Grid.Column="2" Content="FULL" Click="CompactMode_Click" Background="#263E50" Foreground="{StaticResource TextBrush}" Padding="8,4" Margin="4,0,0,0" />
             </Grid>
-            <DataGrid x:Name="CompactAdviceGrid" Grid.Row="1" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True" FontSize="12" RowHeaderWidth="0" HeadersVisibility="Column" RowHeight="72" ColumnHeaderHeight="32" GridLinesVisibility="All">
+            <DataGrid x:Name="CompactAdviceGrid" Grid.Row="1" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True" FontSize="12" RowHeaderWidth="0" HeadersVisibility="Column" RowHeight="86" ColumnHeaderHeight="32" GridLinesVisibility="All" CanUserResizeColumns="False" CanUserReorderColumns="False" ScrollViewer.HorizontalScrollBarVisibility="Disabled" SizeChanged="CompactAdviceGrid_SizeChanged">
                 <DataGrid.Columns>
-                    <DataGridTemplateColumn Header="RESULT" Width="135">
+                    <DataGridTemplateColumn Header="RESULT" Width="115" MinWidth="0" MaxWidth="115">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <StackPanel Margin="3,1">
-                                    <TextBlock Text="{Binding Result}" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" ToolTip="{Binding Result}" />
+                                    <TextBlock Text="{Binding Result}" TextWrapping="Wrap" TextTrimming="CharacterEllipsis" LineHeight="15" LineStackingStrategy="BlockLineHeight" MaxHeight="30" ToolTip="{Binding Result}" />
                                     <TextBlock Text="{Binding GuardianStar1}" FontSize="20" Foreground="{StaticResource MutedBrush}" TextTrimming="CharacterEllipsis" ToolTip="{Binding GuardianOutcomes1}">
                                         <TextBlock.Style>
                                             <Style TargetType="TextBlock">

@@ -1,0 +1,18 @@
+{
+  "reviewed_date": "2026-09-27",
+  "scope": "Original PlayStation Forbidden Memories; independently checked against the resolved local catalog",
+  "library_version": "fan-campaign-library-v1",
+  "lists_are_app_authored": true,
+  "win_rate_measured": false,
+  "sources": [
+    { "url": "https://www.reddit.com/r/YugiohFMR/comments/1ffhm89/", "kind": "firsthand fan discussion", "use": "Non-Thunder casual female/Rock and other progression alternatives" },
+    { "url": "https://www.reddit.com/r/YugiohFMR/comments/1r6anmw/", "kind": "reported vanilla completion and fan replies", "use": "Material efficiency, Meteor progression and Mercury guardian backups; no win-rate inference" },
+    { "url": "https://gamefaqs.gamespot.com/boards/561010-yu-gi-oh-forbidden-memories/70354905", "kind": "firsthand fan deck and explanation", "use": "Natural bodies, shared equips and guardian matchups; rank-farming removal omissions not adopted" },
+    { "url": "https://www.reddit.com/r/YugiohFMR/comments/1ma0lr3/", "kind": "conflicting firsthand fan experiences", "use": "Female/equip theme viability limits and need for stronger upgrades" },
+    { "url": "https://www.reddit.com/r/YugiohFMR/comments/1gpb937/", "kind": "fan farming discussion", "use": "Early fallback fusion packages and acquisition uncertainty" },
+    { "url": "https://www.reddit.com/r/YugiohFMR/comments/1h1trow/", "kind": "fan-authored Crimson toolbox list and replies", "use": "Overlapping fusion web, independently catalog-verified; source used 15-drop mod, so farming times and modified rules excluded" },
+    { "url": "https://cyberdemon531.com/yugiohfm/guide-1/", "kind": "experienced-player routing guide", "use": "Starter fusion/support baseline, supplemented by fan alternatives" }
+  ],
+  "excluded": ["Modern TCG and Master Duel deck rules", "FM2 and online-remake balance", "Dream Vanilla modified rituals/cards/opponents", "Boosted-drop farming times", "Unread Neoseeker pages that returned 403", "Unobtainable vanilla acquisition targets"],
+  "canonical_rules_evidence": ["artifacts/yfm.db resolved fusion pairs and equip compatibility", "database-source/YuGiOh_Forbidden_Memories_PostgreSQL.sql", "src/YfmCompanion.Engine/GuardianStarRules.cs", "docs/research/data/guardian_star_rules.json"]
+}

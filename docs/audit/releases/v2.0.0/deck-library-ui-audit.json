@@ -1,0 +1,12 @@
+{
+  "DeckTiles": 6,
+  "UniqueHeroIcons": 6,
+  "RequiredCopyCount": true,
+  "LiveRefresh": true,
+  "MissingCardDetails": true,
+  "BusyStrategyProtected": true,
+  "ExactReferenceCheck": true,
+  "ReferenceCancellation": true,
+  "VerticalScrolling": true,
+  "AdaptStrategySelected": "sand-mercury"
+}

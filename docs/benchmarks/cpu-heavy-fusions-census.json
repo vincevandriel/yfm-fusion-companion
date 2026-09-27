@@ -1,0 +1,101 @@
+[
+  {
+    "Fixture": "previous-first80",
+    "Hands": 2000,
+    "SuccessfulEdgesByFusionCount": [
+      0,
+      3689,
+      1940,
+      634,
+      59
+    ],
+    "HandsWithRouteByFusionCount": [
+      0,
+      1469,
+      629,
+      184,
+      23
+    ],
+    "ExampleHand": [
+      4,
+      24,
+      48,
+      70,
+      132
+    ],
+    "ExampleFiveMaterialRoute": [
+      4,
+      48,
+      24,
+      70,
+      132
+    ],
+    "ExampleResult": 39
+  },
+  {
+    "Fixture": "chain-rich80",
+    "Hands": 2000,
+    "SuccessfulEdgesByFusionCount": [
+      0,
+      14456,
+      14624,
+      7944,
+      1825
+    ],
+    "HandsWithRouteByFusionCount": [
+      0,
+      1996,
+      1805,
+      1174,
+      365
+    ],
+    "ExampleHand": [
+      4,
+      158,
+      172,
+      189,
+      641
+    ],
+    "ExampleFiveMaterialRoute": [
+      4,
+      172,
+      158,
+      189,
+      641
+    ],
+    "ExampleResult": 627
+  },
+  {
+    "Fixture": "chain-rich40",
+    "Hands": 2000,
+    "SuccessfulEdgesByFusionCount": [
+      0,
+      14604,
+      13094,
+      6883,
+      1562
+    ],
+    "HandsWithRouteByFusionCount": [
+      0,
+      1999,
+      1765,
+      1075,
+      346
+    ],
+    "ExampleHand": [
+      2,
+      147,
+      154,
+      200,
+      561
+    ],
+    "ExampleFiveMaterialRoute": [
+      2,
+      147,
+      154,
+      200,
+      561
+    ],
+    "ExampleResult": 545
+  }
+]

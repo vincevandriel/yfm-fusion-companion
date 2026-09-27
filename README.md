@@ -2,11 +2,15 @@
 
 A native, English-only Windows companion for Yu-Gi-Oh! Forbidden Memories. It works beside RetroArch/SwanStation and does not use a browser. Manual fusion, deck analysis, and optimization work without an emulator; automatic live/save features have the compatibility limits described below.
 
+The **Owned-Card Optimizer → Recommended Decks** screen offers six community-informed 40-card builds, each with a distinct artwork icon and the number of required copies already owned beneath it. Inspect missing cards, progression plans, fan sources and exact opening-hand setup metrics, or select a strategy to adapt to your collection. The optimizer compares these starts and now accounts for natural strong monsters, setups exceeding 4,500 ATK, and support-only hands. See [advanced deck research](docs/research/FAN_DECK_RESEARCH.md) for the evidence, scoring choices and limitations; setup availability is not a win rate.
+
+Suggested deck cards default to **Alphabetical** order. Use **Card Order** above the result list to choose **Card number**, **ATK**, or **DEF**. Numbers sort lowest first; ATK and DEF sort highest first. Your selection is remembered and only changes the displayed order.
+
 ## Download and install dependencies first
 
-1. Open this repository's **Releases** page and download the latest `yfm_companion_windows_x64_*.zip`. GitHub's automatic "Source code" archives are for developers and do not contain the ready-to-run program.
+1. Open this repository's **Releases** page and download a Windows x64 ZIP from the latest release. GitHub's automatic "Source code" archives are for developers and do not contain the ready-to-run program.
 2. Extract the complete ZIP to a normal folder. Do not run files from inside the ZIP preview.
-3. Double-click `install_dependencies.cmd`. It verifies 64-bit Windows and confirms that the executable and `Data\yfm.db` remained together. The portable release is self-contained, so it normally installs nothing and reports that no separate .NET runtime is required.
+3. Keep Artwork, Data and ResearchData beside the executable. If included, `install_dependencies.cmd` checks 64-bit Windows and package placement; the app is self-contained and needs no separate .NET runtime. START-HERE contains instructions for the locally verified package.
 4. Double-click `YFM Fusion Companion.exe`.
 
 Windows 10 or 11 x64 is required. RetroArch and SwanStation are optional unless you want automatic save import or Live Duel. This project is not code-signed; if SmartScreen appears, use **More info > Run anyway** only after confirming the download and release SHA-256.
@@ -207,4 +211,8 @@ The labeled PDF booklet is [`output/pdf/YFM-Fusion-Companion-User-Guide.pdf`](ou
 
 The audited catalog contains 722 cards and 25,146 resolved fusion pairs. The current source suite contains 165 automated regression tests plus 13 independent Phase 4 acceptance probes; each tagged release must regenerate the guide and pass those checks before its package is published.
 
-Original companion code is released under the [MIT License](LICENSE). Game names, card names, rules, and other third-party properties remain with their owners and are not relicensed. No ROM, BIOS, emulator, save, or copyrighted card artwork is included. See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md). This fan project is not affiliated with or endorsed by Konami, Sony, RetroArch, Libretro, or SwanStation.
+Original companion code is released under the [MIT License](LICENSE). Game names, card names, rules, and other third-party properties remain with their owners and are not relicensed. No ROM, BIOS, emulator, or save is included. All 722 card images are now bundled for automatic offline display; see [artwork attribution](assets/card-artwork/ATTRIBUTION.md) for their separate provenance and rights. See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md). This fan project is not affiliated with or endorsed by Konami, Sony, RetroArch, Libretro, or SwanStation.
+
+## Automatic card artwork
+
+The Owned Collection displays all 722 cards with built-in images. No folder selection or image download is required. Custom artwork buttons are optional overrides. Card IDs map to bundled `Artwork/001.png` through `Artwork/722.png`; keep the Artwork folder with the Windows executable. See [artwork attribution](assets/card-artwork/ATTRIBUTION.md).

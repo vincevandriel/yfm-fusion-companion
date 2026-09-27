@@ -157,15 +157,10 @@ public sealed class CampaignDeckOptimizer(
             IncludeGlitches: false,
             Profile: DeckStrategyProfile.ControlAndSafety);
         var context = _contextBuilder.Build(scope, specificOpponentId, progress: progress, cancellationToken: cancellationToken);
-        context = context with
-        {
-            Safety = context.Safety with { ActiveFieldCardId = baseOptions.PreferredFieldCardId }
-        };
+        // A build preference is not evidence of an already active field.
+        // Hand-supported terrain is evaluated by DeckAnalyzer instead.
         var secondaryContext = scope == CampaignOpponentScope.GeneralSafety
-            ? _contextBuilder.Build(CampaignOpponentScope.FinalGauntlet, progress: progress, cancellationToken: cancellationToken).Safety with
-            {
-                ActiveFieldCardId = baseOptions.PreferredFieldCardId
-            }
+            ? _contextBuilder.Build(CampaignOpponentScope.FinalGauntlet, progress: progress, cancellationToken: cancellationToken).Safety
             : null;
         var campaignOptions = baseOptions with
         {

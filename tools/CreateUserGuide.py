@@ -185,7 +185,7 @@ def cover(pdf: canvas.Canvas) -> None:
     pdf.setFillColor(MUTED)
     pdf.setFont("Helvetica", 10)
     pdf.drawCentredString(PAGE_W / 2, 163, "Optional read-only live and save integration for NTSC-U RetroArch/SwanStation")
-    pdf.drawCentredString(PAGE_W / 2, 105, "Independent fan-made utility - no ROM, BIOS, save, or card artwork included")
+    pdf.drawCentredString(PAGE_W / 2, 105, "Independent fan-made utility - offline artwork with separate attribution")
     pdf.showPage()
 
 
@@ -196,9 +196,9 @@ def installation_page(pdf: canvas.Canvas) -> None:
     pdf.setFont("Helvetica-Bold", 15)
     pdf.drawString(58, 492, "Four steps")
     draw_bullets(pdf, 58, 461, 325, [
-        "Download the latest yfm_companion_windows_x64 release ZIP from the Releases page.",
+        "Download a Windows x64 ZIP from the latest release on the Releases page.",
         "Extract the entire ZIP. Never run the program from inside the ZIP preview.",
-        "Run install_dependencies.cmd first. It checks Windows x64 and verifies that the executable and database stayed together.",
+        "Keep Artwork, Data and ResearchData beside the executable. The optional install_dependencies.cmd checks placement when included.",
         "Start YFM Fusion Companion.exe. The bottom line should report 722 cards and 25,146 resolved fusion pairs.",
     ], size=10)
     draw_panel(pdf, 420, 275, 383, 245)
@@ -294,7 +294,7 @@ def safety_page(pdf: canvas.Canvas) -> None:
         "No game input, memory writes, save edits, config edits, telemetry, updater, ads, or online API.",
         "Local settings store window bounds, compact/topmost choices, and the last selected save path.",
         "Diagnostics are created only on request and exclude gameplay/card values.",
-        "No ROM, BIOS, emulator, memory-card save, or copyrighted card artwork is distributed.",
+        "No ROM, BIOS, emulator or memory-card save is distributed. Bundled artwork has separate attribution.",
     ], size=9.3)
     draw_panel(pdf, 38, 68, 765, 195)
     pdf.setFillColor(CYAN)
@@ -303,7 +303,7 @@ def safety_page(pdf: canvas.Canvas) -> None:
     draw_bullets(pdf, 58, 203, 725, [
         "ERROR or DISCONNECTED: confirm Network Commands, port 55355, firewall scope, SwanStation, and that RetroArch was restarted.",
         "NOT IN DUEL: connectivity is healthy; enter a duel. Stale duel structures are intentionally hidden in story mode.",
-        "Save looks old: save in-game, close content so the emulator flushes the file, then Refresh Saved Snapshot.",
+        "Save looks old: save in-game, close content so the emulator flushes the file, then Refresh in the analyzer or optimizer.",
         "Wrong region/core: Live Duel may be rejected safely, but every manual feature remains available.",
         "For support, use Export Diagnostics; review the text yourself before sharing it.",
     ], size=9.2)
@@ -323,37 +323,37 @@ def build() -> None:
         "Workspace tabs select the job.", "Source badge and Compact Live are global.",
         "Read-only connection and summary.", "Hand and player/opponent field tables.",
         "Advice, deck, and collection subtabs.", "Inspector opens only when requested.",
-    ], [(0.25, 0.125), (0.73, 0.055), (0.50, 0.22), (0.50, 0.47), (0.18, 0.64), (0.93, 0.22)])
+    ], [(0.25, 0.125), (0.60, 0.055), (0.50, 0.22), (0.50, 0.47), (0.18, 0.815), (0.93, 0.22)])
     turn_adviser_page(pdf)
     screenshot_page(pdf, 5, "Deck Analyzer", "Every physical five-card hand is examined for a complete 40-card deck", "deck-analyzer.png", [
         "Enter up to 40 cards.", "Load the validated saved deck in one click.",
         "Run, cancel, clear, and glitch controls.", "Exact probability and expected-ATK metrics.",
         "Per-result hand chance and representative route.",
-    ], [(0.18, 0.25), (0.28, 0.49), (0.17, 0.49), (0.62, 0.58), (0.52, 0.76)])
+    ], [(0.18, 0.25), (0.255, 0.68), (0.08, 0.68), (0.60, 0.815), (0.50, 0.895)])
     screenshot_page(pdf, 6, "Live Duel", "Validated state refreshes automatically every second", "live-duel.png", [
         "Connection and read-only status.", "Life Points, terrain, and update health.",
         "Current ordered five-card hand.", "Player and opponent active field positions.",
         "Best legal live routes and both guardian-star chains; F#? preserves unknown opponent state.", "Open the selected-card inspector.",
-    ], [(0.47, 0.22), (0.62, 0.30), (0.13, 0.48), (0.66, 0.48), (0.48, 0.77), (0.93, 0.22)])
+    ], [(0.47, 0.22), (0.62, 0.30), (0.13, 0.48), (0.66, 0.48), (0.48, 0.895), (0.93, 0.22)])
     screenshot_page(pdf, 7, "Card Inspector", "Select a live card, then inspect basic and advanced catalog data", "live-duel-inspector.png", [
         "Select a card in any live table.", "Inspector slides over the right edge.",
         "Basic type, ATK, and DEF appear first.", "Advanced Data expands catalog relationships.",
     ], [(0.20, 0.47), (0.86, 0.27), (0.86, 0.45), (0.86, 0.69)])
-    screenshot_page(pdf, 8, "Save Snapshot", "Imports supported memory-card images without modifying them", "save-snapshot.png", [
-        "Refresh discovery or choose an SRM/MCR file.", "Source, timestamp, and validation details.",
-        "Saved 40-card constructed deck; incomplete decks cannot be loaded into Deck Analyzer.", "Chest, deck, total owned, and Library flag.",
-        "Copy snapshot data into the two analysis tabs.",
-    ], [(0.19, 0.22), (0.24, 0.38), (0.18, 0.66), (0.70, 0.66), (0.58, 0.22)])
-    screenshot_page(pdf, 9, "Campaign and owned-card optimizer", "Builds a legal 40-card deck for general play, one duelist, or the final gauntlet", "campaign-plan.png", [
-        "Choose campaign scope, target duelist, profile, field, and types.", "Enter or load owned quantities; visible rows match the calculation.",
-        "Saved Star Chips are optional and only create a virtual purchase plan.", "Enter already redeemed password-card names so they are excluded.",
-        "Safety summary, exact hand metrics, purchases, threats, outcomes, limits, and exclusions explain the result.",
-    ], [(0.33, 0.21), (0.18, 0.62), (0.58, 0.27), (0.46, 0.36), (0.69, 0.65)])
+    screenshot_page(pdf, 8, "Recommended campaign decks", "Six researched reference builds; opening-hand availability is not a duel win rate", "recommended-decks.png", [
+        "Distinct icons select each reference build.", "Required copies already owned appear out of 40 beneath each icon.",
+        "Missing cards and progression advice explain the strategy.", "Check all opening hands; cancel whenever needed.",
+        "Adapt a strategy to your collection; the optimizer compares other starts too.", "Reference metrics can include missing cards; read sources and limits.",
+    ], [(0.11, 0.16), (0.17, 0.257), (0.48, 0.59), (0.125, 0.735), (0.166, 0.938), (0.425, 0.79)])
+    screenshot_page(pdf, 9, "Suggested deck and ordering", "Save import is integrated into Deck Analyzer and Owned-Card Optimizer", "suggested-order-Alphabetical.png", [
+        "Enter or load owned quantities; card artwork works offline.", "Alphabetical is the default card order.",
+        "Choose card number, ATK or DEF; the choice is remembered.", "ATK and DEF sort highest first; card numbers lowest first.",
+        "Campaign summary keeps uncertainty visible.", "Fields, equips and removal are scored as coherent support; setups may need separate turns.",
+    ], [(0.11, 0.61), (0.41, 0.42), (0.52, 0.42), (0.73, 0.47), (0.48, 0.24), (0.82, 0.60)])
     screenshot_page(pdf, 10, "Compact Live", "A narrow right-side companion that leaves the central duel area visible", "compact.png", [
         "Result name and effective ATK.", "Hand routes use plain slot numbers.",
-        "F(1)-F(5) are monster positions; F(6)-F(10) are spell/trap positions.", "Two guardian chains and F# outcomes stay beneath the route; ? means unknown.",
+        "F(1)-F(5) are monster positions; F(6)-F(10) are spell/trap positions.", "20px stars sit beneath Result; warm/red glows clarify choices and known enemy relations.",
         "PIN stays above the game; FULL restores the normal window.",
-    ], [(0.34, 0.10), (0.76, 0.10), (0.80, 0.15), (0.80, 0.23), (0.85, 0.02)])
+    ], [(0.34, 0.10), (0.87, 0.10), (0.85, 0.15), (0.24, 0.23), (0.85, 0.02)])
     safety_page(pdf)
     pdf.save()
 

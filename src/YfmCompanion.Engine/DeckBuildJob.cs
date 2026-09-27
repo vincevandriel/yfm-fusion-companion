@@ -25,7 +25,7 @@ public sealed record DeckBuildResult(DeckBuildState State, DeckBuildCandidate? B
     public BigInteger? ProofLegalDecksEvaluated { get; init; }
 }
 
-/// <summary>Single-worker frozen job; Pause/Resume retains timed-search state in this instance.</summary>
+/// <summary>Frozen job with bounded candidate and exact-analysis workers; Pause/Resume retains timed-search state in this instance.</summary>
 public sealed class DeckBuildJob
 {
     private static readonly ConditionalWeakTable<FusionCatalog, CatalogIdentityBox> CatalogIdentities = [];
@@ -39,6 +39,9 @@ public sealed class DeckBuildJob
     private string _identity;
     private bool _catalogIdentityKnown;
     private OwnedDeckOptimizer? _optimizer;
+    private OwnedDeckOptimizer[]? _searchWorkers;
+    private readonly int _workerCount;
+    private readonly int _searchWorkerCount;
     private DeckQuantitySpace? _space;
     private OwnedCardQuantity[] _available = [];
     private DeckBuildCandidate? _verified;
@@ -47,11 +50,17 @@ public sealed class DeckBuildJob
     private bool _pauseRequested, _stopRequested, _running, _searchDone, _verifyRequested;
     private TimeSpan _elapsed, _searchTime;
     private long _candidates;
+    private int _strategySeedIndex;
+    private IReadOnlyList<CampaignDeckBlueprint>? _strategySeeds;
     private uint _random;
     private volatile DeckBuildState _state = DeckBuildState.Preparing;
 
-    public DeckBuildJob(FusionCatalog catalog, DeckBuildRequest request, string? proofCheckpointPath = null)
+    public DeckBuildJob(FusionCatalog catalog, DeckBuildRequest request, string? proofCheckpointPath = null, int workerCount = 0)
     {
+        ArgumentOutOfRangeException.ThrowIfNegative(workerCount);
+        if (workerCount > MaximumWorkerCount) throw new ArgumentOutOfRangeException(nameof(workerCount));
+        _workerCount = workerCount == 0 ? AutoAnalysisWorkerCount : workerCount;
+        _searchWorkerCount = workerCount == 0 ? AutoSearchWorkerCount : workerCount;
         _catalog = catalog;
         _request = DeckProofSearch.Freeze(request);
         _identity = $"{DeckProofSearch.InputIdentity(_request)}:{DeckProofSearch.RulesVersion}:{DeckObjectiveComparer.Version}";
@@ -105,7 +114,11 @@ public sealed class DeckBuildJob
         }
         return RunAsync(progress, cancellationToken);
     }
-    public static int MaximumWorkerCount => Math.Max(1, Math.Min(4, Environment.ProcessorCount / 2));
+    public int WorkerCount => _workerCount;
+    public int SearchWorkerCount => _searchWorkerCount;
+    public static int MaximumWorkerCount => Math.Max(1, Math.Min(8, Environment.ProcessorCount - 2));
+    public static int AutoSearchWorkerCount => Math.Min(4, MaximumWorkerCount);
+    public static int AutoAnalysisWorkerCount => MaximumWorkerCount;
     public static TimeSpan? BudgetFor(DeckSearchMode mode) => mode switch
     {
         DeckSearchMode.Quick => TimeSpan.FromSeconds(5),
@@ -180,7 +193,7 @@ public sealed class DeckBuildJob
         DeckBuildResult Finish(bool proven = false) => LastResult = new(_state, Best(), proven, _candidates,
             proven ? "Proven optimal for the frozen model and inputs; not a duel-win guarantee."
             : "Best found. Sampled statistics are estimates; exact hand verification does not prove deck optimality.", _identity)
-        { SearchCache = _optimizer?.CacheDiagnostics, ProofLegalDecksEvaluated = proofProgress?.LegalDecksEvaluated };
+        { SearchCache = CombinedCacheDiagnostics(), ProofLegalDecksEvaluated = proofProgress?.LegalDecksEvaluated };
         try
         {
             Report("Preparing", force: true);
@@ -221,7 +234,11 @@ public sealed class DeckBuildJob
                 Report("First legal deck found; evaluation pending", force: true);
             }
             token.ThrowIfCancellationRequested();
-            _optimizer ??= new(_catalog);
+            // Divide the existing 256 MiB retained-cache budget across coordinator and workers.
+            var cacheBudget = 256L * 1024 * 1024 / (_searchWorkerCount == 1 ? 1 : _searchWorkerCount + 1);
+            _optimizer ??= new(_catalog, _workerCount, cacheBudget);
+            _searchWorkers ??= Enumerable.Range(0, _searchWorkerCount == 1 ? 0 : _searchWorkerCount)
+                .Select(_ => new OwnedDeckOptimizer(_catalog, cacheByteLimit: cacheBudget)).ToArray();
 
             _state = DeckBuildState.Searching;
             var search = Stopwatch.StartNew();
@@ -247,6 +264,34 @@ public sealed class DeckBuildJob
                             _estimated = Describe(_estimated);
                             _searchTime = priorSearch + search.Elapsed;
                             Report("Initial deck evaluated", force: true);
+                            continue;
+                        }
+                        // Compare independently adapted fan strategies before local mutations.
+                        // All use the same objective, sample seed and frozen legal space.
+                        _strategySeeds ??= CampaignDeckLibrary.ForCatalog(_catalog)
+                            .OrderByDescending(b => b.Id == _request.Options.RecommendedBuildId).ThenBy(b => b.Id, StringComparer.Ordinal).ToArray();
+                        if (_strategySeedIndex < _strategySeeds.Count)
+                        {
+                            var blueprint = _strategySeeds[_strategySeedIndex];
+                            var strategyDeck = CampaignDeckLibrary.Adapt(blueprint, _available, Expand(_estimated), _request.Options.CopyLimit, searchCancellation.Token);
+                            if (_space.IsLegal(strategyDeck, out _) && !_shortlist.Any(c => Expand(c).SequenceEqual(strategyDeck)))
+                            {
+                                var candidate = Evaluate(strategyDeck, exact: false, searchCancellation.Token, p => Report($"Comparing {blueprint.Name}", p.CompletedHands, p.TotalHands));
+                                _candidates++;
+                                if (Compare(candidate, _estimated) > 0) _estimated = Describe(candidate);
+                                Retain(candidate);
+                            }
+                            _strategySeedIndex++;
+                            _searchTime = priorSearch + search.Elapsed;
+                            Report($"Compared {blueprint.Name} against the best deck");
+                            continue;
+                        }
+                        if (_searchWorkerCount > 1)
+                        {
+                            EvaluateBatch(searchCancellation.Token);
+                            _searchTime = priorSearch + search.Elapsed;
+                            Report($"Searching with {_searchWorkerCount} CPU workers");
+                            if (_searchTime >= budget) _searchDone = true;
                             continue;
                         }
                         var deck = Expand(_estimated!);
@@ -307,6 +352,65 @@ public sealed class DeckBuildJob
         }
     }
 
+    private AnalysisCacheDiagnostics? CombinedCacheDiagnostics()
+    {
+        if (_optimizer is null) return null;
+        var values = new[] { _optimizer.CacheDiagnostics }.Concat(_searchWorkers?.Select(w => w.CacheDiagnostics) ?? []).ToArray();
+        return new(values.Sum(v => v.AccountedBytes), values.Sum(v => v.LimitBytes),
+            values.Sum(v => v.Hits), values.Sum(v => v.Misses), values.Sum(v => v.Entries));
+    }
+
+    private void EvaluateBatch(CancellationToken token)
+    {
+        // Only the coordinator mutates random state, incumbent, shortlist and progress.
+        // Workers own all assessment caches, analyzer scratch, and cancellation state.
+        var decks = new List<int[]>();
+        var seed = Expand(_estimated!);
+        for (var attempt = 0; attempt < 64 && decks.Count < 16; attempt++)
+        {
+            token.ThrowIfCancellationRequested();
+            var deck = (int[])seed.Clone();
+            var ordinal = _candidates + decks.Count;
+            var swaps = ordinal % 16 == 0 ? 12 : ordinal % 5 == 0 ? 3 : 1;
+            for (var i = 0; i < swaps; i++) deck[Next(deck.Length)] = _available[Next(_available.Length)].CardId;
+            if (_space!.IsLegal(deck, out _)) decks.Add(deck);
+        }
+        var results = new DeckBuildCandidate?[decks.Count];
+        Parallel.For(0, _searchWorkerCount, new ParallelOptions { MaxDegreeOfParallelism = _searchWorkerCount }, worker =>
+        {
+            for (var i = worker; i < decks.Count; i += _searchWorkerCount)
+            {
+                if (token.IsCancellationRequested) break;
+                try
+                {
+                    var report = _searchWorkers![worker].EvaluateCandidate(decks[i], _request.Options, false, null, token);
+                    _space!.IsLegal(decks[i], out var spent);
+                    results[i] = new(report, spent);
+                }
+                catch (OperationCanceledException) when (token.IsCancellationRequested) { break; }
+            }
+        });
+        // Commit completed work in generation order even when pause/stop interrupted a batch.
+        foreach (var candidate in results)
+        {
+            if (candidate is null) continue;
+            _candidates++;
+            if (Compare(candidate, _estimated!) > 0)
+                _estimated = token.IsCancellationRequested
+                    ? candidate with
+                    {
+                        Report = candidate.Report with
+                        {
+                            Deck = candidate.Report.Deck.Select(entry => entry with
+                            { ContributionReason = "Completed sampled candidate; verify this deck for the full assessment." }).ToArray()
+                        }
+                    }
+                    : Describe(candidate);
+            Retain(candidate);
+        }
+        token.ThrowIfCancellationRequested();
+    }
+
     private int[] FeasibleSeed(CancellationToken token, Action<DeckOptimizationProgress> progress)
     {
         var allowed = _space!.Capacities.ToDictionary(c => c.CardId, c => Math.Min(c.Owned, c.Capacity));
@@ -344,6 +448,12 @@ public sealed class DeckBuildJob
             .ToArray();
         if (seed.Length != 40 || !_space.IsLegal(seed, out _))
             throw new InvalidDataException("The deterministic early deck did not satisfy the frozen legal deck space.");
+        var preferred = CampaignDeckLibrary.ForCatalog(_catalog).FirstOrDefault(b => b.Id == _request.Options.RecommendedBuildId);
+        if (preferred is not null)
+        {
+            var adapted = CampaignDeckLibrary.Adapt(preferred, allowed.Select(e => new OwnedCardQuantity(e.Key, e.Value)), seed, _request.Options.CopyLimit, token);
+            if (_space.IsLegal(adapted, out _)) seed = adapted;
+        }
         progress(new("Preparing first legal deck", 1, 1));
         return seed;
     }

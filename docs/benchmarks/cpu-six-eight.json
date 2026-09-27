@@ -1,0 +1,1057 @@
+{
+  "LogicalProcessors": 12,
+  "ExactAnalysis": [
+    {
+      "Fixture": "duplicates",
+      "Workers": 1,
+      "Repeat": 0,
+      "Milliseconds": 29.845,
+      "CpuMilliseconds": 62.5,
+      "ReportHash": "90CC8012FCE0627975C5F538A0A9F6F32DC835D2ACA0A0FE039D03D20FED8FCD",
+      "TotalHands": 658008,
+      "Cache": {
+        "AccountedBytes": 1955306,
+        "LimitBytes": 268435456,
+        "Hits": 0,
+        "Misses": 7827,
+        "Entries": 5243
+      }
+    },
+    {
+      "Fixture": "duplicates",
+      "Workers": 2,
+      "Repeat": 0,
+      "Milliseconds": 24.2172,
+      "CpuMilliseconds": 46.875,
+      "ReportHash": "90CC8012FCE0627975C5F538A0A9F6F32DC835D2ACA0A0FE039D03D20FED8FCD",
+      "TotalHands": 658008,
+      "Cache": {
+        "AccountedBytes": 1955306,
+        "LimitBytes": 268435456,
+        "Hits": 0,
+        "Misses": 7827,
+        "Entries": 5243
+      }
+    },
+    {
+      "Fixture": "duplicates",
+      "Workers": 4,
+      "Repeat": 0,
+      "Milliseconds": 11.8075,
+      "CpuMilliseconds": 31.25,
+      "ReportHash": "90CC8012FCE0627975C5F538A0A9F6F32DC835D2ACA0A0FE039D03D20FED8FCD",
+      "TotalHands": 658008,
+      "Cache": {
+        "AccountedBytes": 1955306,
+        "LimitBytes": 268435456,
+        "Hits": 0,
+        "Misses": 7827,
+        "Entries": 5243
+      }
+    },
+    {
+      "Fixture": "duplicates",
+      "Workers": 6,
+      "Repeat": 0,
+      "Milliseconds": 12.1099,
+      "CpuMilliseconds": 93.75,
+      "ReportHash": "90CC8012FCE0627975C5F538A0A9F6F32DC835D2ACA0A0FE039D03D20FED8FCD",
+      "TotalHands": 658008,
+      "Cache": {
+        "AccountedBytes": 1955306,
+        "LimitBytes": 268435456,
+        "Hits": 0,
+        "Misses": 7827,
+        "Entries": 5243
+      }
+    },
+    {
+      "Fixture": "duplicates",
+      "Workers": 8,
+      "Repeat": 0,
+      "Milliseconds": 7.4871,
+      "CpuMilliseconds": 125,
+      "ReportHash": "90CC8012FCE0627975C5F538A0A9F6F32DC835D2ACA0A0FE039D03D20FED8FCD",
+      "TotalHands": 658008,
+      "Cache": {
+        "AccountedBytes": 1955306,
+        "LimitBytes": 268435456,
+        "Hits": 0,
+        "Misses": 7827,
+        "Entries": 5243
+      }
+    },
+    {
+      "Fixture": "duplicates",
+      "Workers": 2,
+      "Repeat": 1,
+      "Milliseconds": 14.0776,
+      "CpuMilliseconds": 31.25,
+      "ReportHash": "90CC8012FCE0627975C5F538A0A9F6F32DC835D2ACA0A0FE039D03D20FED8FCD",
+      "TotalHands": 658008,
+      "Cache": {
+        "AccountedBytes": 1955306,
+        "LimitBytes": 268435456,
+        "Hits": 0,
+        "Misses": 7827,
+        "Entries": 5243
+      }
+    },
+    {
+      "Fixture": "duplicates",
+      "Workers": 4,
+      "Repeat": 1,
+      "Milliseconds": 9.2494,
+      "CpuMilliseconds": 0,
+      "ReportHash": "90CC8012FCE0627975C5F538A0A9F6F32DC835D2ACA0A0FE039D03D20FED8FCD",
+      "TotalHands": 658008,
+      "Cache": {
+        "AccountedBytes": 1955306,
+        "LimitBytes": 268435456,
+        "Hits": 0,
+        "Misses": 7827,
+        "Entries": 5243
+      }
+    },
+    {
+      "Fixture": "duplicates",
+      "Workers": 6,
+      "Repeat": 1,
+      "Milliseconds": 10.2567,
+      "CpuMilliseconds": 0,
+      "ReportHash": "90CC8012FCE0627975C5F538A0A9F6F32DC835D2ACA0A0FE039D03D20FED8FCD",
+      "TotalHands": 658008,
+      "Cache": {
+        "AccountedBytes": 1955306,
+        "LimitBytes": 268435456,
+        "Hits": 0,
+        "Misses": 7827,
+        "Entries": 5243
+      }
+    },
+    {
+      "Fixture": "duplicates",
+      "Workers": 8,
+      "Repeat": 1,
+      "Milliseconds": 8.246,
+      "CpuMilliseconds": 0,
+      "ReportHash": "90CC8012FCE0627975C5F538A0A9F6F32DC835D2ACA0A0FE039D03D20FED8FCD",
+      "TotalHands": 658008,
+      "Cache": {
+        "AccountedBytes": 1955306,
+        "LimitBytes": 268435456,
+        "Hits": 0,
+        "Misses": 7827,
+        "Entries": 5243
+      }
+    },
+    {
+      "Fixture": "duplicates",
+      "Workers": 1,
+      "Repeat": 1,
+      "Milliseconds": 24.7391,
+      "CpuMilliseconds": 31.25,
+      "ReportHash": "90CC8012FCE0627975C5F538A0A9F6F32DC835D2ACA0A0FE039D03D20FED8FCD",
+      "TotalHands": 658008,
+      "Cache": {
+        "AccountedBytes": 1955306,
+        "LimitBytes": 268435456,
+        "Hits": 0,
+        "Misses": 7827,
+        "Entries": 5243
+      }
+    },
+    {
+      "Fixture": "duplicates",
+      "Workers": 4,
+      "Repeat": 2,
+      "Milliseconds": 9.4448,
+      "CpuMilliseconds": 0,
+      "ReportHash": "90CC8012FCE0627975C5F538A0A9F6F32DC835D2ACA0A0FE039D03D20FED8FCD",
+      "TotalHands": 658008,
+      "Cache": {
+        "AccountedBytes": 1955306,
+        "LimitBytes": 268435456,
+        "Hits": 0,
+        "Misses": 7827,
+        "Entries": 5243
+      }
+    },
+    {
+      "Fixture": "duplicates",
+      "Workers": 6,
+      "Repeat": 2,
+      "Milliseconds": 8.1486,
+      "CpuMilliseconds": 15.625,
+      "ReportHash": "90CC8012FCE0627975C5F538A0A9F6F32DC835D2ACA0A0FE039D03D20FED8FCD",
+      "TotalHands": 658008,
+      "Cache": {
+        "AccountedBytes": 1955306,
+        "LimitBytes": 268435456,
+        "Hits": 0,
+        "Misses": 7827,
+        "Entries": 5243
+      }
+    },
+    {
+      "Fixture": "duplicates",
+      "Workers": 8,
+      "Repeat": 2,
+      "Milliseconds": 7.9109,
+      "CpuMilliseconds": 0,
+      "ReportHash": "90CC8012FCE0627975C5F538A0A9F6F32DC835D2ACA0A0FE039D03D20FED8FCD",
+      "TotalHands": 658008,
+      "Cache": {
+        "AccountedBytes": 1955306,
+        "LimitBytes": 268435456,
+        "Hits": 0,
+        "Misses": 7827,
+        "Entries": 5243
+      }
+    },
+    {
+      "Fixture": "duplicates",
+      "Workers": 1,
+      "Repeat": 2,
+      "Milliseconds": 23.9305,
+      "CpuMilliseconds": 15.625,
+      "ReportHash": "90CC8012FCE0627975C5F538A0A9F6F32DC835D2ACA0A0FE039D03D20FED8FCD",
+      "TotalHands": 658008,
+      "Cache": {
+        "AccountedBytes": 1955306,
+        "LimitBytes": 268435456,
+        "Hits": 0,
+        "Misses": 7827,
+        "Entries": 5243
+      }
+    },
+    {
+      "Fixture": "duplicates",
+      "Workers": 2,
+      "Repeat": 2,
+      "Milliseconds": 13.4132,
+      "CpuMilliseconds": 31.25,
+      "ReportHash": "90CC8012FCE0627975C5F538A0A9F6F32DC835D2ACA0A0FE039D03D20FED8FCD",
+      "TotalHands": 658008,
+      "Cache": {
+        "AccountedBytes": 1955306,
+        "LimitBytes": 268435456,
+        "Hits": 0,
+        "Misses": 7827,
+        "Entries": 5243
+      }
+    },
+    {
+      "Fixture": "diverse",
+      "Workers": 1,
+      "Repeat": 0,
+      "Milliseconds": 905.8928,
+      "CpuMilliseconds": 1078.125,
+      "ReportHash": "20DA9A8834CFA33F76CA8D727E3B3FA847ABB7CBD820AC6D12A44A2C464BE0F8",
+      "TotalHands": 658008,
+      "Cache": {
+        "AccountedBytes": 140396694,
+        "LimitBytes": 268435456,
+        "Hits": 0,
+        "Misses": 658009,
+        "Entries": 386182
+      }
+    },
+    {
+      "Fixture": "diverse",
+      "Workers": 2,
+      "Repeat": 0,
+      "Milliseconds": 447.4813,
+      "CpuMilliseconds": 765.625,
+      "ReportHash": "20DA9A8834CFA33F76CA8D727E3B3FA847ABB7CBD820AC6D12A44A2C464BE0F8",
+      "TotalHands": 658008,
+      "Cache": {
+        "AccountedBytes": 126574086,
+        "LimitBytes": 268435456,
+        "Hits": 0,
+        "Misses": 658009,
+        "Entries": 346166
+      }
+    },
+    {
+      "Fixture": "diverse",
+      "Workers": 4,
+      "Repeat": 0,
+      "Milliseconds": 262.2792,
+      "CpuMilliseconds": 703.125,
+      "ReportHash": "20DA9A8834CFA33F76CA8D727E3B3FA847ABB7CBD820AC6D12A44A2C464BE0F8",
+      "TotalHands": 658008,
+      "Cache": {
+        "AccountedBytes": 126509862,
+        "LimitBytes": 268435456,
+        "Hits": 0,
+        "Misses": 658009,
+        "Entries": 346568
+      }
+    },
+    {
+      "Fixture": "diverse",
+      "Workers": 6,
+      "Repeat": 0,
+      "Milliseconds": 192.1552,
+      "CpuMilliseconds": 796.875,
+      "ReportHash": "20DA9A8834CFA33F76CA8D727E3B3FA847ABB7CBD820AC6D12A44A2C464BE0F8",
+      "TotalHands": 658008,
+      "Cache": {
+        "AccountedBytes": 120205014,
+        "LimitBytes": 268435456,
+        "Hits": 0,
+        "Misses": 658009,
+        "Entries": 332052
+      }
+    },
+    {
+      "Fixture": "diverse",
+      "Workers": 8,
+      "Repeat": 0,
+      "Milliseconds": 167.4631,
+      "CpuMilliseconds": 703.125,
+      "ReportHash": "20DA9A8834CFA33F76CA8D727E3B3FA847ABB7CBD820AC6D12A44A2C464BE0F8",
+      "TotalHands": 658008,
+      "Cache": {
+        "AccountedBytes": 115338694,
+        "LimitBytes": 268435456,
+        "Hits": 0,
+        "Misses": 658009,
+        "Entries": 318042
+      }
+    },
+    {
+      "Fixture": "diverse",
+      "Workers": 2,
+      "Repeat": 1,
+      "Milliseconds": 389.2731,
+      "CpuMilliseconds": 656.25,
+      "ReportHash": "20DA9A8834CFA33F76CA8D727E3B3FA847ABB7CBD820AC6D12A44A2C464BE0F8",
+      "TotalHands": 658008,
+      "Cache": {
+        "AccountedBytes": 126574086,
+        "LimitBytes": 268435456,
+        "Hits": 0,
+        "Misses": 658009,
+        "Entries": 346166
+      }
+    },
+    {
+      "Fixture": "diverse",
+      "Workers": 4,
+      "Repeat": 1,
+      "Milliseconds": 228.5401,
+      "CpuMilliseconds": 609.375,
+      "ReportHash": "20DA9A8834CFA33F76CA8D727E3B3FA847ABB7CBD820AC6D12A44A2C464BE0F8",
+      "TotalHands": 658008,
+      "Cache": {
+        "AccountedBytes": 126509862,
+        "LimitBytes": 268435456,
+        "Hits": 0,
+        "Misses": 658009,
+        "Entries": 346568
+      }
+    },
+    {
+      "Fixture": "diverse",
+      "Workers": 6,
+      "Repeat": 1,
+      "Milliseconds": 197.2418,
+      "CpuMilliseconds": 750,
+      "ReportHash": "20DA9A8834CFA33F76CA8D727E3B3FA847ABB7CBD820AC6D12A44A2C464BE0F8",
+      "TotalHands": 658008,
+      "Cache": {
+        "AccountedBytes": 120205014,
+        "LimitBytes": 268435456,
+        "Hits": 0,
+        "Misses": 658009,
+        "Entries": 332052
+      }
+    },
+    {
+      "Fixture": "diverse",
+      "Workers": 8,
+      "Repeat": 1,
+      "Milliseconds": 172,
+      "CpuMilliseconds": 843.75,
+      "ReportHash": "20DA9A8834CFA33F76CA8D727E3B3FA847ABB7CBD820AC6D12A44A2C464BE0F8",
+      "TotalHands": 658008,
+      "Cache": {
+        "AccountedBytes": 115338694,
+        "LimitBytes": 268435456,
+        "Hits": 0,
+        "Misses": 658009,
+        "Entries": 318042
+      }
+    },
+    {
+      "Fixture": "diverse",
+      "Workers": 1,
+      "Repeat": 1,
+      "Milliseconds": 662.538,
+      "CpuMilliseconds": 671.875,
+      "ReportHash": "20DA9A8834CFA33F76CA8D727E3B3FA847ABB7CBD820AC6D12A44A2C464BE0F8",
+      "TotalHands": 658008,
+      "Cache": {
+        "AccountedBytes": 140396694,
+        "LimitBytes": 268435456,
+        "Hits": 0,
+        "Misses": 658009,
+        "Entries": 386182
+      }
+    },
+    {
+      "Fixture": "diverse",
+      "Workers": 4,
+      "Repeat": 2,
+      "Milliseconds": 240.6938,
+      "CpuMilliseconds": 718.75,
+      "ReportHash": "20DA9A8834CFA33F76CA8D727E3B3FA847ABB7CBD820AC6D12A44A2C464BE0F8",
+      "TotalHands": 658008,
+      "Cache": {
+        "AccountedBytes": 126509862,
+        "LimitBytes": 268435456,
+        "Hits": 0,
+        "Misses": 658009,
+        "Entries": 346568
+      }
+    },
+    {
+      "Fixture": "diverse",
+      "Workers": 6,
+      "Repeat": 2,
+      "Milliseconds": 188.6962,
+      "CpuMilliseconds": 781.25,
+      "ReportHash": "20DA9A8834CFA33F76CA8D727E3B3FA847ABB7CBD820AC6D12A44A2C464BE0F8",
+      "TotalHands": 658008,
+      "Cache": {
+        "AccountedBytes": 120205014,
+        "LimitBytes": 268435456,
+        "Hits": 0,
+        "Misses": 658009,
+        "Entries": 332052
+      }
+    },
+    {
+      "Fixture": "diverse",
+      "Workers": 8,
+      "Repeat": 2,
+      "Milliseconds": 174.3858,
+      "CpuMilliseconds": 812.5,
+      "ReportHash": "20DA9A8834CFA33F76CA8D727E3B3FA847ABB7CBD820AC6D12A44A2C464BE0F8",
+      "TotalHands": 658008,
+      "Cache": {
+        "AccountedBytes": 115338694,
+        "LimitBytes": 268435456,
+        "Hits": 0,
+        "Misses": 658009,
+        "Entries": 318042
+      }
+    },
+    {
+      "Fixture": "diverse",
+      "Workers": 1,
+      "Repeat": 2,
+      "Milliseconds": 650.9794,
+      "CpuMilliseconds": 656.25,
+      "ReportHash": "20DA9A8834CFA33F76CA8D727E3B3FA847ABB7CBD820AC6D12A44A2C464BE0F8",
+      "TotalHands": 658008,
+      "Cache": {
+        "AccountedBytes": 140396694,
+        "LimitBytes": 268435456,
+        "Hits": 0,
+        "Misses": 658009,
+        "Entries": 386182
+      }
+    },
+    {
+      "Fixture": "diverse",
+      "Workers": 2,
+      "Repeat": 2,
+      "Milliseconds": 383.2024,
+      "CpuMilliseconds": 671.875,
+      "ReportHash": "20DA9A8834CFA33F76CA8D727E3B3FA847ABB7CBD820AC6D12A44A2C464BE0F8",
+      "TotalHands": 658008,
+      "Cache": {
+        "AccountedBytes": 126574086,
+        "LimitBytes": 268435456,
+        "Hits": 0,
+        "Misses": 658009,
+        "Entries": 346166
+      }
+    }
+  ],
+  "TimedSearch": [
+    {
+      "CpuMilliseconds": 5312.5,
+      "AverageCpuPercent": 8.795303395070883,
+      "SampledExpectedBestAttack": 2321.5625,
+      "Fixture": "fusion",
+      "Workers": 1,
+      "Repeat": 0,
+      "Milliseconds": 5033.4629,
+      "CandidatesExamined": 62314,
+      "SearchCache": {
+        "AccountedBytes": 234957338,
+        "LimitBytes": 268435456,
+        "Hits": 3389058,
+        "Misses": 540936,
+        "Entries": 90500
+      },
+      "ProvenOptimal": false,
+      "IsExact": false
+    },
+    {
+      "CpuMilliseconds": 6515.625,
+      "AverageCpuPercent": 10.83853726180195,
+      "SampledExpectedBestAttack": 2311.25,
+      "Fixture": "fusion",
+      "Workers": 2,
+      "Repeat": 0,
+      "Milliseconds": 5009.6128,
+      "CandidatesExamined": 78401,
+      "SearchCache": {
+        "AccountedBytes": 156719318,
+        "LimitBytes": 268435452,
+        "Hits": 4407470,
+        "Misses": 834691,
+        "Entries": 59524
+      },
+      "ProvenOptimal": false,
+      "IsExact": false
+    },
+    {
+      "CpuMilliseconds": 8500,
+      "AverageCpuPercent": 14.142091953479106,
+      "SampledExpectedBestAttack": 2311.25,
+      "Fixture": "fusion",
+      "Workers": 4,
+      "Repeat": 0,
+      "Milliseconds": 5008.6885,
+      "CandidatesExamined": 67601,
+      "SearchCache": {
+        "AccountedBytes": 187983348,
+        "LimitBytes": 268435450,
+        "Hits": 5243091,
+        "Misses": 933870,
+        "Entries": 70564
+      },
+      "ProvenOptimal": false,
+      "IsExact": false
+    },
+    {
+      "CpuMilliseconds": 9156.25,
+      "AverageCpuPercent": 15.258303391646924,
+      "SampledExpectedBestAttack": 2311.25,
+      "Fixture": "fusion",
+      "Workers": 6,
+      "Repeat": 0,
+      "Milliseconds": 5000.6925,
+      "CandidatesExamined": 65681,
+      "SearchCache": {
+        "AccountedBytes": 201409440,
+        "LimitBytes": 268435447,
+        "Hits": 6039505,
+        "Misses": 1061296,
+        "Entries": 77060
+      },
+      "ProvenOptimal": false,
+      "IsExact": false
+    },
+    {
+      "CpuMilliseconds": 9796.875,
+      "AverageCpuPercent": 16.32462271544263,
+      "SampledExpectedBestAttack": 2311.25,
+      "Fixture": "fusion",
+      "Workers": 8,
+      "Repeat": 0,
+      "Milliseconds": 5001.0727,
+      "CandidatesExamined": 63921,
+      "SearchCache": {
+        "AccountedBytes": 208835444,
+        "LimitBytes": 268435440,
+        "Hits": 6393255,
+        "Misses": 1146586,
+        "Entries": 84894
+      },
+      "ProvenOptimal": false,
+      "IsExact": false
+    },
+    {
+      "CpuMilliseconds": 6781.25,
+      "AverageCpuPercent": 11.276880407772394,
+      "SampledExpectedBestAttack": 2311.25,
+      "Fixture": "fusion",
+      "Workers": 2,
+      "Repeat": 1,
+      "Milliseconds": 5011.1746,
+      "CandidatesExamined": 80417,
+      "SearchCache": {
+        "AccountedBytes": 156721674,
+        "LimitBytes": 268435452,
+        "Hits": 4504712,
+        "Misses": 853545,
+        "Entries": 59319
+      },
+      "ProvenOptimal": false,
+      "IsExact": false
+    },
+    {
+      "CpuMilliseconds": 7890.625,
+      "AverageCpuPercent": 13.148280264845443,
+      "SampledExpectedBestAttack": 2311.25,
+      "Fixture": "fusion",
+      "Workers": 4,
+      "Repeat": 1,
+      "Milliseconds": 5001.0501,
+      "CandidatesExamined": 71409,
+      "SearchCache": {
+        "AccountedBytes": 187965230,
+        "LimitBytes": 268435450,
+        "Hits": 5511389,
+        "Misses": 979780,
+        "Entries": 70149
+      },
+      "ProvenOptimal": false,
+      "IsExact": false
+    },
+    {
+      "CpuMilliseconds": 9203.125,
+      "AverageCpuPercent": 15.290549524684529,
+      "SampledExpectedBestAttack": 2311.25,
+      "Fixture": "fusion",
+      "Workers": 6,
+      "Repeat": 1,
+      "Milliseconds": 5015.6934,
+      "CandidatesExamined": 66976,
+      "SearchCache": {
+        "AccountedBytes": 201429058,
+        "LimitBytes": 268435447,
+        "Hits": 6149854,
+        "Misses": 1079752,
+        "Entries": 76894
+      },
+      "ProvenOptimal": false,
+      "IsExact": false
+    },
+    {
+      "CpuMilliseconds": 9562.5,
+      "AverageCpuPercent": 15.937810787310353,
+      "SampledExpectedBestAttack": 2311.25,
+      "Fixture": "fusion",
+      "Workers": 8,
+      "Repeat": 1,
+      "Milliseconds": 4999.9025,
+      "CandidatesExamined": 63649,
+      "SearchCache": {
+        "AccountedBytes": 208773158,
+        "LimitBytes": 268435440,
+        "Hits": 6364556,
+        "Misses": 1142213,
+        "Entries": 85029
+      },
+      "ProvenOptimal": false,
+      "IsExact": false
+    },
+    {
+      "CpuMilliseconds": 4937.5,
+      "AverageCpuPercent": 8.199637639620606,
+      "SampledExpectedBestAttack": 2321.5625,
+      "Fixture": "fusion",
+      "Workers": 1,
+      "Repeat": 1,
+      "Milliseconds": 5018.0063,
+      "CandidatesExamined": 71801,
+      "SearchCache": {
+        "AccountedBytes": 234933210,
+        "LimitBytes": 268435456,
+        "Hits": 3721781,
+        "Misses": 598500,
+        "Entries": 90251
+      },
+      "ProvenOptimal": false,
+      "IsExact": false
+    },
+    {
+      "CpuMilliseconds": 7796.875,
+      "AverageCpuPercent": 12.972973719465271,
+      "SampledExpectedBestAttack": 2311.25,
+      "Fixture": "fusion",
+      "Workers": 4,
+      "Repeat": 2,
+      "Milliseconds": 5008.409,
+      "CandidatesExamined": 72145,
+      "SearchCache": {
+        "AccountedBytes": 187971364,
+        "LimitBytes": 268435450,
+        "Hits": 5562970,
+        "Misses": 988775,
+        "Entries": 70253
+      },
+      "ProvenOptimal": false,
+      "IsExact": false
+    },
+    {
+      "CpuMilliseconds": 8562.5,
+      "AverageCpuPercent": 14.268919871178607,
+      "SampledExpectedBestAttack": 2311.25,
+      "Fixture": "fusion",
+      "Workers": 6,
+      "Repeat": 2,
+      "Milliseconds": 5000.6705,
+      "CandidatesExamined": 67089,
+      "SearchCache": {
+        "AccountedBytes": 201442772,
+        "LimitBytes": 268435447,
+        "Hits": 6159057,
+        "Misses": 1081392,
+        "Entries": 76806
+      },
+      "ProvenOptimal": false,
+      "IsExact": false
+    },
+    {
+      "CpuMilliseconds": 10296.875,
+      "AverageCpuPercent": 17.06488948890677,
+      "SampledExpectedBestAttack": 2311.25,
+      "Fixture": "fusion",
+      "Workers": 8,
+      "Repeat": 2,
+      "Milliseconds": 5028.2946,
+      "CandidatesExamined": 63868,
+      "SearchCache": {
+        "AccountedBytes": 208914684,
+        "LimitBytes": 268435440,
+        "Hits": 6387554,
+        "Misses": 1145660,
+        "Entries": 85048
+      },
+      "ProvenOptimal": false,
+      "IsExact": false
+    },
+    {
+      "CpuMilliseconds": 4968.75,
+      "AverageCpuPercent": 8.247320687637473,
+      "SampledExpectedBestAttack": 2321.5625,
+      "Fixture": "fusion",
+      "Workers": 1,
+      "Repeat": 2,
+      "Milliseconds": 5020.5699,
+      "CandidatesExamined": 71800,
+      "SearchCache": {
+        "AccountedBytes": 234936782,
+        "LimitBytes": 268435456,
+        "Hits": 3721629,
+        "Misses": 598491,
+        "Entries": 90253
+      },
+      "ProvenOptimal": false,
+      "IsExact": false
+    },
+    {
+      "CpuMilliseconds": 6609.375,
+      "AverageCpuPercent": 11.012962506184504,
+      "SampledExpectedBestAttack": 2311.25,
+      "Fixture": "fusion",
+      "Workers": 2,
+      "Repeat": 2,
+      "Milliseconds": 5001.2088,
+      "CandidatesExamined": 79457,
+      "SearchCache": {
+        "AccountedBytes": 156744632,
+        "LimitBytes": 268435452,
+        "Hits": 4457727,
+        "Misses": 844530,
+        "Entries": 59589
+      },
+      "ProvenOptimal": false,
+      "IsExact": false
+    },
+    {
+      "CpuMilliseconds": 5109.375,
+      "AverageCpuPercent": 8.514901573962277,
+      "SampledExpectedBestAttack": 2399.375,
+      "Fixture": "campaign",
+      "Workers": 1,
+      "Repeat": 0,
+      "Milliseconds": 5000.4248,
+      "CandidatesExamined": 18727,
+      "SearchCache": {
+        "AccountedBytes": 235196434,
+        "LimitBytes": 268435456,
+        "Hits": 2753765,
+        "Misses": 219781,
+        "Entries": 63482
+      },
+      "ProvenOptimal": false,
+      "IsExact": false
+    },
+    {
+      "CpuMilliseconds": 7296.875,
+      "AverageCpuPercent": 12.157618471115416,
+      "SampledExpectedBestAttack": 2390.9375,
+      "Fixture": "campaign",
+      "Workers": 2,
+      "Repeat": 0,
+      "Milliseconds": 5001.5792,
+      "CandidatesExamined": 24801,
+      "SearchCache": {
+        "AccountedBytes": 157446368,
+        "LimitBytes": 268435452,
+        "Hits": 3921124,
+        "Misses": 361545,
+        "Entries": 46143
+      },
+      "ProvenOptimal": false,
+      "IsExact": false
+    },
+    {
+      "CpuMilliseconds": 9359.375,
+      "AverageCpuPercent": 15.59475710576904,
+      "SampledExpectedBestAttack": 2390.9375,
+      "Fixture": "campaign",
+      "Workers": 4,
+      "Repeat": 0,
+      "Milliseconds": 5001.347,
+      "CandidatesExamined": 29681,
+      "SearchCache": {
+        "AccountedBytes": 189249182,
+        "LimitBytes": 268435450,
+        "Hits": 5033323,
+        "Misses": 515282,
+        "Entries": 58683
+      },
+      "ProvenOptimal": false,
+      "IsExact": false
+    },
+    {
+      "CpuMilliseconds": 10578.125,
+      "AverageCpuPercent": 17.62138002194234,
+      "SampledExpectedBestAttack": 2390.9375,
+      "Fixture": "campaign",
+      "Workers": 6,
+      "Repeat": 0,
+      "Milliseconds": 5002.505,
+      "CandidatesExamined": 29601,
+      "SearchCache": {
+        "AccountedBytes": 203115586,
+        "LimitBytes": 268435447,
+        "Hits": 5222570,
+        "Misses": 591644,
+        "Entries": 66746
+      },
+      "ProvenOptimal": false,
+      "IsExact": false
+    },
+    {
+      "CpuMilliseconds": 12359.375,
+      "AverageCpuPercent": 20.59291266603284,
+      "SampledExpectedBestAttack": 2390.9375,
+      "Fixture": "campaign",
+      "Workers": 8,
+      "Repeat": 0,
+      "Milliseconds": 5001.4679,
+      "CandidatesExamined": 27553,
+      "SearchCache": {
+        "AccountedBytes": 211010028,
+        "LimitBytes": 268435440,
+        "Hits": 4954607,
+        "Misses": 618214,
+        "Entries": 74518
+      },
+      "ProvenOptimal": false,
+      "IsExact": false
+    },
+    {
+      "CpuMilliseconds": 7453.125,
+      "AverageCpuPercent": 12.417379908473132,
+      "SampledExpectedBestAttack": 2390.9375,
+      "Fixture": "campaign",
+      "Workers": 2,
+      "Repeat": 1,
+      "Milliseconds": 5001.81,
+      "CandidatesExamined": 25745,
+      "SearchCache": {
+        "AccountedBytes": 157399730,
+        "LimitBytes": 268435452,
+        "Hits": 4043350,
+        "Misses": 372273,
+        "Entries": 46346
+      },
+      "ProvenOptimal": false,
+      "IsExact": false
+    },
+    {
+      "CpuMilliseconds": 9812.5,
+      "AverageCpuPercent": 16.3077892709149,
+      "SampledExpectedBestAttack": 2390.9375,
+      "Fixture": "campaign",
+      "Workers": 4,
+      "Repeat": 1,
+      "Milliseconds": 5014.2194,
+      "CandidatesExamined": 29104,
+      "SearchCache": {
+        "AccountedBytes": 189212030,
+        "LimitBytes": 268435450,
+        "Hits": 4944959,
+        "Misses": 507203,
+        "Entries": 58285
+      },
+      "ProvenOptimal": false,
+      "IsExact": false
+    },
+    {
+      "CpuMilliseconds": 11343.75,
+      "AverageCpuPercent": 18.895188001136614,
+      "SampledExpectedBestAttack": 2390.9375,
+      "Fixture": "campaign",
+      "Workers": 6,
+      "Repeat": 1,
+      "Milliseconds": 5002.9272,
+      "CandidatesExamined": 28881,
+      "SearchCache": {
+        "AccountedBytes": 203108812,
+        "LimitBytes": 268435447,
+        "Hits": 5102216,
+        "Misses": 579841,
+        "Entries": 66551
+      },
+      "ProvenOptimal": false,
+      "IsExact": false
+    },
+    {
+      "CpuMilliseconds": 13078.125,
+      "AverageCpuPercent": 21.728478529853298,
+      "SampledExpectedBestAttack": 2390.9375,
+      "Fixture": "campaign",
+      "Workers": 8,
+      "Repeat": 1,
+      "Milliseconds": 5015.7389,
+      "CandidatesExamined": 27675,
+      "SearchCache": {
+        "AccountedBytes": 211024726,
+        "LimitBytes": 268435440,
+        "Hits": 4977932,
+        "Misses": 620459,
+        "Entries": 74280
+      },
+      "ProvenOptimal": false,
+      "IsExact": false
+    },
+    {
+      "CpuMilliseconds": 4968.75,
+      "AverageCpuPercent": 8.280402583599594,
+      "SampledExpectedBestAttack": 2399.375,
+      "Fixture": "campaign",
+      "Workers": 1,
+      "Repeat": 1,
+      "Milliseconds": 5000.5117,
+      "CandidatesExamined": 20058,
+      "SearchCache": {
+        "AccountedBytes": 235183838,
+        "LimitBytes": 268435456,
+        "Hits": 2903633,
+        "Misses": 228916,
+        "Entries": 61267
+      },
+      "ProvenOptimal": false,
+      "IsExact": false
+    },
+    {
+      "CpuMilliseconds": 10375,
+      "AverageCpuPercent": 17.258904089034452,
+      "SampledExpectedBestAttack": 2390.9375,
+      "Fixture": "campaign",
+      "Workers": 4,
+      "Repeat": 2,
+      "Milliseconds": 5009.4915,
+      "CandidatesExamined": 29825,
+      "SearchCache": {
+        "AccountedBytes": 189186248,
+        "LimitBytes": 268435450,
+        "Hits": 5055858,
+        "Misses": 517203,
+        "Entries": 58561
+      },
+      "ProvenOptimal": false,
+      "IsExact": false
+    },
+    {
+      "CpuMilliseconds": 10734.375,
+      "AverageCpuPercent": 17.865353385714705,
+      "SampledExpectedBestAttack": 2390.9375,
+      "Fixture": "campaign",
+      "Workers": 6,
+      "Repeat": 2,
+      "Milliseconds": 5007.0728,
+      "CandidatesExamined": 30000,
+      "SearchCache": {
+        "AccountedBytes": 203079140,
+        "LimitBytes": 268435447,
+        "Hits": 5288329,
+        "Misses": 597858,
+        "Entries": 66526
+      },
+      "ProvenOptimal": false,
+      "IsExact": false
+    },
+    {
+      "CpuMilliseconds": 13000,
+      "AverageCpuPercent": 21.655545244850725,
+      "SampledExpectedBestAttack": 2390.9375,
+      "Fixture": "campaign",
+      "Workers": 8,
+      "Repeat": 2,
+      "Milliseconds": 5002.5678,
+      "CandidatesExamined": 27809,
+      "SearchCache": {
+        "AccountedBytes": 211077910,
+        "LimitBytes": 268435440,
+        "Hits": 4999935,
+        "Misses": 623007,
+        "Entries": 74360
+      },
+      "ProvenOptimal": false,
+      "IsExact": false
+    },
+    {
+      "CpuMilliseconds": 4968.75,
+      "AverageCpuPercent": 8.270470599439514,
+      "SampledExpectedBestAttack": 2399.375,
+      "Fixture": "campaign",
+      "Workers": 1,
+      "Repeat": 2,
+      "Milliseconds": 5006.5168,
+      "CandidatesExamined": 20104,
+      "SearchCache": {
+        "AccountedBytes": 235190828,
+        "LimitBytes": 268435456,
+        "Hits": 2909042,
+        "Misses": 229208,
+        "Entries": 61208
+      },
+      "ProvenOptimal": false,
+      "IsExact": false
+    },
+    {
+      "CpuMilliseconds": 7406.25,
+      "AverageCpuPercent": 12.339177841042778,
+      "SampledExpectedBestAttack": 2390.9375,
+      "Fixture": "campaign",
+      "Workers": 2,
+      "Repeat": 2,
+      "Milliseconds": 5001.8527,
+      "CandidatesExamined": 25857,
+      "SearchCache": {
+        "AccountedBytes": 157443554,
+        "LimitBytes": 268435452,
+        "Hits": 4057858,
+        "Misses": 373488,
+        "Entries": 46365
+      },
+      "ProvenOptimal": false,
+      "IsExact": false
+    }
+  ]
+}

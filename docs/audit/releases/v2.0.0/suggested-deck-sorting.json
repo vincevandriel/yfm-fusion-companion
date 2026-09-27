@@ -1,0 +1,12 @@
+{
+  "Default": "Alphabetical",
+  "Orders": [
+    "Alphabetical",
+    "Card number",
+    "ATK",
+    "DEF"
+  ],
+  "NewResultRetainsOrder": true,
+  "PreferenceSaved": true,
+  "ReportUnchanged": true
+}

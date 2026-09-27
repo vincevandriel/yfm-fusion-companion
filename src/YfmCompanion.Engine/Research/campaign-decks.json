@@ -1,0 +1,654 @@
+[
+  {
+    "Id": "thunder-umi",
+    "Name": "Thunder Tide",
+    "HeroCardId": 613,
+    "Accent": "#55BDE8",
+    "Stage": "Campaign \u2192 endgame with power-ups",
+    "Description": "Repeatable Thunder fusions, a single Umi, compatible power-ups and reliable removal.",
+    "Plan": "Start with available Dragon/Thunder materials. Replace weak three-material chains with stronger two-card recipes as you collect them. Umi + Megamorph + Dragon Treasure takes Twin-headed Thunder Dragon to 4,800 ATK over separate plays. Preserve Raigeki for threats your current monster cannot beat.",
+    "Cautions": "A 2,800 ATK fusion alone is insufficient late in the game. The displayed setup odds require the field and equips to be present in the same opening hand; they do not assume an active Umi or predict a win.",
+    "Entries": [
+      {
+        "CardId": 94,
+        "Copies": 3,
+        "Role": "Fusion materials"
+      },
+      {
+        "CardId": 97,
+        "Copies": 3,
+        "Role": "Fusion materials"
+      },
+      {
+        "CardId": 39,
+        "Copies": 3,
+        "Role": "Fusion materials"
+      },
+      {
+        "CardId": 425,
+        "Copies": 3,
+        "Role": "Fusion materials"
+      },
+      {
+        "CardId": 458,
+        "Copies": 3,
+        "Role": "Fusion materials"
+      },
+      {
+        "CardId": 463,
+        "Copies": 3,
+        "Role": "Fusion materials"
+      },
+      {
+        "CardId": 191,
+        "Copies": 3,
+        "Role": "Fusion materials"
+      },
+      {
+        "CardId": 4,
+        "Copies": 3,
+        "Role": "Fusion materials"
+      },
+      {
+        "CardId": 45,
+        "Copies": 2,
+        "Role": "Fusion materials"
+      },
+      {
+        "CardId": 337,
+        "Copies": 3,
+        "Role": "Removal"
+      },
+      {
+        "CardId": 686,
+        "Copies": 2,
+        "Role": "Removal"
+      },
+      {
+        "CardId": 334,
+        "Copies": 1,
+        "Role": "Field"
+      },
+      {
+        "CardId": 315,
+        "Copies": 2,
+        "Role": "Power-ups"
+      },
+      {
+        "CardId": 324,
+        "Copies": 2,
+        "Role": "Power-ups"
+      },
+      {
+        "CardId": 657,
+        "Copies": 2,
+        "Role": "Power-ups"
+      },
+      {
+        "CardId": 668,
+        "Copies": 2,
+        "Role": "Power-ups"
+      }
+    ],
+    "Recipes": [
+      {
+        "Materials": [
+          94,
+          463
+        ],
+        "ResultCardId": 613
+      },
+      {
+        "Materials": [
+          4,
+          425
+        ],
+        "ResultCardId": 613
+      }
+    ],
+    "Sources": [
+      "https://cyberdemon531.com/yugiohfm/guide-1/",
+      "https://www.reddit.com/r/YugiohFMR/comments/1r6anmw/",
+      "https://www.reddit.com/r/YugiohFMR/comments/1gpb937/"
+    ]
+  },
+  {
+    "Id": "meteor-hybrid",
+    "Name": "Meteor Crossfire",
+    "HeroCardId": 713,
+    "Accent": "#FF9970",
+    "Stage": "Late campaign / final gauntlet",
+    "Description": "Meteor B. Dragon as both a natural draw and a fusion, with Thunder and Mercury backups.",
+    "Plan": "Red-eyes B. Dragon + Meteor Dragon produces a 3,500 ATK boss. Both materials also have actual Thunder fusion routes. Dragon Treasure, Bright Castle and Megamorph support the main Dragon/Thunder routes; Salamandra is for Meteor B. Dragon. A natural Meteor + Megamorph + Dragon Treasure reaches 5,000 ATK without terrain.",
+    "Cautions": "Mountain helps opposing Dragons too, including Blue-eyes Ultimate Dragon. Treat it as a situational card. This is a farming destination rather than a starting deck; acquiring natural Meteor copies can take substantial play.",
+    "Entries": [
+      {
+        "CardId": 713,
+        "Copies": 3,
+        "Role": "Monsters / materials"
+      },
+      {
+        "CardId": 82,
+        "Copies": 3,
+        "Role": "Monsters / materials"
+      },
+      {
+        "CardId": 712,
+        "Copies": 3,
+        "Role": "Monsters / materials"
+      },
+      {
+        "CardId": 39,
+        "Copies": 3,
+        "Role": "Monsters / materials"
+      },
+      {
+        "CardId": 97,
+        "Copies": 3,
+        "Role": "Monsters / materials"
+      },
+      {
+        "CardId": 425,
+        "Copies": 3,
+        "Role": "Monsters / materials"
+      },
+      {
+        "CardId": 458,
+        "Copies": 3,
+        "Role": "Monsters / materials"
+      },
+      {
+        "CardId": 707,
+        "Copies": 2,
+        "Role": "Monsters / materials"
+      },
+      {
+        "CardId": 391,
+        "Copies": 2,
+        "Role": "Monsters / materials"
+      },
+      {
+        "CardId": 337,
+        "Copies": 3,
+        "Role": "Removal"
+      },
+      {
+        "CardId": 686,
+        "Copies": 2,
+        "Role": "Removal"
+      },
+      {
+        "CardId": 332,
+        "Copies": 1,
+        "Role": "Field"
+      },
+      {
+        "CardId": 315,
+        "Copies": 3,
+        "Role": "Power-ups"
+      },
+      {
+        "CardId": 654,
+        "Copies": 2,
+        "Role": "Power-ups"
+      },
+      {
+        "CardId": 657,
+        "Copies": 2,
+        "Role": "Power-ups"
+      },
+      {
+        "CardId": 668,
+        "Copies": 2,
+        "Role": "Power-ups"
+      }
+    ],
+    "Recipes": [
+      {
+        "Materials": [
+          82,
+          712
+        ],
+        "ResultCardId": 713
+      },
+      {
+        "Materials": [
+          712,
+          425
+        ],
+        "ResultCardId": 613
+      }
+    ],
+    "Sources": [
+      "https://www.reddit.com/r/YugiohFMR/comments/1r6anmw/",
+      "https://gamefaqs.gamespot.com/boards/561010-yu-gi-oh-forbidden-memories/70354905"
+    ]
+  },
+  {
+    "Id": "mercury-control",
+    "Name": "Mercury Eclipse",
+    "HeroCardId": 707,
+    "Accent": "#BB9AF7",
+    "Stage": "Endgame alternative to Thunder",
+    "Description": "Skull Knight and Zoa use Mercury, backed by shared dark equips and Meteor finishers.",
+    "Plan": "Mercury gains 500 combat points against Sun, one of Blue-eyes Ultimate Dragon\u2019s stars. Yami supports the Fiend/Spellcaster core. Skull Knight + Yami + two Megamorphs reaches 5,150 ATK before guardian comparison; Zoa reaches 5,100. Use actual compatibility rather than assuming every dark-looking monster takes Dark Energy.",
+    "Cautions": "Mercury is neutral against Venus; its advantage is not universal. The heavy equip package can draw without a monster. Removal is retained for campaign survival even though some S/A-POW farming lists omit it to protect rank.",
+    "Entries": [
+      {
+        "CardId": 707,
+        "Copies": 3,
+        "Role": "Natural threats / fusion pair"
+      },
+      {
+        "CardId": 391,
+        "Copies": 3,
+        "Role": "Natural threats / fusion pair"
+      },
+      {
+        "CardId": 35,
+        "Copies": 3,
+        "Role": "Natural threats / fusion pair"
+      },
+      {
+        "CardId": 392,
+        "Copies": 3,
+        "Role": "Natural threats / fusion pair"
+      },
+      {
+        "CardId": 39,
+        "Copies": 3,
+        "Role": "Natural threats / fusion pair"
+      },
+      {
+        "CardId": 713,
+        "Copies": 3,
+        "Role": "Natural threats / fusion pair"
+      },
+      {
+        "CardId": 82,
+        "Copies": 3,
+        "Role": "Natural threats / fusion pair"
+      },
+      {
+        "CardId": 712,
+        "Copies": 3,
+        "Role": "Natural threats / fusion pair"
+      },
+      {
+        "CardId": 337,
+        "Copies": 3,
+        "Role": "Removal"
+      },
+      {
+        "CardId": 686,
+        "Copies": 2,
+        "Role": "Removal"
+      },
+      {
+        "CardId": 335,
+        "Copies": 1,
+        "Role": "Field"
+      },
+      {
+        "CardId": 303,
+        "Copies": 3,
+        "Role": "Power-ups"
+      },
+      {
+        "CardId": 668,
+        "Copies": 3,
+        "Role": "Power-ups"
+      },
+      {
+        "CardId": 657,
+        "Copies": 3,
+        "Role": "Power-ups"
+      },
+      {
+        "CardId": 311,
+        "Copies": 1,
+        "Role": "Power-ups"
+      }
+    ],
+    "Recipes": [
+      {
+        "Materials": [
+          82,
+          712
+        ],
+        "ResultCardId": 713
+      }
+    ],
+    "Sources": [
+      "https://gamefaqs.gamespot.com/boards/561010-yu-gi-oh-forbidden-memories/70354905",
+      "https://www.reddit.com/r/YugiohFMR/comments/1r6anmw/",
+      "https://www.reddit.com/r/YugiohFMR/comments/1ffhm89/"
+    ]
+  },
+  {
+    "Id": "natural-bosses",
+    "Name": "Iron & Meteor",
+    "HeroCardId": 392,
+    "Accent": "#A7C4CD",
+    "Stage": "Farmed endgame / fewer materials",
+    "Description": "Strong monsters drawn directly leave more opening-hand space for power-ups and removal.",
+    "Plan": "Natural Meteor B. Dragon and Metalzoa avoid spending two or three opening cards on a monster. Skull Knight and Zoa add a different guardian matchup. Start with the strongest owned natural bodies; fill missing slots with actual fusion partners, not unrelated ritual cards. Meteor + Megamorph + Bright Castle reaches 5,000 ATK before terrain.",
+    "Cautions": "The reference list is expensive to farm. Metalzoa\u2019s stars do not provide Mercury\u2019s Sun advantage. Yami supports the Fiend/Spellcaster core without strengthening enemy Dragons, but does not boost Meteor or Metalzoa. The heavier equip package trades fusion density for finishing power.",
+    "Entries": [
+      {
+        "CardId": 713,
+        "Copies": 3,
+        "Role": "Natural threats / backups"
+      },
+      {
+        "CardId": 707,
+        "Copies": 3,
+        "Role": "Natural threats / backups"
+      },
+      {
+        "CardId": 391,
+        "Copies": 3,
+        "Role": "Natural threats / backups"
+      },
+      {
+        "CardId": 392,
+        "Copies": 3,
+        "Role": "Natural threats / backups"
+      },
+      {
+        "CardId": 35,
+        "Copies": 3,
+        "Role": "Natural threats / backups"
+      },
+      {
+        "CardId": 82,
+        "Copies": 2,
+        "Role": "Natural threats / backups"
+      },
+      {
+        "CardId": 712,
+        "Copies": 2,
+        "Role": "Natural threats / backups"
+      },
+      {
+        "CardId": 337,
+        "Copies": 3,
+        "Role": "Removal"
+      },
+      {
+        "CardId": 686,
+        "Copies": 2,
+        "Role": "Removal"
+      },
+      {
+        "CardId": 335,
+        "Copies": 1,
+        "Role": "Field"
+      },
+      {
+        "CardId": 657,
+        "Copies": 3,
+        "Role": "Power-ups"
+      },
+      {
+        "CardId": 668,
+        "Copies": 3,
+        "Role": "Power-ups"
+      },
+      {
+        "CardId": 303,
+        "Copies": 3,
+        "Role": "Power-ups"
+      },
+      {
+        "CardId": 315,
+        "Copies": 3,
+        "Role": "Power-ups"
+      },
+      {
+        "CardId": 654,
+        "Copies": 3,
+        "Role": "Power-ups"
+      }
+    ],
+    "Recipes": [
+      {
+        "Materials": [
+          82,
+          712
+        ],
+        "ResultCardId": 713
+      }
+    ],
+    "Sources": [
+      "https://gamefaqs.gamespot.com/boards/561010-yu-gi-oh-forbidden-memories/70354905",
+      "https://www.reddit.com/r/YugiohFMR/comments/1r6anmw/"
+    ]
+  },
+  {
+    "Id": "sand-mercury",
+    "Name": "Sand & Sorcery",
+    "HeroCardId": 531,
+    "Accent": "#E8C884",
+    "Stage": "Fan synergy \u2192 equip-heavy endgame",
+    "Description": "Female/Rock fusion routes, broad Mystical Sand equip compatibility and Mercury backups.",
+    "Plan": "Female materials + selected Rocks make Mystical Sand, but always check the actual pair: category exceptions exist. Wasteland + three Megamorphs reaches 5,600 ATK on a naturally drawn Mystical Sand. A two-material Sand fusion + two Megamorphs + Wasteland fills all five opening slots and reaches 4,600. Skull Knight and Zoa provide stronger late-game natural draws.",
+    "Cautions": "Sand starts at only 2,100 ATK. This route needs much heavier support than Meteor or Thunder and may need several turns. Fan reports disagree on finishing with a pure female deck, so this is a supported hybrid rather than a promised pure-theme clear.",
+    "Entries": [
+      {
+        "CardId": 2,
+        "Copies": 3,
+        "Role": "Female / Rock core and backups"
+      },
+      {
+        "CardId": 433,
+        "Copies": 3,
+        "Role": "Female / Rock core and backups"
+      },
+      {
+        "CardId": 532,
+        "Copies": 3,
+        "Role": "Female / Rock core and backups"
+      },
+      {
+        "CardId": 74,
+        "Copies": 3,
+        "Role": "Female / Rock core and backups"
+      },
+      {
+        "CardId": 591,
+        "Copies": 3,
+        "Role": "Female / Rock core and backups"
+      },
+      {
+        "CardId": 257,
+        "Copies": 3,
+        "Role": "Female / Rock core and backups"
+      },
+      {
+        "CardId": 707,
+        "Copies": 3,
+        "Role": "Female / Rock core and backups"
+      },
+      {
+        "CardId": 391,
+        "Copies": 2,
+        "Role": "Female / Rock core and backups"
+      },
+      {
+        "CardId": 531,
+        "Copies": 2,
+        "Role": "Female / Rock core and backups"
+      },
+      {
+        "CardId": 337,
+        "Copies": 3,
+        "Role": "Removal"
+      },
+      {
+        "CardId": 686,
+        "Copies": 2,
+        "Role": "Removal"
+      },
+      {
+        "CardId": 331,
+        "Copies": 1,
+        "Role": "Field"
+      },
+      {
+        "CardId": 657,
+        "Copies": 3,
+        "Role": "Power-ups"
+      },
+      {
+        "CardId": 668,
+        "Copies": 2,
+        "Role": "Power-ups"
+      },
+      {
+        "CardId": 316,
+        "Copies": 2,
+        "Role": "Power-ups"
+      },
+      {
+        "CardId": 311,
+        "Copies": 2,
+        "Role": "Power-ups"
+      }
+    ],
+    "Recipes": [
+      {
+        "Materials": [
+          2,
+          74
+        ],
+        "ResultCardId": 531
+      },
+      {
+        "Materials": [
+          433,
+          591
+        ],
+        "ResultCardId": 531
+      }
+    ],
+    "Sources": [
+      "https://www.reddit.com/r/YugiohFMR/comments/1ffhm89/",
+      "https://www.reddit.com/r/YugiohFMR/comments/1ma0lr3/",
+      "https://www.reddit.com/r/YugiohFMR/comments/1gpb937/"
+    ]
+  },
+  {
+    "Id": "crimson-toolbox",
+    "Name": "Crimson Toolbox",
+    "HeroCardId": 467,
+    "Accent": "#79D9AB",
+    "Stage": "Fan fusion web \u2192 upgraded endgame",
+    "Description": "Winged Beast / fiery fusion routes with Zombie/Dragon/Thunder overlap and natural boss upgrades.",
+    "Plan": "Faith Bird + Darkfire Dragon makes Crimson Sunbird; Dragon Zombie + The Immortal of Thunder makes Twin-headed Thunder Dragon. Several low cards serve more than one fusion route. Mountain + two Megamorphs takes Crimson Sunbird to 4,800 ATK, but uses every slot in a five-card hand if the monster needs two materials. Upgrade into natural Meteor and Skull Knight when available.",
+    "Cautions": "Crimson starts at 2,300 ATK, so a pure early toolbox plateaus. Follow Wind supports the Winged Beast routes, while Dragon Treasure supports the Dragon/Thunder backups; neither is universal. The source player used a 15-drop mod: only catalog-verified vanilla synergies are imported, not farming rates. Mountain can boost opposing Dragons.",
+    "Entries": [
+      {
+        "CardId": 168,
+        "Copies": 3,
+        "Role": "Overlapping materials / boss upgrades"
+      },
+      {
+        "CardId": 97,
+        "Copies": 3,
+        "Role": "Overlapping materials / boss upgrades"
+      },
+      {
+        "CardId": 154,
+        "Copies": 3,
+        "Role": "Overlapping materials / boss upgrades"
+      },
+      {
+        "CardId": 125,
+        "Copies": 3,
+        "Role": "Overlapping materials / boss upgrades"
+      },
+      {
+        "CardId": 272,
+        "Copies": 3,
+        "Role": "Overlapping materials / boss upgrades"
+      },
+      {
+        "CardId": 466,
+        "Copies": 3,
+        "Role": "Overlapping materials / boss upgrades"
+      },
+      {
+        "CardId": 462,
+        "Copies": 3,
+        "Role": "Overlapping materials / boss upgrades"
+      },
+      {
+        "CardId": 713,
+        "Copies": 2,
+        "Role": "Overlapping materials / boss upgrades"
+      },
+      {
+        "CardId": 707,
+        "Copies": 2,
+        "Role": "Overlapping materials / boss upgrades"
+      },
+      {
+        "CardId": 337,
+        "Copies": 3,
+        "Role": "Removal"
+      },
+      {
+        "CardId": 686,
+        "Copies": 2,
+        "Role": "Removal"
+      },
+      {
+        "CardId": 332,
+        "Copies": 1,
+        "Role": "Field"
+      },
+      {
+        "CardId": 657,
+        "Copies": 3,
+        "Role": "Power-ups"
+      },
+      {
+        "CardId": 668,
+        "Copies": 2,
+        "Role": "Power-ups"
+      },
+      {
+        "CardId": 327,
+        "Copies": 2,
+        "Role": "Power-ups"
+      },
+      {
+        "CardId": 315,
+        "Copies": 2,
+        "Role": "Power-ups"
+      }
+    ],
+    "Recipes": [
+      {
+        "Materials": [
+          125,
+          168
+        ],
+        "ResultCardId": 467
+      },
+      {
+        "Materials": [
+          97,
+          462
+        ],
+        "ResultCardId": 613
+      }
+    ],
+    "Sources": [
+      "https://www.reddit.com/r/YugiohFMR/comments/1h1trow/",
+      "https://www.reddit.com/r/YugiohFMR/comments/1gpb937/",
+      "https://www.reddit.com/r/YugiohFMR/comments/1r6anmw/"
+    ]
+  }
+]

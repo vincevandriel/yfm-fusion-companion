@@ -35,7 +35,6 @@ internal sealed class ThumbnailCache(long maximumBytes = 64L * 1024 * 1024)
             bitmap.BeginInit();
             bitmap.CacheOption = BitmapCacheOption.OnLoad;
             bitmap.DecodePixelWidth = 96;
-            bitmap.DecodePixelHeight = 144;
             // StreamSource avoids WPF's independent URI cache serving replaced artwork.
             bitmap.StreamSource = stream;
             bitmap.EndInit();

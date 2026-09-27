@@ -7,6 +7,12 @@ namespace YfmCompanion.Desktop.Views;
 public partial class OwnedOptimizerView : UserControl
 {
     public OwnedOptimizerView() => InitializeComponent();
+    public event EventHandler<SelectionChangedEventArgs>? SuggestedDeckSort_ChangedRequested;
+    private void SuggestedDeckSort_Changed(object sender, SelectionChangedEventArgs e) => SuggestedDeckSort_ChangedRequested?.Invoke(sender, e);
+    public event EventHandler<RoutedEventArgs>? RecommendedDecks_ClickRequested;
+    private void RecommendedDecks_Click(object sender, RoutedEventArgs e) => RecommendedDecks_ClickRequested?.Invoke(sender, e);
+    public event EventHandler<RoutedEventArgs>? ResetRecommendedStrategy_ClickRequested;
+    private void ResetRecommendedStrategy_Click(object sender, RoutedEventArgs e) => ResetRecommendedStrategy_ClickRequested?.Invoke(sender, e);
     public event EventHandler<RoutedEventArgs>? RefreshSaveSnapshot_ClickRequested;
     private void RefreshSaveSnapshot_Click(object sender, RoutedEventArgs e) => RefreshSaveSnapshot_ClickRequested?.Invoke(sender, e);
     public event EventHandler<RoutedEventArgs>? SelectSave_ClickRequested;

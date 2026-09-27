@@ -1,0 +1,38 @@
+{
+  "Package": "YFM-Fusion-Companion-2.0-CardOrder-20260927-072408",
+  "Archive": "YFM-Fusion-Companion-2.0-CardOrder-20260927-072408.zip",
+  "ArchiveSHA256": "465EDEF53CF2C45351F799E9E42043990C2514823FE412A83B9F01FCBF0FD3A1",
+  "Tests": {
+    "Total": 226,
+    "Passed": 226,
+    "Failed": 0
+  },
+  "ExactPublishedStartupSeconds": 4,
+  "ExtractedFilesVerified": 750,
+  "AutomaticArtworkCardsVerified": 722,
+  "DeckLibrary": {
+    "DeckTiles": 6,
+    "UniqueHeroIcons": 6,
+    "RequiredCopyCount": true,
+    "LiveRefresh": true,
+    "MissingCardDetails": true,
+    "BusyStrategyProtected": true,
+    "ExactReferenceCheck": true,
+    "ReferenceCancellation": true,
+    "VerticalScrolling": true,
+    "AdaptStrategySelected": "sand-mercury"
+  },
+  "SuggestedDeckOrdering": {
+    "Default": "Alphabetical",
+    "Orders": [
+      "Alphabetical",
+      "Card number",
+      "ATK",
+      "DEF"
+    ],
+    "NewResultRetainsOrder": true,
+    "PreferenceSaved": true,
+    "ReportUnchanged": true
+  },
+  "LiveGameplayCoexistenceRetested": false
+}

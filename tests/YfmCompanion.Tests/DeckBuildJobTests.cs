@@ -11,6 +11,50 @@ public sealed class DeckBuildJobTests
         [.. Enumerable.Range(1, 14).Select(id => new OwnedCardQuantity(id, 3))], new(SampleHands: 24), mode);
 
     [Fact]
+    public void AutoSplitsSearchAndAnalysisAndPreservesManualCounts()
+    {
+        var auto = new DeckBuildJob(Catalog(), Request());
+        Assert.Equal(Math.Min(4, DeckBuildJob.MaximumWorkerCount), auto.SearchWorkerCount);
+        Assert.Equal(Math.Min(8, Math.Max(1, Environment.ProcessorCount - 2)), auto.WorkerCount);
+        var serial = new DeckBuildJob(Catalog(), Request(), workerCount: 1);
+        Assert.Equal(1, serial.SearchWorkerCount);
+        Assert.Equal(1, serial.WorkerCount);
+        var manual = new DeckBuildJob(Catalog(), Request(), workerCount: DeckBuildJob.MaximumWorkerCount);
+        Assert.Equal(DeckBuildJob.MaximumWorkerCount, manual.SearchWorkerCount);
+        Assert.Equal(DeckBuildJob.MaximumWorkerCount, manual.WorkerCount);
+        Assert.Throws<ArgumentOutOfRangeException>(() => new DeckBuildJob(Catalog(), Request(), workerCount: DeckBuildJob.MaximumWorkerCount + 1));
+    }
+
+    [Fact]
+    public async Task ParallelSearchPauseResumeStopAndVerificationKeepLegalCompletedWork()
+    {
+        var job = new DeckBuildJob(Catalog(), Request());
+        Assert.Equal(DeckBuildJob.AutoSearchWorkerCount, job.SearchWorkerCount);
+        Assert.Equal(DeckBuildJob.AutoAnalysisWorkerCount, job.WorkerCount);
+        var paused = await job.RunAsync(new Callback<DeckBuildProgress>(p =>
+        {
+            if (p.CandidatesExamined > 1 && p.State == DeckBuildState.Searching) job.Pause();
+        }));
+        Assert.Equal(DeckBuildState.Paused, paused.State);
+        Assert.True(paused.CandidatesExamined > 1);
+        Assert.Equal(40, paused.Best!.Report.TotalCards);
+        Assert.All(paused.Best.Report.Deck, entry => Assert.False(string.IsNullOrWhiteSpace(entry.ContributionReason)));
+        Assert.True(paused.SearchCache!.AccountedBytes <= paused.SearchCache.LimitBytes);
+        Assert.True(paused.SearchCache.LimitBytes <= 256L * 1024 * 1024);
+        var stopped = await job.RunAsync(new Callback<DeckBuildProgress>(p =>
+        {
+            if (p.State == DeckBuildState.Searching) job.StopAndKeepBest();
+        }));
+        Assert.Equal(DeckBuildState.Cancelled, stopped.State);
+        Assert.True(stopped.CandidatesExamined >= paused.CandidatesExamined);
+        var verified = await job.VerifyBestAsync();
+        Assert.True(verified.Best!.Report.ExactAnalysis.IsExact);
+        Assert.Equal(658008, verified.Best.Report.ExactAnalysis.TotalHands);
+        Assert.False(verified.ProvenOptimal);
+        Assert.Equal(40, verified.Best.Report.TotalCards);
+    }
+
+    [Fact]
     public async Task StopKeepsEarlyLegalDeckAndVerifyDoesNotClaimOptimality()
     {
         var job = new DeckBuildJob(Catalog(), Request());

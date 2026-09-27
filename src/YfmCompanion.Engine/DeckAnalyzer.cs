@@ -13,20 +13,39 @@ public sealed class DeckAnalyzer
     private readonly int[] _stamps = new int[2169];
     private readonly List<int> _outcomes = new(64);
     private readonly Accumulator _accumulator = new();
+    private readonly int _workerCount;
+    private readonly long _workerCacheBudget;
+    private DeckAnalyzer[]? _workers;
     private int _stamp;
     private int[] _hand = [];
     private bool _includeGlitches;
     private CancellationToken _token;
+    private int _bestSetupAttack;
+    private int _bestBodyAttack;
 
-    public DeckAnalyzer(FusionCatalog catalog, long cacheByteLimit = 256L * 1024 * 1024)
+    public DeckAnalyzer(FusionCatalog catalog, long cacheByteLimit = 256L * 1024 * 1024, int workerCount = 1)
     {
         ArgumentNullException.ThrowIfNull(catalog);
         ArgumentOutOfRangeException.ThrowIfNegative(cacheByteLimit);
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(workerCount);
         _catalog = catalog;
-        _cache = new(cacheByteLimit);
+        _workerCount = workerCount;
+        _workerCacheBudget = workerCount == 1 ? 0 : cacheByteLimit / 2;
+        _cache = new(cacheByteLimit - _workerCacheBudget);
     }
 
-    public AnalysisCacheDiagnostics CacheDiagnostics { get { lock (_gate) return _cache.Diagnostics; } }
+    public AnalysisCacheDiagnostics CacheDiagnostics
+    {
+        get
+        {
+            lock (_gate)
+            {
+                var diagnostics = new[] { _cache.Diagnostics }.Concat(_workers?.Select(w => w.CacheDiagnostics) ?? []);
+                return new(diagnostics.Sum(d => d.AccountedBytes), _cache.Diagnostics.LimitBytes + _workerCacheBudget,
+                    diagnostics.Sum(d => d.Hits), diagnostics.Sum(d => d.Misses), diagnostics.Sum(d => d.Entries));
+            }
+        }
+    }
 
     public DeckAnalysisReport Analyze(IEnumerable<int> deckCardIds, bool includeGlitches = true,
         IProgress<DeckAnalysisProgress>? progress = null, CancellationToken cancellationToken = default) =>
@@ -77,7 +96,11 @@ public sealed class DeckAnalyzer
                     watch.Restart();
                 }
             }
-            if (total > 0 && samples is { } count)
+            if (samples is null && total >= 4096 && _workerCount > 1)
+            {
+                AnalyzeParallel(deck, handSize, total, glitches, progress, token);
+            }
+            else if (total > 0 && samples is { } count)
             {
                 var random = new Random(seed);
                 var positions = new int[deck.Length];
@@ -123,24 +146,117 @@ public sealed class DeckAnalyzer
         finally { Monitor.Exit(_gate); }
     }
 
-    private HandRoute[] EvaluateHand(int[] hand, bool glitches, CancellationToken token)
+    // Enumerate in the serial order and merge contiguous partitions in that same order.
+    // This preserves the first representative when equally good routes tie.
+    private void AnalyzeParallel(int[] deck, int handSize, long total, bool glitches,
+        IProgress<DeckAnalysisProgress>? progress, CancellationToken token)
+    {
+        var work = new List<(ulong Hand, long Weight)>();
+        var groups = deck.GroupBy(id => id).Select(g => (Id: g.Key, Count: g.Count())).ToArray();
+        var suffix = new int[groups.Length + 1];
+        for (var i = groups.Length - 1; i >= 0; i--) suffix[i] = suffix[i + 1] + groups[i].Count;
+        void Enumerate(int group, int used, long weight, ulong hand)
+        {
+            token.ThrowIfCancellationRequested();
+            if (used == handSize) { work.Add((hand, weight)); return; }
+            if (group == groups.Length || suffix[group] < handSize - used) return;
+            var minimum = Math.Max(0, handSize - used - suffix[group + 1]);
+            var maximum = Math.Min(groups[group].Count, handSize - used);
+            for (var take = 0; take <= maximum; take++)
+            {
+                if (take >= minimum) Enumerate(group + 1, used + take,
+                    checked(weight * Choose(groups[group].Count, take)), hand);
+                hand |= (ulong)groups[group].Id << ((used + take) * 10);
+            }
+        }
+        Enumerate(0, 0, 1, 0);
+        // Very duplicate-heavy decks have few distinct hands and do not justify scheduling.
+        var count = Math.Min(_workerCount, Math.Max(1, work.Count / 128));
+        _workers ??= Enumerable.Range(0, _workerCount)
+            .Select(_ => new DeckAnalyzer(_catalog, _workerCacheBudget / _workerCount)).ToArray();
+        long completed = 0;
+        var clock = Stopwatch.StartNew();
+        var midpointReported = false;
+        using var workCancellation = CancellationTokenSource.CreateLinkedTokenSource(token);
+        var workToken = workCancellation.Token;
+        var task = Task.Run(() => Parallel.For(0, count,
+            new ParallelOptions { MaxDegreeOfParallelism = count, CancellationToken = workToken }, index =>
+        {
+            var worker = _workers[index];
+            worker._accumulator.Reset(total);
+            var hand = new int[handSize];
+            var start = (int)((long)work.Count * index / count);
+            var end = (int)((long)work.Count * (index + 1) / count);
+            long pending = 0;
+            for (var i = start; i < end; i++)
+            {
+                workToken.ThrowIfCancellationRequested();
+                var item = work[i];
+                for (var h = 0; h < handSize; h++) hand[h] = (int)(item.Hand >> (h * 10) & 1023);
+                worker._accumulator.Add(worker.EvaluateHand(hand, glitches, workToken), item.Weight, _catalog);
+                pending += item.Weight;
+                if ((i - start) % 128 != 127 && i != end - 1) continue;
+                Interlocked.Add(ref completed, pending);
+                pending = 0;
+            }
+        }));
+        try
+        {
+            // Preserve the serial callback context. A callback can inspect diagnostics
+            // without blocking a worker on the coordinator's analyzer lock.
+            while (!task.IsCompleted)
+            {
+                var done = Interlocked.Read(ref completed);
+                var midpoint = !midpointReported && done >= total / 2 && done < total;
+                if (midpoint || clock.ElapsedMilliseconds >= 200)
+                {
+                    midpointReported |= midpoint;
+                    progress?.Report(new(done, total));
+                    clock.Restart();
+                }
+                try { task.Wait(10); }
+                catch (AggregateException) { break; }
+            }
+            task.GetAwaiter().GetResult();
+        }
+        catch
+        {
+            // A throwing callback must not leave workers modifying reusable scratch.
+            workCancellation.Cancel();
+            try { task.GetAwaiter().GetResult(); }
+            catch (Exception) { /* Preserve the coordinator's original failure. */ }
+            throw;
+        }
+        token.ThrowIfCancellationRequested();
+        for (var i = 0; i < count; i++) _accumulator.Merge(_workers[i]._accumulator);
+    }
+
+    private HandEvaluation EvaluateHand(int[] hand, bool glitches, CancellationToken token)
     {
         ulong packed = (ulong)hand.Length << 50;
         for (var i = 0; i < hand.Length; i++) packed |= (ulong)hand[i] << (i * 10);
         var key = new AnalysisCacheKey(packed | (glitches ? 1UL << 54 : 0));
-        if (_cache.TryGet<HandRoute[]>(key, out var cached)) return cached!;
+        if (_cache.TryGet<HandEvaluation>(key, out var cached)) return cached!;
         if (_stamp == int.MaxValue) { Array.Clear(_stamps); _stamp = 0; }
         _stamp++;
         _outcomes.Clear();
+        _bestSetupAttack = 0;
+        _bestBodyAttack = 0;
         _hand = hand;
         _includeGlitches = glitches;
         _token = token;
         for (var start = 0; start < hand.Length; start++) Explore(hand[start], 1 << start, 1, (ulong)hand[start], 0, false);
         // Empty hands are cheap to recompute and common in sparse starter inventories.
         // Do not spend an LRU node/key on each of hundreds of thousands of empty outcomes.
-        var value = _outcomes.Count == 0 ? [] : new HandRoute[_outcomes.Count];
-        for (var i = 0; i < value.Length; i++) value[i] = _routes[_outcomes[i]];
-        if (value.Length > 0) _cache.Add(key, value, 32L + value.Length * 40L);
+        var routes = _outcomes.Count == 0 ? [] : new HandRoute[_outcomes.Count];
+        for (var i = 0; i < routes.Length; i++) routes[i] = _routes[_outcomes[i]];
+        var clear = hand.Any(id => id is 336 or 337);
+        var broadRemoval = hand.Any(id => id is 336 or 337 or 686);
+        var hasMonster = _bestBodyAttack > 0 || hand.Any(id => _catalog.GetCard(id).PrimaryType is not ("Equip" or "Magic" or "Trap" or "Ritual"));
+        var value = new HandEvaluation(routes, _bestSetupAttack, clear, broadRemoval, _bestBodyAttack, hasMonster);
+        // Setup/removal-only hands also carry meaningful work and must be cached.
+        if (routes.Length > 0 || _bestSetupAttack >= 3500 || broadRemoval)
+            _cache.Add(key, value, 80L + routes.Length * 40L);
         return value;
     }
 
@@ -158,6 +274,7 @@ public sealed class DeckAnalyzer
     private void Explore(int current, int mask, int depth, ulong materials, ulong results, bool hasGlitch)
     {
         _token.ThrowIfCancellationRequested();
+        ConsiderSetup(current, mask);
         for (var next = 0; next < _hand.Length; next++)
         {
             if ((mask & (1 << next)) != 0) continue;
@@ -176,6 +293,28 @@ public sealed class DeckAnalyzer
             Explore(result, mask | (1 << next), depth + 1, m, r, hasGlitch || glitch);
         }
     }
+
+    private void ConsiderSetup(int current, int consumedMask)
+    {
+        var monster = _catalog.GetCard(current);
+        if (monster.Attack <= 0) return;
+        _bestBodyAttack = Math.Max(_bestBodyAttack, monster.Attack);
+        var attack = monster.Attack;
+        var bestTerrain = 0;
+        for (var i = 0; i < _hand.Length; i++)
+        {
+            if ((consumedMask & (1 << i)) != 0) continue;
+            var support = _hand[i];
+            if (_catalog.CanEquip(support, current)) attack += support == 657 ? 1000 : 500;
+            if (ForbiddenMemoriesStrategyEvaluator.IsFieldCard(support))
+                bestTerrain = Math.Max(bestTerrain, ForbiddenMemoriesStrategyEvaluator.GetFieldModifier(support, monster.PrimaryType));
+        }
+        // Each physical equip is consumed once, after the final monster is formed.
+        // One terrain is chosen, never stacked. Nothing is assumed already active.
+        _bestSetupAttack = Math.Max(_bestSetupAttack, attack + bestTerrain);
+    }
+
+    private sealed record HandEvaluation(HandRoute[] Routes, int SetupAttack, bool BoardClear, bool BroadRemoval, int BodyAttack, bool HasMonster);
 
     public static long Choose(int population, int selected)
     {
@@ -207,6 +346,9 @@ public sealed class DeckAnalyzer
         private readonly long[] _counts = new long[2169];
         private readonly HandRoute[] _representatives = new HandRoute[2169];
         private long _any, _at2000, _at2500, _at2800, _at3000, _sum;
+        private long _setup3500, _setup4500, _clear, _removal, _setupOrClear, _setupSum;
+        private int _maximumSetup;
+        private long _endgame, _endgameOrClear, _body2800, _noMonster;
         public long Completed { get; private set; }
 
         public void Reset(long total)
@@ -214,13 +356,28 @@ public sealed class DeckAnalyzer
             _total = total;
             Array.Clear(_counts);
             _any = _at2000 = _at2500 = _at2800 = _at3000 = _sum = Completed = 0;
+            _setup3500 = _setup4500 = _clear = _removal = _setupOrClear = _setupSum = 0;
+            _maximumSetup = 0;
+            _endgame = _endgameOrClear = _body2800 = _noMonster = 0;
             // Representatives are structs; entries are replaced on the first count.
             // Reuse these large scratch arrays under the analyzer lock. Returned
             // reports own their materialized arrays and never reference this scratch.
         }
 
-        public void Add(HandRoute[] routes, long weight, FusionCatalog catalog)
+        public void Add(HandEvaluation evaluation, long weight, FusionCatalog catalog)
         {
+            var routes = evaluation.Routes;
+            if (evaluation.SetupAttack >= 3500) _setup3500 += weight;
+            if (evaluation.SetupAttack >= 4500) _setup4500 += weight;
+            if (evaluation.SetupAttack > 4500) _endgame += weight;
+            if (evaluation.SetupAttack > 4500 || evaluation.BoardClear) _endgameOrClear += weight;
+            if (evaluation.BodyAttack >= 2800) _body2800 += weight;
+            if (!evaluation.HasMonster) _noMonster += weight;
+            if (evaluation.BoardClear) _clear += weight;
+            if (evaluation.BroadRemoval) _removal += weight;
+            if (evaluation.SetupAttack >= 3500 || evaluation.BoardClear) _setupOrClear += weight;
+            _setupSum += evaluation.SetupAttack * weight;
+            _maximumSetup = Math.Max(_maximumSetup, evaluation.SetupAttack);
             var best = 0;
             foreach (var route in routes)
             {
@@ -237,6 +394,26 @@ public sealed class DeckAnalyzer
             Completed += weight;
         }
 
+        public void Merge(Accumulator other)
+        {
+            for (var i = 0; i < _counts.Length; i++)
+            {
+                if (other._counts[i] == 0) continue;
+                if (_counts[i] == 0 || other._representatives[i].BetterThan(_representatives[i]))
+                    _representatives[i] = other._representatives[i];
+                _counts[i] += other._counts[i];
+            }
+            _any += other._any; _at2000 += other._at2000; _at2500 += other._at2500;
+            _at2800 += other._at2800; _at3000 += other._at3000; _sum += other._sum;
+            _setup3500 += other._setup3500; _setup4500 += other._setup4500;
+            _clear += other._clear; _removal += other._removal;
+            _setupOrClear += other._setupOrClear; _setupSum += other._setupSum;
+            _maximumSetup = Math.Max(_maximumSetup, other._maximumSetup);
+            _endgame += other._endgame; _endgameOrClear += other._endgameOrClear;
+            _body2800 += other._body2800; _noMonster += other._noMonster;
+            Completed += other.Completed;
+        }
+
         public DeckAnalysisReport Report(int deckSize, int handSize, int? samples, FusionCatalog catalog)
         {
             var results = Enumerable.Range(1, 2168).Where(i => _counts[i] > 0).Select(i =>
@@ -248,7 +425,12 @@ public sealed class DeckAnalyzer
                 .ThenByDescending(r => r.Probability).ThenBy(r => r.Result.Name, StringComparer.OrdinalIgnoreCase).ToArray();
             return new(deckSize, handSize, _total, _any, _at2000, _at2500, _at2800, _at3000,
                 _total == 0 ? 0 : (double)_sum / _total, Array.AsReadOnly(results))
-            { TotalBestFusionAttack = _sum, IsExact = samples is null, SampleCount = samples ?? 0 };
+            { TotalBestFusionAttack = _sum, IsExact = samples is null, SampleCount = samples ?? 0,
+                HandsWith3500Setup = _setup3500, HandsWith4500Setup = _setup4500,
+                HandsWithBoardClear = _clear, HandsWithBroadRemoval = _removal,
+                HandsWith3500SetupOrBoardClear = _setupOrClear, TotalBestSetupAttack = _setupSum, MaximumSetupAttack = _maximumSetup,
+                HandsWithEndgamePower = _endgame, HandsWithEndgamePowerOrBoardClear = _endgameOrClear,
+                HandsWith2800Body = _body2800, HandsWithNoMonster = _noMonster };
         }
     }
 }

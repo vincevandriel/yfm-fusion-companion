@@ -1,12 +1,34 @@
 # YFM Fusion Companion v2.0.0
 
-## Compact Live window specification
+This release includes the completed 2.0 desktop, live-state repairs, faster CPU execution, offline card artwork, researched campaign decks, and configurable suggested-card ordering.
 
-The Windows x64 2.0 build bounds Compact Live to exactly **272 × 1002 pixels**, matching the supplied reference. Its visible grid uses the three compact columns `RESULT`, `ATK`, and `ROUTE` at the reference proportions, with one-line rows and route details available from the cell tooltip. The self-contained executable starts normally and can switch to Compact Live from the header.
+## New and improved
 
-The v2.0 executable is published as `YFM Fusion Companion.exe` with file and product version `2.0.0.0`.
+- Compact Live is bounded to **272 × 1002 pixels**, uses two-line card names without sideways scrolling, and shows 20px guardian symbols under Result. Warm and red glow states clarify available stars and known opponent relationships.
+- Live Duel recognizes opening duels while deck memory settles and handles transient reads without resetting collection browsing. Save import is integrated into Deck Analyzer and Owned-Card Optimizer; the separate Save Snapshot tab is removed.
+- Auto uses up to four independent search workers and eight analysis workers, reduced on smaller CPUs; manual choices remain available. Exact physical-hand weighting, deterministic metrics, cancellation, progress and checkpoint recovery are preserved. See `docs/CPU_PARALLELISM.md` and the measured benchmark records.
+- All 722 card images are bundled for offline use, with per-file hashes, source provenance and separate artwork attribution. Custom images remain optional.
+- Recommended Decks offers six community-informed, app-authored 40-card reference builds with distinct artwork icons and required owned-copy counts beneath each button. It shows missing cards, progression advice, sources and cancellable exact opening-hand checks, and can adapt a strategy to the current collection.
+- Balanced scoring considers coherent fields/equips, natural strong monsters, 3,500+ setups, strictly greater than 4,500 ATK setups, removal coverage and support-only draw risk. These are setup and availability metrics, not duel win probabilities or proof of global optimality.
+- Suggested deck cards default to Alphabetical. Card Order also offers card number (lowest first), ATK and DEF (highest first); the display preference persists across results and restarts.
 
-# YFM Fusion Companion v1.1.0
+## Verification and limits
+
+- 226 regression tests passed with zero failures or skips; 13 current release acceptance probes passed.
+- Six reference decks each passed exact serial/eight-worker equality over all 658,008 physical five-card hands.
+- Production WPF checks passed for bundled artwork, recommended-deck ownership refresh, reference analysis/cancellation, active-job protection and all four suggested-card orders.
+- The local self-contained Windows package passed startup and independent ZIP extraction/hash verification for all 750 packaged files, including all 722 artwork images.
+- Actual OS-DPI switching and unpaused gameplay coexistence were not retested for these latest updates. Earlier live audit evidence is retained separately.
+
+## Installation
+
+Download a Windows x64 ZIP from this release, extract the complete folder, and run `YFM Fusion Companion.exe`. Keep Artwork, Data and ResearchData beside the executable. The runtime is included. Read START-HERE when present; the dependency-check script in the CI package is optional for the self-contained app.
+
+Windows 10 or 11 x64 is required. Live mode supports the validated NTSC-U game through RetroArch/SwanStation. Game memory, saves and RetroArch configuration remain read-only. No ROM, BIOS, emulator or memory-card save is distributed. Artwork has separate third-party notices.
+
+The scoring identity changed. Preserve previous proof files and use the existing New proof checkpoint option for a fresh proof. Restart an older running copy using the new executable.
+
+# YFM Fusion Companion v1.1.0 — historical release notes
 
 This public Windows x64 release completes the campaign-planning work and fixes the startup path that could incorrectly report a database failure.
 

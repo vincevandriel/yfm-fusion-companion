@@ -3,18 +3,25 @@ using System.Numerics;
 namespace YfmCompanion.Engine;
 
 public sealed record DeckObjective(DeckAnalysisReport Analysis, DeckSafetyAssessment? Safety,
-    DeckSafetyAssessment? SecondarySafety, IReadOnlyList<int> Cards, long RequiredStarChips = 0);
+    DeckSafetyAssessment? SecondarySafety, IReadOnlyList<int> Cards, long RequiredStarChips = 0)
+{
+    public bool UseGuideSupport { get; init; } = true;
+    public int GuideStructurePoints { get; init; }
+}
 
 /// <summary>Positive means better. Compare only evaluations of the same frozen objective.</summary>
 public sealed class DeckObjectiveComparer(bool campaign, bool gauntletTieBreak) : IComparer<DeckObjective>
 {
-    public const string Version = "campaign-lexicographic-v3";
+    public const string Version = "fan-campaign-support-v5";
     public int Compare(DeckObjective? x, DeckObjective? y)
     {
         if (ReferenceEquals(x, y)) return 0;
         if (x is null) return -1;
         if (y is null) return 1;
         int difference;
+        if (x.UseGuideSupport && y.UseGuideSupport &&
+            (difference = CompareGuideSupport(x, y)) != 0) return difference;
+
         if (campaign && (difference = CompareSafety(x.Safety, y.Safety, binnedCoverage: gauntletTieBreak)) != 0) return difference;
         if (gauntletTieBreak)
         {
@@ -35,7 +42,8 @@ public sealed class DeckObjectiveComparer(bool campaign, bool gauntletTieBreak) 
 
     public static DeckObjective FromReport(DeckOptimizationReport report, long spent = 0) => new(
         report.ExactAnalysis, report.SafetyAssessment, report.SecondarySafetyAssessment,
-        [.. report.Deck.SelectMany(e => Enumerable.Repeat(e.Card.Id, e.Copies))], spent);
+        [.. report.Deck.SelectMany(e => Enumerable.Repeat(e.Card.Id, e.Copies))], spent)
+        { GuideStructurePoints = report.SupportStructure?.Points ?? 0, UseGuideSupport = report.Profile is DeckStrategyProfile.Balanced or DeckStrategyProfile.ControlAndSafety or DeckStrategyProfile.FieldAndType };
 
     private static int CompareSafety(DeckSafetyAssessment? x, DeckSafetyAssessment? y, bool binnedCoverage = false)
     {
@@ -54,6 +62,25 @@ public sealed class DeckObjectiveComparer(bool campaign, bool gauntletTieBreak) 
     {
         if (!double.IsFinite(value)) throw new InvalidDataException("Objective scores must be finite.");
         return new BigInteger(decimal.Round((decimal)value * 1_000_000m, 0, MidpointRounding.ToEven));
+    }
+
+    private static int CompareGuideSupport(DeckObjective first, DeckObjective second)
+    {
+        // Fixed heuristic weights, not measured win probabilities. Joint setup/clear
+        // counts are deduplicated per hand; removal cannot benefit from a phantom field.
+        static BigInteger Points(DeckAnalysisReport r) =>
+            35 * (BigInteger)r.HandsWith3500SetupOrBoardClear +
+            20 * (BigInteger)r.HandsWith2800Body +
+            15 * (BigInteger)r.HandsWithEndgamePowerOrBoardClear +
+            10 * (BigInteger)r.HandsWithBroadRemoval +
+            10 * (BigInteger)r.HandsWith3500Setup +
+            5 * (BigInteger)r.HandsWithEndgamePower +
+            5 * (BigInteger)r.HandsWithBoardClear -
+            15 * (BigInteger)r.HandsWithNoMonster;
+        var x = first.Analysis;
+        var y = second.Analysis;
+        return ((Points(x) + (BigInteger)first.GuideStructurePoints * x.TotalHands) * Math.Max(1, y.TotalHands))
+            .CompareTo((Points(y) + (BigInteger)second.GuideStructurePoints * y.TotalHands) * Math.Max(1, x.TotalHands));
     }
 
     private static int ComparePower(DeckAnalysisReport x, DeckAnalysisReport y, bool binned)

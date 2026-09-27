@@ -42,6 +42,12 @@ jobs:
           if (-not (Test-Path -LiteralPath output/pdf/YFM-Fusion-Companion-User-Guide.pdf -PathType Leaf)) {
             throw 'The regenerated PDF user guide was not created.'
           }
+      - name: Check production UI, artwork and suggested-card ordering
+        shell: pwsh
+        run: |
+          $env:YFM_COMPANION_SETTINGS_DIRECTORY = Join-Path $env:RUNNER_TEMP 'yfm-release-ui-settings'
+          dotnet run --project tools/YfmCompanion.UiRender --configuration Release -- artifacts/github-ui
+          if ($LASTEXITCODE -ne 0) { throw 'Production UI verification failed.' }
       - name: Publish Windows x64
         run: dotnet publish src/YfmCompanion.Desktop/YfmCompanion.Desktop.csproj --configuration Release --runtime win-x64 --self-contained true --output publish
       - name: Assemble portable package
@@ -55,7 +61,9 @@ jobs:
             'ResearchData/guardian_star_rules.json',
             'ResearchData/opponent_reference.json',
             'ResearchData/optimizer_policy.json',
-            'ResearchData/source_manifest.json'
+            'ResearchData/source_manifest.json',
+            'ResearchData/fan_deck_sources.json',
+            'Artwork/manifest.json'
           )) {
             if (-not (Test-Path -LiteralPath (Join-Path 'publish' $requiredPublishFile) -PathType Leaf)) {
               throw "Required published file is missing: $requiredPublishFile"
@@ -64,6 +72,8 @@ jobs:
           Copy-Item install_dependencies.ps1, install_dependencies.cmd, README.md, RELEASE_NOTES.md, LICENSE, THIRD_PARTY_NOTICES.md package
           New-Item -ItemType Directory -Path package/Documentation | Out-Null
           Copy-Item docs/SETUP.md, docs/LIMITATIONS.md, output/pdf/YFM-Fusion-Companion-User-Guide.pdf package/Documentation
+          Copy-Item docs/CPU_PARALLELISM.md, docs/research/FAN_DECK_RESEARCH.md, docs/research/GUIDE_SCORING.md, docs/benchmarks/CAMPAIGN_DECK_RESULTS.md package/Documentation
+          Copy-Item artifacts/github-ui/suggested-deck-sorting.json, artifacts/github-ui/deck-library-ui-audit.json package/Documentation
           if (-not (Test-Path -LiteralPath 'package/Data/yfm.db' -PathType Leaf)) {
             throw 'The portable package is missing Data/yfm.db.'
           }

@@ -18,7 +18,10 @@ internal sealed record DesktopSettings(
     string? ArtworkFolder = null,
     IReadOnlyDictionary<int, string>? ArtworkOverrides = null,
     IReadOnlyDictionary<int, int>? ManualQuantities = null,
-    string? PinnedSavePath = null);
+    string? PinnedSavePath = null,
+    int CpuWorkers = 0,
+    string? RecommendedBuildId = null,
+    string SuggestedDeckSort = "Alphabetical");
 
 internal static class DesktopSettingsStore
 {

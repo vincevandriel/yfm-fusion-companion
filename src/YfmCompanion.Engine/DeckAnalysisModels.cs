@@ -43,6 +43,27 @@ public sealed record DeckAnalysisReport(
     double ExpectedBestFusionAttack,
     IReadOnlyList<DeckFusionResult> FusionResults)
 {
+    // Potential setups using only cards in this hand; field/equips may need separate turns.
+    // These are not immediate-play or duel-win probabilities.
+    public long HandsWith3500Setup { get; init; }
+    public long HandsWith4500Setup { get; init; }
+    public long HandsWithEndgamePower { get; init; }
+    public long HandsWithEndgamePowerOrBoardClear { get; init; }
+    public long HandsWith2800Body { get; init; }
+    public long HandsWithNoMonster { get; init; }
+    public double EndgamePowerProbability => Probability(HandsWithEndgamePower);
+    public double EndgameAnswerProbability => Probability(HandsWithEndgamePowerOrBoardClear);
+    public double Body2800Probability => Probability(HandsWith2800Body);
+    public double NoMonsterProbability => Probability(HandsWithNoMonster);
+    public long HandsWithBoardClear { get; init; }
+    public long HandsWithBroadRemoval { get; init; }
+    public long HandsWith3500SetupOrBoardClear { get; init; }
+    public int MaximumSetupAttack { get; init; }
+    public long TotalBestSetupAttack { get; init; }
+    public double Setup3500Probability => Probability(HandsWith3500Setup);
+    public double Setup4500Probability => Probability(HandsWith4500Setup);
+    public double BoardClearProbability => Probability(HandsWithBoardClear);
+    public double SetupOrClearProbability => Probability(HandsWith3500SetupOrBoardClear);
     public long TotalBestFusionAttack { get; init; }
     public bool IsExact { get; init; } = true;
     public int SampleCount { get; init; }

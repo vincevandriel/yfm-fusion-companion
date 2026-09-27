@@ -1,5 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <ItemGroup>
+    <EmbeddedResource Include="Research\campaign-decks.json" />
     <ProjectReference Include="..\YfmCompanion.Data\YfmCompanion.Data.csproj" />
   </ItemGroup>
   <ItemGroup>

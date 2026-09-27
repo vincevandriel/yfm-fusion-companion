@@ -3,7 +3,7 @@
 ## Start the companion
 
 1. Extract the complete ZIP to a normal folder. Do not run the executable from inside the ZIP.
-2. Keep `YFM Fusion Companion.exe` and the `Data` folder together.
+2. Keep `YFM Fusion Companion.exe`, `Data`, `Artwork` and `ResearchData` together.
 3. Double-click `YFM Fusion Companion.exe`.
 
 The program is a self-contained Windows x64 application. It does not require a separate .NET installation and does not use a browser.
@@ -23,15 +23,21 @@ RetroArch may listen beyond this computer even though the companion connects onl
 
 ## Display modes
 
-- **COMPACT LIVE** switches to a 320-pixel-wide, full-work-area-height sidecar docked to the right edge. It contains only **BEST LEGAL ROUTES**, plus **PIN** and **FULL** controls. The result column shows the resulting card name, ATK shows effective attack after any legal final equip, and route uses plain hand-slot numbers. A field target is written as `F(X)`: `F(1)` through `F(5)` are the five monster slots and `F(6)` through `F(10)` are the five spell/trap slots. Compact mode has no enforced minimum window size, so it can be narrowed further manually.
-- **FULL ANALYSIS** returns to the complete manual, deck, save, live, and optimizer workspaces.
+- **COMPACT LIVE** switches to a bounded 272 × 1002 pixel sidecar. Card names wrap to two lines without sideways scrolling, and 20px guardian symbols sit beneath Result. Warm glow marks selectable stars; red glow marks known opponent relationships. ATK shows effective attack after legal terminal equips, and route uses hand-slot numbers. `F(1)` through `F(5)` are monster positions; `F(6)` through `F(10)` are spell/trap positions.
+- **FULL** returns to the manual, deck, live, and optimizer workspaces.
 - **Always on top** keeps the companion above the game when desired.
 
 These choices, the window position and size, and the last validated save path are remembered locally.
 
 ## Saved snapshot
 
-The companion can auto-detect the SwanStation memory-card file or you can select an `.srm` or `.mcr` file. It opens the file read-only. If the game has not flushed recent progress to disk, close the game content after saving and import the snapshot again.
+Save controls are integrated into Deck Analyzer and Owned-Card Optimizer. The companion can auto-detect the SwanStation memory-card file or you can select an `.srm` or `.mcr` file. It opens the file read-only. If the game has not flushed recent progress to disk, close the game content after saving and refresh the snapshot again.
+
+## Recommended decks and card order
+
+Open Owned-Card Optimizer → Recommended Decks to browse six researched builds. Each icon shows required owned copies out of 40 below it. Inspect missing cards and advice, check all reference opening hands, or adapt the selected strategy to the current collection. Reference metrics may include missing cards and are not a measured win rate.
+
+Above the suggested DECK result, Card Order defaults to Alphabetical. Card number sorts lowest first; ATK and DEF sort highest first. This remembered preference changes only the displayed order. Auto CPU settings use up to four search workers and eight analysis workers, reduced on smaller CPUs; manual choices are available.
 
 ## Diagnostics
 

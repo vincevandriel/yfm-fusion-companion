@@ -1,0 +1,1365 @@
+{
+  "LogicalProcessors": 12,
+  "CatalogIdentity": "30DD8FDD6637B600AABD5F85FB152047541244B973B25214280E177CE55489E1",
+  "Inventory": [
+    {
+      "Id": 138,
+      "Name": "Dragon Statue"
+    },
+    {
+      "Id": 298,
+      "Name": "Wicked Dragon with the Ersatz Head"
+    },
+    {
+      "Id": 561,
+      "Name": "Lesser Dragon"
+    },
+    {
+      "Id": 200,
+      "Name": "Petit Dragon"
+    },
+    {
+      "Id": 4,
+      "Name": "Baby Dragon"
+    },
+    {
+      "Id": 122,
+      "Name": "Yamatano Dragon Scroll"
+    },
+    {
+      "Id": 296,
+      "Name": "One-eyed Shield Dragon"
+    },
+    {
+      "Id": 603,
+      "Name": "Fairy Dragon"
+    },
+    {
+      "Id": 180,
+      "Name": "Arlownay"
+    },
+    {
+      "Id": 280,
+      "Name": "Protector of the Throne"
+    },
+    {
+      "Id": 282,
+      "Name": "Mystical Sheep #2"
+    },
+    {
+      "Id": 172,
+      "Name": "Armaill"
+    },
+    {
+      "Id": 2,
+      "Name": "Mystical Elf"
+    },
+    {
+      "Id": 395,
+      "Name": "Dancing Elf"
+    },
+    {
+      "Id": 214,
+      "Name": "Kagemusha of the Blue Flame"
+    },
+    {
+      "Id": 189,
+      "Name": "Fusionist"
+    },
+    {
+      "Id": 154,
+      "Name": "Fire Reaper"
+    },
+    {
+      "Id": 251,
+      "Name": "Enchanting Mermaid"
+    },
+    {
+      "Id": 635,
+      "Name": "Queen's Double"
+    },
+    {
+      "Id": 253,
+      "Name": "Angelwitch"
+    },
+    {
+      "Id": 628,
+      "Name": "Witch's Apprentice"
+    },
+    {
+      "Id": 215,
+      "Name": "Flame Ghost"
+    },
+    {
+      "Id": 202,
+      "Name": "Air Marmot of Nefariousness"
+    },
+    {
+      "Id": 299,
+      "Name": "Sonic Maid"
+    },
+    {
+      "Id": 157,
+      "Name": "Firegrass"
+    },
+    {
+      "Id": 604,
+      "Name": "Obese Marmot of Nefariousness"
+    },
+    {
+      "Id": 108,
+      "Name": "Graveyard and the Hand of Invitation"
+    },
+    {
+      "Id": 147,
+      "Name": "Monster Egg"
+    },
+    {
+      "Id": 527,
+      "Name": "Milus Radiant"
+    },
+    {
+      "Id": 239,
+      "Name": "Vishwar Randi"
+    },
+    {
+      "Id": 264,
+      "Name": "Wing Egg Elf"
+    },
+    {
+      "Id": 266,
+      "Name": "Princess of Tsurugi"
+    },
+    {
+      "Id": 113,
+      "Name": "Dark Gray"
+    },
+    {
+      "Id": 121,
+      "Name": "Sleeping Lion"
+    },
+    {
+      "Id": 129,
+      "Name": "Nemuriko"
+    },
+    {
+      "Id": 188,
+      "Name": "Synchar"
+    },
+    {
+      "Id": 255,
+      "Name": "Prevent Rat"
+    },
+    {
+      "Id": 481,
+      "Name": "Burglar"
+    },
+    {
+      "Id": 530,
+      "Name": "Eldeen"
+    },
+    {
+      "Id": 574,
+      "Name": "Witch of the Black Forest"
+    },
+    {
+      "Id": 598,
+      "Name": "Little Chimera"
+    },
+    {
+      "Id": 629,
+      "Name": "Armored Rat"
+    },
+    {
+      "Id": 642,
+      "Name": "Mystical Sheep #1"
+    },
+    {
+      "Id": 641,
+      "Name": "Invader of the Throne"
+    },
+    {
+      "Id": 417,
+      "Name": "Blast Juggler"
+    },
+    {
+      "Id": 469,
+      "Name": "Armed Ninja"
+    },
+    {
+      "Id": 586,
+      "Name": "Greenkappa"
+    },
+    {
+      "Id": 100,
+      "Name": "Battle Warrior"
+    },
+    {
+      "Id": 156,
+      "Name": "Hard Armor"
+    },
+    {
+      "Id": 161,
+      "Name": "M-warrior #2"
+    },
+    {
+      "Id": 182,
+      "Name": "Masked Clown"
+    },
+    {
+      "Id": 185,
+      "Name": "Eyearmor"
+    },
+    {
+      "Id": 224,
+      "Name": "Trap Master"
+    },
+    {
+      "Id": 399,
+      "Name": "Swordsman from a Foreign Land"
+    },
+    {
+      "Id": 488,
+      "Name": "Rainbow Flower"
+    },
+    {
+      "Id": 46,
+      "Name": "Griffore"
+    },
+    {
+      "Id": 47,
+      "Name": "Torike"
+    },
+    {
+      "Id": 61,
+      "Name": "Wolf"
+    },
+    {
+      "Id": 65,
+      "Name": "Silver Fang"
+    },
+    {
+      "Id": 201,
+      "Name": "Frenzied Panda"
+    },
+    {
+      "Id": 248,
+      "Name": "Master & Expert"
+    },
+    {
+      "Id": 24,
+      "Name": "Skull Servant"
+    },
+    {
+      "Id": 123,
+      "Name": "Dark Plant"
+    },
+    {
+      "Id": 247,
+      "Name": "Root Water"
+    },
+    {
+      "Id": 273,
+      "Name": "Ancient Tree of Enlightenment"
+    },
+    {
+      "Id": 274,
+      "Name": "Green Phantom King"
+    },
+    {
+      "Id": 436,
+      "Name": "White Dolphin"
+    },
+    {
+      "Id": 547,
+      "Name": "Griggle"
+    },
+    {
+      "Id": 589,
+      "Name": "Tentacle Plant"
+    },
+    {
+      "Id": 128,
+      "Name": "LaMoon"
+    },
+    {
+      "Id": 244,
+      "Name": "Dissolverock"
+    },
+    {
+      "Id": 548,
+      "Name": "Bone Mouse"
+    },
+    {
+      "Id": 9,
+      "Name": "Shadow Specter"
+    },
+    {
+      "Id": 146,
+      "Name": "Temple of Skulls"
+    },
+    {
+      "Id": 8,
+      "Name": "Mushroom Man"
+    },
+    {
+      "Id": 75,
+      "Name": "Man-eating Plant"
+    },
+    {
+      "Id": 135,
+      "Name": "Fiend's Hand"
+    },
+    {
+      "Id": 139,
+      "Name": "Blue-eyed Silver Zombie"
+    },
+    {
+      "Id": 153,
+      "Name": "Dokuroizo the Grim Reaper"
+    },
+    {
+      "Id": 158,
+      "Name": "Man Eater"
+    }
+  ],
+  "Census": [
+    {
+      "Fixture": "previous-first80",
+      "Hands": 2000,
+      "SuccessfulEdgesByFusionCount": [
+        0,
+        3689,
+        1940,
+        634,
+        59
+      ],
+      "HandsWithRouteByFusionCount": [
+        0,
+        1469,
+        629,
+        184,
+        23
+      ],
+      "ExampleHand": [
+        4,
+        24,
+        48,
+        70,
+        132
+      ],
+      "ExampleFiveMaterialRoute": [
+        4,
+        48,
+        24,
+        70,
+        132
+      ],
+      "ExampleResult": 39
+    },
+    {
+      "Fixture": "chain-rich80",
+      "Hands": 2000,
+      "SuccessfulEdgesByFusionCount": [
+        0,
+        14456,
+        14624,
+        7944,
+        1825
+      ],
+      "HandsWithRouteByFusionCount": [
+        0,
+        1996,
+        1805,
+        1174,
+        365
+      ],
+      "ExampleHand": [
+        4,
+        158,
+        172,
+        189,
+        641
+      ],
+      "ExampleFiveMaterialRoute": [
+        4,
+        172,
+        158,
+        189,
+        641
+      ],
+      "ExampleResult": 627
+    },
+    {
+      "Fixture": "chain-rich40",
+      "Hands": 2000,
+      "SuccessfulEdgesByFusionCount": [
+        0,
+        14604,
+        13094,
+        6883,
+        1562
+      ],
+      "HandsWithRouteByFusionCount": [
+        0,
+        1999,
+        1765,
+        1075,
+        346
+      ],
+      "ExampleHand": [
+        2,
+        147,
+        154,
+        200,
+        561
+      ],
+      "ExampleFiveMaterialRoute": [
+        2,
+        147,
+        154,
+        200,
+        561
+      ],
+      "ExampleResult": 545
+    }
+  ],
+  "ExactAnalysis": [
+    {
+      "Fixture": "chain-rich-diverse",
+      "Workers": 1,
+      "Repeat": 0,
+      "Milliseconds": 2117.777,
+      "CpuMilliseconds": 2234.375,
+      "ReportHash": "14F23116F279A3E2DB1E27AE14F31DD02F3CB9D7CB51D8EA517ECB40C9D8A94F",
+      "TotalHands": 658008,
+      "Cache": {
+        "AccountedBytes": 268435236,
+        "LimitBytes": 268435456,
+        "Hits": 0,
+        "Misses": 658009,
+        "Entries": 504041
+      }
+    },
+    {
+      "Fixture": "chain-rich-diverse",
+      "Workers": 2,
+      "Repeat": 0,
+      "Milliseconds": 1084.3539,
+      "CpuMilliseconds": 2046.875,
+      "ReportHash": "14F23116F279A3E2DB1E27AE14F31DD02F3CB9D7CB51D8EA517ECB40C9D8A94F",
+      "TotalHands": 658008,
+      "Cache": {
+        "AccountedBytes": 134273436,
+        "LimitBytes": 268435456,
+        "Hits": 0,
+        "Misses": 658009,
+        "Entries": 250766
+      }
+    },
+    {
+      "Fixture": "chain-rich-diverse",
+      "Workers": 4,
+      "Repeat": 0,
+      "Milliseconds": 704.9368,
+      "CpuMilliseconds": 1984.375,
+      "ReportHash": "14F23116F279A3E2DB1E27AE14F31DD02F3CB9D7CB51D8EA517ECB40C9D8A94F",
+      "TotalHands": 658008,
+      "Cache": {
+        "AccountedBytes": 134273068,
+        "LimitBytes": 268435456,
+        "Hits": 0,
+        "Misses": 658009,
+        "Entries": 243280
+      }
+    },
+    {
+      "Fixture": "chain-rich-diverse",
+      "Workers": 6,
+      "Repeat": 0,
+      "Milliseconds": 630.9053,
+      "CpuMilliseconds": 2109.375,
+      "ReportHash": "14F23116F279A3E2DB1E27AE14F31DD02F3CB9D7CB51D8EA517ECB40C9D8A94F",
+      "TotalHands": 658008,
+      "Cache": {
+        "AccountedBytes": 134272124,
+        "LimitBytes": 268435456,
+        "Hits": 0,
+        "Misses": 658009,
+        "Entries": 252907
+      }
+    },
+    {
+      "Fixture": "chain-rich-diverse",
+      "Workers": 8,
+      "Repeat": 0,
+      "Milliseconds": 512.4535,
+      "CpuMilliseconds": 2234.375,
+      "ReportHash": "14F23116F279A3E2DB1E27AE14F31DD02F3CB9D7CB51D8EA517ECB40C9D8A94F",
+      "TotalHands": 658008,
+      "Cache": {
+        "AccountedBytes": 134271972,
+        "LimitBytes": 268435456,
+        "Hits": 0,
+        "Misses": 658009,
+        "Entries": 251938
+      }
+    },
+    {
+      "Fixture": "chain-rich-diverse",
+      "Workers": 2,
+      "Repeat": 1,
+      "Milliseconds": 1039.0144,
+      "CpuMilliseconds": 1890.625,
+      "ReportHash": "14F23116F279A3E2DB1E27AE14F31DD02F3CB9D7CB51D8EA517ECB40C9D8A94F",
+      "TotalHands": 658008,
+      "Cache": {
+        "AccountedBytes": 134273436,
+        "LimitBytes": 268435456,
+        "Hits": 0,
+        "Misses": 658009,
+        "Entries": 250766
+      }
+    },
+    {
+      "Fixture": "chain-rich-diverse",
+      "Workers": 4,
+      "Repeat": 1,
+      "Milliseconds": 688.9992,
+      "CpuMilliseconds": 1953.125,
+      "ReportHash": "14F23116F279A3E2DB1E27AE14F31DD02F3CB9D7CB51D8EA517ECB40C9D8A94F",
+      "TotalHands": 658008,
+      "Cache": {
+        "AccountedBytes": 134273068,
+        "LimitBytes": 268435456,
+        "Hits": 0,
+        "Misses": 658009,
+        "Entries": 243280
+      }
+    },
+    {
+      "Fixture": "chain-rich-diverse",
+      "Workers": 6,
+      "Repeat": 1,
+      "Milliseconds": 576.8187,
+      "CpuMilliseconds": 2078.125,
+      "ReportHash": "14F23116F279A3E2DB1E27AE14F31DD02F3CB9D7CB51D8EA517ECB40C9D8A94F",
+      "TotalHands": 658008,
+      "Cache": {
+        "AccountedBytes": 134272124,
+        "LimitBytes": 268435456,
+        "Hits": 0,
+        "Misses": 658009,
+        "Entries": 252907
+      }
+    },
+    {
+      "Fixture": "chain-rich-diverse",
+      "Workers": 8,
+      "Repeat": 1,
+      "Milliseconds": 512.7784,
+      "CpuMilliseconds": 2281.25,
+      "ReportHash": "14F23116F279A3E2DB1E27AE14F31DD02F3CB9D7CB51D8EA517ECB40C9D8A94F",
+      "TotalHands": 658008,
+      "Cache": {
+        "AccountedBytes": 134271972,
+        "LimitBytes": 268435456,
+        "Hits": 0,
+        "Misses": 658009,
+        "Entries": 251938
+      }
+    },
+    {
+      "Fixture": "chain-rich-diverse",
+      "Workers": 1,
+      "Repeat": 1,
+      "Milliseconds": 1743.0364,
+      "CpuMilliseconds": 1796.875,
+      "ReportHash": "14F23116F279A3E2DB1E27AE14F31DD02F3CB9D7CB51D8EA517ECB40C9D8A94F",
+      "TotalHands": 658008,
+      "Cache": {
+        "AccountedBytes": 268435236,
+        "LimitBytes": 268435456,
+        "Hits": 0,
+        "Misses": 658009,
+        "Entries": 504041
+      }
+    },
+    {
+      "Fixture": "chain-rich-diverse",
+      "Workers": 4,
+      "Repeat": 2,
+      "Milliseconds": 691.8885,
+      "CpuMilliseconds": 1812.5,
+      "ReportHash": "14F23116F279A3E2DB1E27AE14F31DD02F3CB9D7CB51D8EA517ECB40C9D8A94F",
+      "TotalHands": 658008,
+      "Cache": {
+        "AccountedBytes": 134273068,
+        "LimitBytes": 268435456,
+        "Hits": 0,
+        "Misses": 658009,
+        "Entries": 243280
+      }
+    },
+    {
+      "Fixture": "chain-rich-diverse",
+      "Workers": 6,
+      "Repeat": 2,
+      "Milliseconds": 577.0462,
+      "CpuMilliseconds": 2359.375,
+      "ReportHash": "14F23116F279A3E2DB1E27AE14F31DD02F3CB9D7CB51D8EA517ECB40C9D8A94F",
+      "TotalHands": 658008,
+      "Cache": {
+        "AccountedBytes": 134272124,
+        "LimitBytes": 268435456,
+        "Hits": 0,
+        "Misses": 658009,
+        "Entries": 252907
+      }
+    },
+    {
+      "Fixture": "chain-rich-diverse",
+      "Workers": 8,
+      "Repeat": 2,
+      "Milliseconds": 516.0806,
+      "CpuMilliseconds": 2250,
+      "ReportHash": "14F23116F279A3E2DB1E27AE14F31DD02F3CB9D7CB51D8EA517ECB40C9D8A94F",
+      "TotalHands": 658008,
+      "Cache": {
+        "AccountedBytes": 134271972,
+        "LimitBytes": 268435456,
+        "Hits": 0,
+        "Misses": 658009,
+        "Entries": 251938
+      }
+    },
+    {
+      "Fixture": "chain-rich-diverse",
+      "Workers": 1,
+      "Repeat": 2,
+      "Milliseconds": 1769.4814,
+      "CpuMilliseconds": 1812.5,
+      "ReportHash": "14F23116F279A3E2DB1E27AE14F31DD02F3CB9D7CB51D8EA517ECB40C9D8A94F",
+      "TotalHands": 658008,
+      "Cache": {
+        "AccountedBytes": 268435236,
+        "LimitBytes": 268435456,
+        "Hits": 0,
+        "Misses": 658009,
+        "Entries": 504041
+      }
+    },
+    {
+      "Fixture": "chain-rich-diverse",
+      "Workers": 2,
+      "Repeat": 2,
+      "Milliseconds": 1088.3937,
+      "CpuMilliseconds": 1906.25,
+      "ReportHash": "14F23116F279A3E2DB1E27AE14F31DD02F3CB9D7CB51D8EA517ECB40C9D8A94F",
+      "TotalHands": 658008,
+      "Cache": {
+        "AccountedBytes": 134273436,
+        "LimitBytes": 268435456,
+        "Hits": 0,
+        "Misses": 658009,
+        "Entries": 250766
+      }
+    }
+  ],
+  "TimedSearch": [
+    {
+      "CpuMilliseconds": 7203.125,
+      "AverageCpuPercent": 11.919019519384758,
+      "SampledExpectedBestAttack": 2072.5,
+      "Fixture": "chains-160",
+      "Workers": 2,
+      "Repeat": 0,
+      "Milliseconds": 5036.156,
+      "CandidatesExamined": 51601,
+      "SearchCache": {
+        "AccountedBytes": 156765442,
+        "LimitBytes": 268435452,
+        "Hits": 4050580,
+        "Misses": 652941,
+        "Entries": 63619
+      },
+      "ProvenOptimal": false,
+      "IsExact": false
+    },
+    {
+      "CpuMilliseconds": 8062.5,
+      "AverageCpuPercent": 13.434138778477624,
+      "SampledExpectedBestAttack": 2072.5,
+      "Fixture": "chains-160",
+      "Workers": 4,
+      "Repeat": 0,
+      "Milliseconds": 5001.251,
+      "CandidatesExamined": 57281,
+      "SearchCache": {
+        "AccountedBytes": 188080196,
+        "LimitBytes": 268435450,
+        "Hits": 5177168,
+        "Misses": 888993,
+        "Entries": 74633
+      },
+      "ProvenOptimal": false,
+      "IsExact": false
+    },
+    {
+      "CpuMilliseconds": 9375,
+      "AverageCpuPercent": 15.567339198303053,
+      "SampledExpectedBestAttack": 2072.5,
+      "Fixture": "chains-160",
+      "Workers": 6,
+      "Repeat": 0,
+      "Milliseconds": 5018.5198,
+      "CandidatesExamined": 53550,
+      "SearchCache": {
+        "AccountedBytes": 201434362,
+        "LimitBytes": 268435447,
+        "Hits": 5425298,
+        "Misses": 981303,
+        "Entries": 81370
+      },
+      "ProvenOptimal": false,
+      "IsExact": false
+    },
+    {
+      "CpuMilliseconds": 9515.625,
+      "AverageCpuPercent": 15.793569827826774,
+      "SampledExpectedBestAttack": 2072.5,
+      "Fixture": "chains-160",
+      "Workers": 8,
+      "Repeat": 0,
+      "Milliseconds": 5020.8329,
+      "CandidatesExamined": 51029,
+      "SearchCache": {
+        "AccountedBytes": 208827036,
+        "LimitBytes": 268435440,
+        "Hits": 5483093,
+        "Misses": 1052149,
+        "Entries": 89467
+      },
+      "ProvenOptimal": false,
+      "IsExact": false
+    },
+    {
+      "CpuMilliseconds": 8296.875,
+      "AverageCpuPercent": 13.798331917689962,
+      "SampledExpectedBestAttack": 2072.5,
+      "Fixture": "chains-160",
+      "Workers": 4,
+      "Repeat": 1,
+      "Milliseconds": 5010.7959,
+      "CandidatesExamined": 55569,
+      "SearchCache": {
+        "AccountedBytes": 188018818,
+        "LimitBytes": 268435450,
+        "Hits": 5055492,
+        "Misses": 870397,
+        "Entries": 74809
+      },
+      "ProvenOptimal": false,
+      "IsExact": false
+    },
+    {
+      "CpuMilliseconds": 9359.375,
+      "AverageCpuPercent": 15.59647818137293,
+      "SampledExpectedBestAttack": 2072.5,
+      "Fixture": "chains-160",
+      "Workers": 6,
+      "Repeat": 1,
+      "Milliseconds": 5000.7951,
+      "CandidatesExamined": 52769,
+      "SearchCache": {
+        "AccountedBytes": 201406296,
+        "LimitBytes": 268435447,
+        "Hits": 5357950,
+        "Misses": 971539,
+        "Entries": 81704
+      },
+      "ProvenOptimal": false,
+      "IsExact": false
+    },
+    {
+      "CpuMilliseconds": 11281.25,
+      "AverageCpuPercent": 18.799707426308796,
+      "SampledExpectedBestAttack": 2072.5,
+      "Fixture": "chains-160",
+      "Workers": 8,
+      "Repeat": 1,
+      "Milliseconds": 5000.6319,
+      "CandidatesExamined": 50545,
+      "SearchCache": {
+        "AccountedBytes": 208865042,
+        "LimitBytes": 268435440,
+        "Hits": 5436534,
+        "Misses": 1045451,
+        "Entries": 89966
+      },
+      "ProvenOptimal": false,
+      "IsExact": false
+    },
+    {
+      "CpuMilliseconds": 6515.625,
+      "AverageCpuPercent": 10.85792438130266,
+      "SampledExpectedBestAttack": 2072.5,
+      "Fixture": "chains-160",
+      "Workers": 2,
+      "Repeat": 1,
+      "Milliseconds": 5000.668,
+      "CandidatesExamined": 59425,
+      "SearchCache": {
+        "AccountedBytes": 156770498,
+        "LimitBytes": 268435452,
+        "Hits": 4441371,
+        "Misses": 719894,
+        "Entries": 62828
+      },
+      "ProvenOptimal": false,
+      "IsExact": false
+    },
+    {
+      "CpuMilliseconds": 10171.875,
+      "AverageCpuPercent": 16.859133979334494,
+      "SampledExpectedBestAttack": 2072.5,
+      "Fixture": "chains-160",
+      "Workers": 6,
+      "Repeat": 2,
+      "Milliseconds": 5027.8754,
+      "CandidatesExamined": 53546,
+      "SearchCache": {
+        "AccountedBytes": 201450028,
+        "LimitBytes": 268435447,
+        "Hits": 5424919,
+        "Misses": 981273,
+        "Entries": 81374
+      },
+      "ProvenOptimal": false,
+      "IsExact": false
+    },
+    {
+      "CpuMilliseconds": 10859.375,
+      "AverageCpuPercent": 18.095367850444447,
+      "SampledExpectedBestAttack": 2072.5,
+      "Fixture": "chains-160",
+      "Workers": 8,
+      "Repeat": 2,
+      "Milliseconds": 5000.9921,
+      "CandidatesExamined": 51073,
+      "SearchCache": {
+        "AccountedBytes": 208888418,
+        "LimitBytes": 268435440,
+        "Hits": 5487386,
+        "Misses": 1052887,
+        "Entries": 89481
+      },
+      "ProvenOptimal": false,
+      "IsExact": false
+    },
+    {
+      "CpuMilliseconds": 6750,
+      "AverageCpuPercent": 11.247469994099527,
+      "SampledExpectedBestAttack": 2072.5,
+      "Fixture": "chains-160",
+      "Workers": 2,
+      "Repeat": 2,
+      "Milliseconds": 5001.1247,
+      "CandidatesExamined": 58929,
+      "SearchCache": {
+        "AccountedBytes": 156756840,
+        "LimitBytes": 268435452,
+        "Hits": 4415197,
+        "Misses": 715812,
+        "Entries": 62957
+      },
+      "ProvenOptimal": false,
+      "IsExact": false
+    },
+    {
+      "CpuMilliseconds": 8765.625,
+      "AverageCpuPercent": 14.606478535306449,
+      "SampledExpectedBestAttack": 2072.5,
+      "Fixture": "chains-160",
+      "Workers": 4,
+      "Repeat": 2,
+      "Milliseconds": 5000.9915,
+      "CandidatesExamined": 56913,
+      "SearchCache": {
+        "AccountedBytes": 188056834,
+        "LimitBytes": 268435450,
+        "Hits": 5150533,
+        "Misses": 884860,
+        "Entries": 74690
+      },
+      "ProvenOptimal": false,
+      "IsExact": false
+    },
+    {
+      "CpuMilliseconds": 8140.625,
+      "AverageCpuPercent": 13.49613911736231,
+      "SampledExpectedBestAttack": 1990.4375,
+      "Fixture": "chains-1600",
+      "Workers": 2,
+      "Repeat": 0,
+      "Milliseconds": 5026.5147,
+      "CandidatesExamined": 5008,
+      "SearchCache": {
+        "AccountedBytes": 157413660,
+        "LimitBytes": 268435452,
+        "Hits": 6340959,
+        "Misses": 1110015,
+        "Entries": 210964
+      },
+      "ProvenOptimal": false,
+      "IsExact": false
+    },
+    {
+      "CpuMilliseconds": 10812.5,
+      "AverageCpuPercent": 17.827123806056722,
+      "SampledExpectedBestAttack": 1990.4375,
+      "Fixture": "chains-1600",
+      "Workers": 4,
+      "Repeat": 0,
+      "Milliseconds": 5054.33,
+      "CandidatesExamined": 5675,
+      "SearchCache": {
+        "AccountedBytes": 188684734,
+        "LimitBytes": 268435450,
+        "Hits": 7058509,
+        "Misses": 1544633,
+        "Entries": 267894
+      },
+      "ProvenOptimal": false,
+      "IsExact": false
+    },
+    {
+      "CpuMilliseconds": 13531.25,
+      "AverageCpuPercent": 22.531703857828006,
+      "SampledExpectedBestAttack": 1990.4375,
+      "Fixture": "chains-1600",
+      "Workers": 6,
+      "Repeat": 0,
+      "Milliseconds": 5004.5224,
+      "CandidatesExamined": 5361,
+      "SearchCache": {
+        "AccountedBytes": 202162508,
+        "LimitBytes": 268435447,
+        "Hits": 6528348,
+        "Misses": 1759253,
+        "Entries": 299499
+      },
+      "ProvenOptimal": false,
+      "IsExact": false
+    },
+    {
+      "CpuMilliseconds": 15109.375,
+      "AverageCpuPercent": 25.171495108984523,
+      "SampledExpectedBestAttack": 1990.4375,
+      "Fixture": "chains-1600",
+      "Workers": 8,
+      "Repeat": 0,
+      "Milliseconds": 5002.1446,
+      "CandidatesExamined": 5025,
+      "SearchCache": {
+        "AccountedBytes": 209621474,
+        "LimitBytes": 268435440,
+        "Hits": 5983907,
+        "Misses": 1888958,
+        "Entries": 321935
+      },
+      "ProvenOptimal": false,
+      "IsExact": false
+    },
+    {
+      "CpuMilliseconds": 11406.25,
+      "AverageCpuPercent": 18.994563803716083,
+      "SampledExpectedBestAttack": 1990.4375,
+      "Fixture": "chains-1600",
+      "Workers": 4,
+      "Repeat": 1,
+      "Milliseconds": 5004.173,
+      "CandidatesExamined": 5632,
+      "SearchCache": {
+        "AccountedBytes": 188712650,
+        "LimitBytes": 268435450,
+        "Hits": 7003092,
+        "Misses": 1538125,
+        "Entries": 267495
+      },
+      "ProvenOptimal": false,
+      "IsExact": false
+    },
+    {
+      "CpuMilliseconds": 13765.625,
+      "AverageCpuPercent": 22.799233214697903,
+      "SampledExpectedBestAttack": 1990.4375,
+      "Fixture": "chains-1600",
+      "Workers": 6,
+      "Repeat": 1,
+      "Milliseconds": 5031.4649,
+      "CandidatesExamined": 5152,
+      "SearchCache": {
+        "AccountedBytes": 202175924,
+        "LimitBytes": 268435447,
+        "Hits": 6265659,
+        "Misses": 1723562,
+        "Entries": 299993
+      },
+      "ProvenOptimal": false,
+      "IsExact": false
+    },
+    {
+      "CpuMilliseconds": 14218.75,
+      "AverageCpuPercent": 23.484277377252514,
+      "SampledExpectedBestAttack": 1990.4375,
+      "Fixture": "chains-1600",
+      "Workers": 8,
+      "Repeat": 1,
+      "Milliseconds": 5045.4856,
+      "CandidatesExamined": 5008,
+      "SearchCache": {
+        "AccountedBytes": 209609770,
+        "LimitBytes": 268435440,
+        "Hits": 5967072,
+        "Misses": 1886170,
+        "Entries": 322119
+      },
+      "ProvenOptimal": false,
+      "IsExact": false
+    },
+    {
+      "CpuMilliseconds": 8109.375,
+      "AverageCpuPercent": 13.462490703193009,
+      "SampledExpectedBestAttack": 1990.4375,
+      "Fixture": "chains-1600",
+      "Workers": 2,
+      "Repeat": 1,
+      "Milliseconds": 5019.7342,
+      "CandidatesExamined": 5088,
+      "SearchCache": {
+        "AccountedBytes": 157424328,
+        "LimitBytes": 268435452,
+        "Hits": 6418846,
+        "Misses": 1117007,
+        "Entries": 210664
+      },
+      "ProvenOptimal": false,
+      "IsExact": false
+    },
+    {
+      "CpuMilliseconds": 12812.5,
+      "AverageCpuPercent": 21.110345970568872,
+      "SampledExpectedBestAttack": 1990.4375,
+      "Fixture": "chains-1600",
+      "Workers": 6,
+      "Repeat": 2,
+      "Milliseconds": 5057.7491,
+      "CandidatesExamined": 5393,
+      "SearchCache": {
+        "AccountedBytes": 202144178,
+        "LimitBytes": 268435447,
+        "Hits": 6569119,
+        "Misses": 1764914,
+        "Entries": 299498
+      },
+      "ProvenOptimal": false,
+      "IsExact": false
+    },
+    {
+      "CpuMilliseconds": 14015.625,
+      "AverageCpuPercent": 23.350411710960632,
+      "SampledExpectedBestAttack": 1990.4375,
+      "Fixture": "chains-1600",
+      "Workers": 8,
+      "Repeat": 2,
+      "Milliseconds": 5001.9193,
+      "CandidatesExamined": 5056,
+      "SearchCache": {
+        "AccountedBytes": 209591214,
+        "LimitBytes": 268435440,
+        "Hits": 6024748,
+        "Misses": 1895809,
+        "Entries": 322391
+      },
+      "ProvenOptimal": false,
+      "IsExact": false
+    },
+    {
+      "CpuMilliseconds": 8187.5,
+      "AverageCpuPercent": 13.622144424179686,
+      "SampledExpectedBestAttack": 1990.4375,
+      "Fixture": "chains-1600",
+      "Workers": 2,
+      "Repeat": 2,
+      "Milliseconds": 5008.695,
+      "CandidatesExamined": 4801,
+      "SearchCache": {
+        "AccountedBytes": 157418936,
+        "LimitBytes": 268435452,
+        "Hits": 6097710,
+        "Misses": 1088531,
+        "Entries": 211378
+      },
+      "ProvenOptimal": false,
+      "IsExact": false
+    },
+    {
+      "CpuMilliseconds": 11640.625,
+      "AverageCpuPercent": 19.292164407615846,
+      "SampledExpectedBestAttack": 1990.4375,
+      "Fixture": "chains-1600",
+      "Workers": 4,
+      "Repeat": 2,
+      "Milliseconds": 5028.218,
+      "CandidatesExamined": 5675,
+      "SearchCache": {
+        "AccountedBytes": 188711964,
+        "LimitBytes": 268435450,
+        "Hits": 7058585,
+        "Misses": 1544692,
+        "Entries": 267889
+      },
+      "ProvenOptimal": false,
+      "IsExact": false
+    },
+    {
+      "CpuMilliseconds": 7921.875,
+      "AverageCpuPercent": 13.201791091028163,
+      "SampledExpectedBestAttack": 2064.71875,
+      "Fixture": "chains-campaign-1600",
+      "Workers": 2,
+      "Repeat": 0,
+      "Milliseconds": 5000.5052,
+      "CandidatesExamined": 3505,
+      "SearchCache": {
+        "AccountedBytes": 158074868,
+        "LimitBytes": 268435452,
+        "Hits": 4808793,
+        "Misses": 880614,
+        "Entries": 178049
+      },
+      "ProvenOptimal": false,
+      "IsExact": false
+    },
+    {
+      "CpuMilliseconds": 9812.5,
+      "AverageCpuPercent": 16.336772578167242,
+      "SampledExpectedBestAttack": 2064.71875,
+      "Fixture": "chains-campaign-1600",
+      "Workers": 4,
+      "Repeat": 0,
+      "Milliseconds": 5005.3236,
+      "CandidatesExamined": 3933,
+      "SearchCache": {
+        "AccountedBytes": 189840920,
+        "LimitBytes": 268435450,
+        "Hits": 5218342,
+        "Misses": 1232450,
+        "Entries": 227789
+      },
+      "ProvenOptimal": false,
+      "IsExact": false
+    },
+    {
+      "CpuMilliseconds": 12265.625,
+      "AverageCpuPercent": 20.32284056158978,
+      "SampledExpectedBestAttack": 2064.71875,
+      "Fixture": "chains-campaign-1600",
+      "Workers": 6,
+      "Repeat": 0,
+      "Milliseconds": 5029.4909,
+      "CandidatesExamined": 3645,
+      "SearchCache": {
+        "AccountedBytes": 203853142,
+        "LimitBytes": 268435447,
+        "Hits": 4649560,
+        "Misses": 1389222,
+        "Entries": 256057
+      },
+      "ProvenOptimal": false,
+      "IsExact": false
+    },
+    {
+      "CpuMilliseconds": 14078.125,
+      "AverageCpuPercent": 23.366852900722883,
+      "SampledExpectedBestAttack": 2064.71875,
+      "Fixture": "chains-campaign-1600",
+      "Workers": 8,
+      "Repeat": 0,
+      "Milliseconds": 5020.6893,
+      "CandidatesExamined": 3504,
+      "SearchCache": {
+        "AccountedBytes": 211766822,
+        "LimitBytes": 268435440,
+        "Hits": 4309124,
+        "Misses": 1513885,
+        "Entries": 275389
+      },
+      "ProvenOptimal": false,
+      "IsExact": false
+    },
+    {
+      "CpuMilliseconds": 10937.5,
+      "AverageCpuPercent": 18.19126879638316,
+      "SampledExpectedBestAttack": 2064.71875,
+      "Fixture": "chains-campaign-1600",
+      "Workers": 4,
+      "Repeat": 1,
+      "Milliseconds": 5010.4165,
+      "CandidatesExamined": 3901,
+      "SearchCache": {
+        "AccountedBytes": 189859500,
+        "LimitBytes": 268435450,
+        "Hits": 5173259,
+        "Misses": 1225680,
+        "Entries": 227305
+      },
+      "ProvenOptimal": false,
+      "IsExact": false
+    },
+    {
+      "CpuMilliseconds": 12390.625,
+      "AverageCpuPercent": 20.628576734031775,
+      "SampledExpectedBestAttack": 2064.71875,
+      "Fixture": "chains-campaign-1600",
+      "Workers": 6,
+      "Repeat": 1,
+      "Milliseconds": 5005.4451,
+      "CandidatesExamined": 3600,
+      "SearchCache": {
+        "AccountedBytes": 203850014,
+        "LimitBytes": 268435447,
+        "Hits": 4587787,
+        "Misses": 1378833,
+        "Entries": 256143
+      },
+      "ProvenOptimal": false,
+      "IsExact": false
+    },
+    {
+      "CpuMilliseconds": 13781.25,
+      "AverageCpuPercent": 22.944582929691812,
+      "SampledExpectedBestAttack": 2064.71875,
+      "Fixture": "chains-campaign-1600",
+      "Workers": 8,
+      "Repeat": 1,
+      "Milliseconds": 5005.2664,
+      "CandidatesExamined": 3425,
+      "SearchCache": {
+        "AccountedBytes": 211595376,
+        "LimitBytes": 268435440,
+        "Hits": 4197754,
+        "Misses": 1492095,
+        "Entries": 275342
+      },
+      "ProvenOptimal": false,
+      "IsExact": false
+    },
+    {
+      "CpuMilliseconds": 7640.625,
+      "AverageCpuPercent": 12.718125051621543,
+      "SampledExpectedBestAttack": 2064.71875,
+      "Fixture": "chains-campaign-1600",
+      "Workers": 2,
+      "Repeat": 1,
+      "Milliseconds": 5006.3885,
+      "CandidatesExamined": 3707,
+      "SearchCache": {
+        "AccountedBytes": 158130490,
+        "LimitBytes": 268435452,
+        "Hits": 5088826,
+        "Misses": 908515,
+        "Entries": 177466
+      },
+      "ProvenOptimal": false,
+      "IsExact": false
+    },
+    {
+      "CpuMilliseconds": 12406.25,
+      "AverageCpuPercent": 20.665321045900427,
+      "SampledExpectedBestAttack": 2064.71875,
+      "Fixture": "chains-campaign-1600",
+      "Workers": 6,
+      "Repeat": 2,
+      "Milliseconds": 5002.8459,
+      "CandidatesExamined": 3614,
+      "SearchCache": {
+        "AccountedBytes": 203700416,
+        "LimitBytes": 268435447,
+        "Hits": 4608482,
+        "Misses": 1381694,
+        "Entries": 256080
+      },
+      "ProvenOptimal": false,
+      "IsExact": false
+    },
+    {
+      "CpuMilliseconds": 13343.75,
+      "AverageCpuPercent": 22.077624967439693,
+      "SampledExpectedBestAttack": 2064.71875,
+      "Fixture": "chains-campaign-1600",
+      "Workers": 8,
+      "Repeat": 2,
+      "Milliseconds": 5036.6793,
+      "CandidatesExamined": 3569,
+      "SearchCache": {
+        "AccountedBytes": 211569132,
+        "LimitBytes": 268435440,
+        "Hits": 4398982,
+        "Misses": 1530383,
+        "Entries": 274973
+      },
+      "ProvenOptimal": false,
+      "IsExact": false
+    },
+    {
+      "CpuMilliseconds": 7687.5,
+      "AverageCpuPercent": 12.775002556994659,
+      "SampledExpectedBestAttack": 2064.71875,
+      "Fixture": "chains-campaign-1600",
+      "Workers": 2,
+      "Repeat": 2,
+      "Milliseconds": 5014.6761,
+      "CandidatesExamined": 3696,
+      "SearchCache": {
+        "AccountedBytes": 158068916,
+        "LimitBytes": 268435452,
+        "Hits": 5072098,
+        "Misses": 907133,
+        "Entries": 177367
+      },
+      "ProvenOptimal": false,
+      "IsExact": false
+    },
+    {
+      "CpuMilliseconds": 11312.5,
+      "AverageCpuPercent": 18.82725273234073,
+      "SampledExpectedBestAttack": 2064.71875,
+      "Fixture": "chains-campaign-1600",
+      "Workers": 4,
+      "Repeat": 2,
+      "Milliseconds": 5007.1476,
+      "CandidatesExamined": 3873,
+      "SearchCache": {
+        "AccountedBytes": 189903568,
+        "LimitBytes": 268435450,
+        "Hits": 5132522,
+        "Misses": 1221065,
+        "Entries": 227747
+      },
+      "ProvenOptimal": false,
+      "IsExact": false
+    }
+  ],
+  "CensusMethod": "2000 deterministic random five-card hands drawn without replacement from physical copy pools; three copies per owned type, one per exact deck type. Counts follow analyzer initial-pair canonical ordering and all subsequent ordered chains.",
+  "Validation": {
+    "UnchangedOriginalSourceFiles": 126,
+    "ExactReportsIdentical": 15,
+    "ExactHandsPerReport": 658008,
+    "SearchRunsCompleted": 36,
+    "SearchCacheWithin256MiB": true,
+    "1600SampleCountCheckPassed": true,
+    "InstalledApplicationChanged": false
+  }
+}

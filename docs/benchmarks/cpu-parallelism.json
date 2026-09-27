@@ -1,0 +1,385 @@
+{
+  "LogicalProcessors": 12,
+  "ExactAnalysis": [
+    {
+      "Fixture": "duplicates",
+      "Workers": 1,
+      "Repeat": 0,
+      "Milliseconds": 29.2026,
+      "CpuMilliseconds": 62.5,
+      "ReportHash": "90CC8012FCE0627975C5F538A0A9F6F32DC835D2ACA0A0FE039D03D20FED8FCD",
+      "TotalHands": 658008,
+      "Cache": {
+        "AccountedBytes": 1955306,
+        "LimitBytes": 268435456,
+        "Hits": 0,
+        "Misses": 7827,
+        "Entries": 5243
+      }
+    },
+    {
+      "Fixture": "duplicates",
+      "Workers": 1,
+      "Repeat": 1,
+      "Milliseconds": 26.1876,
+      "CpuMilliseconds": 15.625,
+      "ReportHash": "90CC8012FCE0627975C5F538A0A9F6F32DC835D2ACA0A0FE039D03D20FED8FCD",
+      "TotalHands": 658008,
+      "Cache": {
+        "AccountedBytes": 1955306,
+        "LimitBytes": 268435456,
+        "Hits": 0,
+        "Misses": 7827,
+        "Entries": 5243
+      }
+    },
+    {
+      "Fixture": "duplicates",
+      "Workers": 1,
+      "Repeat": 2,
+      "Milliseconds": 25.1023,
+      "CpuMilliseconds": 31.25,
+      "ReportHash": "90CC8012FCE0627975C5F538A0A9F6F32DC835D2ACA0A0FE039D03D20FED8FCD",
+      "TotalHands": 658008,
+      "Cache": {
+        "AccountedBytes": 1955306,
+        "LimitBytes": 268435456,
+        "Hits": 0,
+        "Misses": 7827,
+        "Entries": 5243
+      }
+    },
+    {
+      "Fixture": "duplicates",
+      "Workers": 2,
+      "Repeat": 0,
+      "Milliseconds": 41.371,
+      "CpuMilliseconds": 46.875,
+      "ReportHash": "90CC8012FCE0627975C5F538A0A9F6F32DC835D2ACA0A0FE039D03D20FED8FCD",
+      "TotalHands": 658008,
+      "Cache": {
+        "AccountedBytes": 1955306,
+        "LimitBytes": 268435456,
+        "Hits": 0,
+        "Misses": 7827,
+        "Entries": 5243
+      }
+    },
+    {
+      "Fixture": "duplicates",
+      "Workers": 2,
+      "Repeat": 1,
+      "Milliseconds": 14.5919,
+      "CpuMilliseconds": 31.25,
+      "ReportHash": "90CC8012FCE0627975C5F538A0A9F6F32DC835D2ACA0A0FE039D03D20FED8FCD",
+      "TotalHands": 658008,
+      "Cache": {
+        "AccountedBytes": 1955306,
+        "LimitBytes": 268435456,
+        "Hits": 0,
+        "Misses": 7827,
+        "Entries": 5243
+      }
+    },
+    {
+      "Fixture": "duplicates",
+      "Workers": 2,
+      "Repeat": 2,
+      "Milliseconds": 14.7422,
+      "CpuMilliseconds": 31.25,
+      "ReportHash": "90CC8012FCE0627975C5F538A0A9F6F32DC835D2ACA0A0FE039D03D20FED8FCD",
+      "TotalHands": 658008,
+      "Cache": {
+        "AccountedBytes": 1955306,
+        "LimitBytes": 268435456,
+        "Hits": 0,
+        "Misses": 7827,
+        "Entries": 5243
+      }
+    },
+    {
+      "Fixture": "duplicates",
+      "Workers": 4,
+      "Repeat": 0,
+      "Milliseconds": 9.4968,
+      "CpuMilliseconds": 0,
+      "ReportHash": "90CC8012FCE0627975C5F538A0A9F6F32DC835D2ACA0A0FE039D03D20FED8FCD",
+      "TotalHands": 658008,
+      "Cache": {
+        "AccountedBytes": 1955306,
+        "LimitBytes": 268435456,
+        "Hits": 0,
+        "Misses": 7827,
+        "Entries": 5243
+      }
+    },
+    {
+      "Fixture": "duplicates",
+      "Workers": 4,
+      "Repeat": 1,
+      "Milliseconds": 12.8044,
+      "CpuMilliseconds": 62.5,
+      "ReportHash": "90CC8012FCE0627975C5F538A0A9F6F32DC835D2ACA0A0FE039D03D20FED8FCD",
+      "TotalHands": 658008,
+      "Cache": {
+        "AccountedBytes": 1955306,
+        "LimitBytes": 268435456,
+        "Hits": 0,
+        "Misses": 7827,
+        "Entries": 5243
+      }
+    },
+    {
+      "Fixture": "duplicates",
+      "Workers": 4,
+      "Repeat": 2,
+      "Milliseconds": 11.1116,
+      "CpuMilliseconds": 62.5,
+      "ReportHash": "90CC8012FCE0627975C5F538A0A9F6F32DC835D2ACA0A0FE039D03D20FED8FCD",
+      "TotalHands": 658008,
+      "Cache": {
+        "AccountedBytes": 1955306,
+        "LimitBytes": 268435456,
+        "Hits": 0,
+        "Misses": 7827,
+        "Entries": 5243
+      }
+    },
+    {
+      "Fixture": "diverse",
+      "Workers": 1,
+      "Repeat": 0,
+      "Milliseconds": 943.1223,
+      "CpuMilliseconds": 1078.125,
+      "ReportHash": "20DA9A8834CFA33F76CA8D727E3B3FA847ABB7CBD820AC6D12A44A2C464BE0F8",
+      "TotalHands": 658008,
+      "Cache": {
+        "AccountedBytes": 140396694,
+        "LimitBytes": 268435456,
+        "Hits": 0,
+        "Misses": 658009,
+        "Entries": 386182
+      }
+    },
+    {
+      "Fixture": "diverse",
+      "Workers": 1,
+      "Repeat": 1,
+      "Milliseconds": 766.2476,
+      "CpuMilliseconds": 843.75,
+      "ReportHash": "20DA9A8834CFA33F76CA8D727E3B3FA847ABB7CBD820AC6D12A44A2C464BE0F8",
+      "TotalHands": 658008,
+      "Cache": {
+        "AccountedBytes": 140396694,
+        "LimitBytes": 268435456,
+        "Hits": 0,
+        "Misses": 658009,
+        "Entries": 386182
+      }
+    },
+    {
+      "Fixture": "diverse",
+      "Workers": 1,
+      "Repeat": 2,
+      "Milliseconds": 692.2633,
+      "CpuMilliseconds": 750,
+      "ReportHash": "20DA9A8834CFA33F76CA8D727E3B3FA847ABB7CBD820AC6D12A44A2C464BE0F8",
+      "TotalHands": 658008,
+      "Cache": {
+        "AccountedBytes": 140396694,
+        "LimitBytes": 268435456,
+        "Hits": 0,
+        "Misses": 658009,
+        "Entries": 386182
+      }
+    },
+    {
+      "Fixture": "diverse",
+      "Workers": 2,
+      "Repeat": 0,
+      "Milliseconds": 454.9728,
+      "CpuMilliseconds": 812.5,
+      "ReportHash": "20DA9A8834CFA33F76CA8D727E3B3FA847ABB7CBD820AC6D12A44A2C464BE0F8",
+      "TotalHands": 658008,
+      "Cache": {
+        "AccountedBytes": 126574086,
+        "LimitBytes": 268435456,
+        "Hits": 0,
+        "Misses": 658009,
+        "Entries": 346166
+      }
+    },
+    {
+      "Fixture": "diverse",
+      "Workers": 2,
+      "Repeat": 1,
+      "Milliseconds": 433.5534,
+      "CpuMilliseconds": 734.375,
+      "ReportHash": "20DA9A8834CFA33F76CA8D727E3B3FA847ABB7CBD820AC6D12A44A2C464BE0F8",
+      "TotalHands": 658008,
+      "Cache": {
+        "AccountedBytes": 126574086,
+        "LimitBytes": 268435456,
+        "Hits": 0,
+        "Misses": 658009,
+        "Entries": 346166
+      }
+    },
+    {
+      "Fixture": "diverse",
+      "Workers": 2,
+      "Repeat": 2,
+      "Milliseconds": 477.7279,
+      "CpuMilliseconds": 750,
+      "ReportHash": "20DA9A8834CFA33F76CA8D727E3B3FA847ABB7CBD820AC6D12A44A2C464BE0F8",
+      "TotalHands": 658008,
+      "Cache": {
+        "AccountedBytes": 126574086,
+        "LimitBytes": 268435456,
+        "Hits": 0,
+        "Misses": 658009,
+        "Entries": 346166
+      }
+    },
+    {
+      "Fixture": "diverse",
+      "Workers": 4,
+      "Repeat": 0,
+      "Milliseconds": 286.2,
+      "CpuMilliseconds": 796.875,
+      "ReportHash": "20DA9A8834CFA33F76CA8D727E3B3FA847ABB7CBD820AC6D12A44A2C464BE0F8",
+      "TotalHands": 658008,
+      "Cache": {
+        "AccountedBytes": 126509862,
+        "LimitBytes": 268435456,
+        "Hits": 0,
+        "Misses": 658009,
+        "Entries": 346568
+      }
+    },
+    {
+      "Fixture": "diverse",
+      "Workers": 4,
+      "Repeat": 1,
+      "Milliseconds": 280.4771,
+      "CpuMilliseconds": 750,
+      "ReportHash": "20DA9A8834CFA33F76CA8D727E3B3FA847ABB7CBD820AC6D12A44A2C464BE0F8",
+      "TotalHands": 658008,
+      "Cache": {
+        "AccountedBytes": 126509862,
+        "LimitBytes": 268435456,
+        "Hits": 0,
+        "Misses": 658009,
+        "Entries": 346568
+      }
+    },
+    {
+      "Fixture": "diverse",
+      "Workers": 4,
+      "Repeat": 2,
+      "Milliseconds": 341.7029,
+      "CpuMilliseconds": 796.875,
+      "ReportHash": "20DA9A8834CFA33F76CA8D727E3B3FA847ABB7CBD820AC6D12A44A2C464BE0F8",
+      "TotalHands": 658008,
+      "Cache": {
+        "AccountedBytes": 126509862,
+        "LimitBytes": 268435456,
+        "Hits": 0,
+        "Misses": 658009,
+        "Entries": 346568
+      }
+    }
+  ],
+  "TimedSearch": [
+    {
+      "Workers": 1,
+      "Repeat": 0,
+      "Milliseconds": 5028.4208,
+      "CandidatesExamined": 58289,
+      "SearchCache": {
+        "AccountedBytes": 117482240,
+        "LimitBytes": 268435456,
+        "Hits": 3379404,
+        "Misses": 616805,
+        "Entries": 46021
+      },
+      "ProvenOptimal": false,
+      "IsExact": false
+    },
+    {
+      "Workers": 1,
+      "Repeat": 1,
+      "Milliseconds": 5001.3775,
+      "CandidatesExamined": 60581,
+      "SearchCache": {
+        "AccountedBytes": 117495568,
+        "LimitBytes": 268435456,
+        "Hits": 3469067,
+        "Misses": 635994,
+        "Entries": 46438
+      },
+      "ProvenOptimal": false,
+      "IsExact": false
+    },
+    {
+      "Workers": 2,
+      "Repeat": 0,
+      "Milliseconds": 5001.0128,
+      "CandidatesExamined": 37921,
+      "SearchCache": {
+        "AccountedBytes": 156704880,
+        "LimitBytes": 268435452,
+        "Hits": 3846164,
+        "Misses": 591517,
+        "Entries": 46761
+      },
+      "ProvenOptimal": false,
+      "IsExact": false
+    },
+    {
+      "Workers": 2,
+      "Repeat": 1,
+      "Milliseconds": 5001.0876,
+      "CandidatesExamined": 43377,
+      "SearchCache": {
+        "AccountedBytes": 156685158,
+        "LimitBytes": 268435452,
+        "Hits": 4321164,
+        "Misses": 661973,
+        "Entries": 46909
+      },
+      "ProvenOptimal": false,
+      "IsExact": false
+    },
+    {
+      "Workers": 4,
+      "Repeat": 0,
+      "Milliseconds": 5006.1329,
+      "CandidatesExamined": 69248,
+      "SearchCache": {
+        "AccountedBytes": 187984902,
+        "LimitBytes": 268435450,
+        "Hits": 5360127,
+        "Misses": 953755,
+        "Entries": 69865
+      },
+      "ProvenOptimal": false,
+      "IsExact": false
+    },
+    {
+      "Workers": 4,
+      "Repeat": 1,
+      "Milliseconds": 5000.5404,
+      "CandidatesExamined": 67569,
+      "SearchCache": {
+        "AccountedBytes": 187992456,
+        "LimitBytes": 268435450,
+        "Hits": 5241209,
+        "Misses": 933480,
+        "Entries": 70517
+      },
+      "ProvenOptimal": false,
+      "IsExact": false
+    }
+  ]
+}

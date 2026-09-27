@@ -6,6 +6,7 @@ using System.Text;
 using System.Text.Json;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Threading;
@@ -31,6 +32,9 @@ public partial class MainWindow : Window
     private readonly OptimizerActivityViewModel _optimizerActivity = new();
     private CardPicker? _deckAddPicker;
     private readonly List<OwnedCardRow> _ownedCardRows = [];
+    private CampaignDeckLibraryWindow? _deckLibraryWindow;
+    private string? _recommendedBuildId;
+    private bool _initializingSuggestedDeckSort;
     private CardPicker? _ownedAddPicker;
     private readonly DispatcherTimer _liveTimer = new() { Interval = TimeSpan.FromSeconds(1) };
     private readonly DispatcherTimer _saveWatchTimer = new() { Interval = TimeSpan.FromSeconds(15) };
@@ -178,13 +182,14 @@ public partial class MainWindow : Window
 
         _catalog = FusionCatalog.Load(databasePath);
         _planner = new TacticalFusionPlanner(_catalog);
-        _deckAnalyzer = new DeckAnalyzer(_catalog);
+        _deckAnalyzer = new DeckAnalyzer(_catalog, workerCount: DeckBuildJob.AutoAnalysisWorkerCount);
         var search = new CardSearchService(_catalog.Cards);
         AddPickers(HandPickerPanel, _handPickers, "Hand", search);
         AddPickers(MonsterPickerPanel, _monsterPickers, "Monster", search);
         AddPickers(SpellPickerPanel, _spellPickers, "Spell / Trap", search);
         AddDeckPickers(search);
         InitializeOptimizer(_catalog);
+        UpdateRecommendedStrategyLabel();
         InitializeCampaignOptimizer(_catalog);
         if (_collectionSourceMode == CollectionSourceMode.Manual)
         {
@@ -239,6 +244,8 @@ public partial class MainWindow : Window
     private void RestoreDesktopSettings()
     {
         var settings = DesktopSettingsStore.Load();
+        _recommendedBuildId = settings.RecommendedBuildId;
+        UpdateRecommendedStrategyLabel();
         _lastSavePath = settings.LastSavePath;
         _collectionSourceMode = settings.CollectionSourceMode;
         _pinnedSavePath = settings.PinnedSavePath ?? (settings.CollectionSourceMode == CollectionSourceMode.PinnedFile ? settings.LastSavePath : null);
@@ -299,7 +306,10 @@ public partial class MainWindow : Window
                 _artworkOverrides,
                 _collectionSourceMode == CollectionSourceMode.Manual
                     ? _ownedCardRows.Where(row => row.Quantity > 0).ToDictionary(row => row.Card.Id, row => row.Quantity) : null,
-                _pinnedSavePath));
+                _pinnedSavePath,
+                OwnedOptimizerPaneView.CpuWorkersCombo.SelectedValue is int workers ? workers : 0,
+                _recommendedBuildId,
+                OwnedOptimizerPaneView.SuggestedDeckSortCombo.SelectedItem as string ?? "Alphabetical"));
         }
         catch (Exception exception)
         {
@@ -621,7 +631,7 @@ public partial class MainWindow : Window
     {
         var profiles = new[]
         {
-            new ProfileChoice(DeckStrategyProfile.Balanced, "Balanced", "Strong-fusion probabilities first, while retaining useful control, equips, and flexible secondary routes."),
+            new ProfileChoice(DeckStrategyProfile.Balanced, "Balanced", "Balances fusion consistency, compatible field/equip setup availability, and removal; setups may require multiple turns."),
             new ProfileChoice(DeckStrategyProfile.FusionConsistency, "Fusion consistency", "Favors material overlap and independent routes so weak five-card draws can still chain."),
             new ProfileChoice(DeckStrategyProfile.MaximumPower, "Maximum power", "Favors the highest reachable results and stronger standalone monsters over route breadth."),
             new ProfileChoice(DeckStrategyProfile.ControlAndSafety, "Control and safety", "Raises Raigeki, broad traps, stall, debuffs, and matchup-relevant removal."),
@@ -649,10 +659,22 @@ public partial class MainWindow : Window
             new SearchModeChoice(DeckSearchMode.Thorough, "Thorough • 15 minutes")
         };
         OptimizerSpeedCombo.SelectedIndex = 1;
+        OwnedOptimizerPaneView.CpuWorkersCombo.ItemsSource = new[] { new CpuWorkerChoice(0, $"Auto • {DeckBuildJob.AutoSearchWorkerCount} search / {DeckBuildJob.AutoAnalysisWorkerCount} analysis") }
+            .Concat(Enumerable.Range(1, DeckBuildJob.MaximumWorkerCount).Select(count => new CpuWorkerChoice(count, $"{count} worker(s)"))).ToArray();
+        OwnedOptimizerPaneView.CpuWorkersCombo.SelectedValue = Math.Clamp(DesktopSettingsStore.Load().CpuWorkers, 0, DeckBuildJob.MaximumWorkerCount);
         OwnedTypeFilterCombo.ItemsSource = first.Concat(catalog.Cards.Select(card => card.PrimaryType).Distinct().Order()).ToArray();
         OwnedTypeFilterCombo.SelectedIndex = 0;
         OwnedSortCombo.ItemsSource = new[] { "Name", "Quantity", "ATK", "In proposed deck" };
         OwnedSortCombo.SelectedIndex = 0;
+        _initializingSuggestedDeckSort = true;
+        try
+        {
+            string[] orders = ["Alphabetical", "Card number", "ATK", "DEF"];
+            OwnedOptimizerPaneView.SuggestedDeckSortCombo.ItemsSource = orders;
+            var savedOrder = DesktopSettingsStore.Load().SuggestedDeckSort;
+            OwnedOptimizerPaneView.SuggestedDeckSortCombo.SelectedItem = orders.Contains(savedOrder) ? savedOrder : "Alphabetical";
+        }
+        finally { _initializingSuggestedDeckSort = false; }
         _ownedAddPicker = new CardPicker();
         _ownedAddPicker.Configure("Add owned card", new CardSearchService(catalog.Cards));
         _ownedAddPicker.AdvanceRequested += (_, _) => AddOwnedCard();
@@ -1443,6 +1465,38 @@ public partial class MainWindow : Window
         ResetDeckMetrics();
     }
 
+    private bool CanChangeRecommendedStrategy() => !_optimizerBusy && !_closeRequested && _deckBuildJob?.State != DeckBuildState.Paused;
+
+    private void RecommendedDecks_Click(object sender, RoutedEventArgs e)
+    {
+        if (_catalog is null || _closeRequested) return;
+        if (_deckLibraryWindow is not null) { _deckLibraryWindow.Activate(); return; }
+        _deckLibraryWindow = new CampaignDeckLibraryWindow(_catalog,
+            () => _ownedCardRows.Where(r => r.Quantity > 0).Select(r => new OwnedCardQuantity(r.Card.Id, r.Quantity)),
+            id => _ownedCardRows.First(r => r.Card.Id == id).Artwork,
+            () => OptimizerSourceTitle.Text + " • " + OptimizerSourceSummary.Text,
+            build => { _recommendedBuildId = build.Id; UpdateRecommendedStrategyLabel(); SaveDesktopSettings(); },
+            CanChangeRecommendedStrategy) { Owner = this };
+        _deckLibraryWindow.Closed += (_, _) => _deckLibraryWindow = null;
+        _deckLibraryWindow.Show();
+    }
+
+    private void UpdateRecommendedStrategyLabel()
+    {
+        var name = _catalog is null ? null : CampaignDeckLibrary.ForCatalog(_catalog).FirstOrDefault(b => b.Id == _recommendedBuildId)?.Name;
+        OwnedOptimizerPaneView.RecommendedStrategyText.Text = name is null
+            ? "Starting strategy: automatic • compare all six builds"
+            : $"Starting strategy: {name} • adapted to owned cards; all builds still compared";
+    }
+
+    private void ResetRecommendedStrategy_Click(object sender, RoutedEventArgs e)
+    {
+        if (!CanChangeRecommendedStrategy()) return;
+        _recommendedBuildId = null;
+        UpdateRecommendedStrategyLabel();
+        SaveDesktopSettings();
+    }
+
     private async void OptimizeDeck_Click(object sender, RoutedEventArgs e)
     {
         if (_closeRequested) return;
@@ -1497,7 +1551,8 @@ public partial class MainWindow : Window
             PreferredMonsterTypes: ParseTypes(PreferredTypesTextBox.Text),
             PreferredFieldCardId: preferredFieldId,
             OpponentMonsterTypes: ParseTypes(OpponentTypesTextBox.Text),
-            AlreadyRedeemedCardNames: ParseCardNames(AlreadyRedeemedCardsTextBox.Text));
+            AlreadyRedeemedCardNames: ParseCardNames(AlreadyRedeemedCardsTextBox.Text),
+            RecommendedBuildId: _recommendedBuildId);
         var specificOpponentId = CampaignOpponentCombo.SelectedValue is int selectedOpponentId
             ? selectedOpponentId
             : (int?)null;
@@ -1550,8 +1605,8 @@ public partial class MainWindow : Window
                 options = options with
                 {
                     OpponentMonsterTypes = context.Safety.OpponentMonsterTypes,
-                    SafetyContext = context.Safety with { ActiveFieldCardId = preferredFieldId },
-                    SecondarySafetyContext = secondary is null ? null : secondary with { ActiveFieldCardId = preferredFieldId }
+                    SafetyContext = context.Safety,
+                    SecondarySafetyContext = secondary
                 };
             }
 
@@ -1594,7 +1649,8 @@ public partial class MainWindow : Window
                 ProofCheckpointFiles.PreserveAndRestart(checkpoint);
                 NewProofCheckpointCheckBox.IsChecked = false;
             }
-            var job = new DeckBuildJob(_catalog, request, checkpoint);
+            var job = new DeckBuildJob(_catalog, request, checkpoint,
+                OwnedOptimizerPaneView.CpuWorkersCombo.SelectedValue is int workers ? workers : 0);
             if (_lastDeckBuildResult is not null)
             {
                 try { job.AdoptVerifiedIncumbent(_lastDeckBuildResult); }
@@ -1711,6 +1767,16 @@ public partial class MainWindow : Window
         _optimizerActivity.Detail = presentation.Detail;
     }
 
+    private static string FormatSupportSummary(DeckOptimizationReport report)
+    {
+        var a = report.ExactAnalysis;
+        var text = $" • ≥3500 setup available {a.Setup3500Probability:P1} • board clear drawn {a.BoardClearProbability:P1} • >4500 setup {a.EndgamePowerProbability:P1} • strong body {a.Body2800Probability:P1} • no monster {a.NoMonsterProbability:P1} • highest setup {a.MaximumSetupAttack:N0} ATK. Setups may require separate turns; not win probabilities.";
+        if (report.SupportStructure is { } support)
+            text += $" • support for {support.TargetName}: {support.UsefulFieldCopies} useful field / {support.CompatibleEquipCopies} compatible equips" +
+                (support.MeetsSupportTarget ? "." : " • below the 1-field / 2-equip structure target.");
+        return text;
+    }
+
     private void ShowBestSoFar(DeckBuildCandidate best, DeckBuildState state, bool proven = false)
     {
         var analysis = best.Report.ExactAnalysis;
@@ -1721,18 +1787,20 @@ public partial class MainWindow : Window
                 : $"estimated from {analysis.TotalHands:N0} sampled hands; sampling uncertainty applies";
         OptimizationStatus.Text = $"{(proven ? "Proven optimal for this model and inputs" : "Best found")} • {statistics} • {best.Report.TotalCards}/40 cards" +
             (best.RequiredStarChips > 0 ? $" • {best.RequiredStarChips:N0} Star Chips" : string.Empty) +
-            (state == DeckBuildState.Paused ? " • paused" : string.Empty);
+            (state == DeckBuildState.Paused ? " • paused" : string.Empty) +
+            (analysis.TotalHands > 0 ? FormatSupportSummary(best.Report) : string.Empty);
         var previewKey = string.Join(',', best.Report.Deck.Select(entry => $"{entry.Card.Id}:{entry.Copies}"));
         if (_lastPreviewKey != previewKey)
         {
             _lastPreviewKey = previewKey;
-            OptimizedDeckGrid.ItemsSource = BuildDeckDisplay(best.Report);
+            SetSuggestedDeckRows(BuildDeckDisplay(best.Report));
             UpdateProposedCopies(best.Report);
         }
     }
 
     private void SetOptimizerRunning(bool running)
     {
+        _deckLibraryWindow?.QueueRefresh();
         _optimizerBusy = running;
         var paused = _preparationPaused || _deckBuildJob?.State == DeckBuildState.Paused;
         OptimizeDeckButton.IsEnabled = !running;
@@ -1927,6 +1995,7 @@ public partial class MainWindow : Window
             if (selected is OwnedCardRow selectedRow && visible.Contains(selectedRow)) OwnedCardsGallery.SelectedItem = selected;
         }
         OwnedCollectionCount.Text = $"{_visibleOwnedCardRows.Count:N0} shown • {_ownedCardRows.Count(row => row.Quantity > 0):N0} distinct • {_ownedCardRows.Sum(row => row.Quantity):N0} copies";
+        _deckLibraryWindow?.QueueRefresh();
     }
 
     private void UpdateProposedCopies(DeckOptimizationReport report)
@@ -1971,7 +2040,7 @@ public partial class MainWindow : Window
         OptimizerExpectedMetric.Text = evaluated ? report.ExactAnalysis.ExpectedBestFusionAttack.ToString("N0", CultureInfo.InvariantCulture) : "—";
         OptimizerDeadMetric.Text = evaluated ? FormatProbability(report.ExactAnalysis.DeadHandProbability) : "—";
         var displayDeck = BuildDeckDisplay(report);
-        OptimizedDeckGrid.ItemsSource = displayDeck;
+        SetSuggestedDeckRows(displayDeck);
         long cumulative = 0;
         var startingChips = _resultStarChips;
         PurchasePlanGrid.ItemsSource = displayDeck.Where(row => row.Purchase > 0).Select(row =>
@@ -1999,6 +2068,7 @@ public partial class MainWindow : Window
         OptimizationStatus.Text = string.Create(
             CultureInfo.InvariantCulture,
             $"{analysisLabel} • {report.TotalCards}/40 cards • seed {report.RandomSeed}{comparison}");
+        if (evaluated) OptimizationStatus.Text += FormatSupportSummary(report);
         CampaignPlanPanel.Visibility = Visibility.Collapsed;
         if (evaluated && report.SafetyAssessment is not null)
         {
@@ -2028,6 +2098,43 @@ public partial class MainWindow : Window
                 : string.Empty;
             return new OptimizedDeckDisplayRow(entry.Card, entry.Copies, owned, purchase, entry.ContributionReason + purchaseNote);
         })];
+    }
+
+    private void SetSuggestedDeckRows(OptimizedDeckDisplayRow[] rows)
+    {
+        OptimizedDeckGrid.ItemsSource = rows;
+        ApplySuggestedDeckSort();
+    }
+
+    private void SuggestedDeckSort_Changed(object sender, SelectionChangedEventArgs e)
+    {
+        if (_initializingSuggestedDeckSort) return;
+        ApplySuggestedDeckSort();
+        if (_catalog is not null) SaveDesktopSettings();
+    }
+
+    private void ApplySuggestedDeckSort()
+    {
+        if (OptimizedDeckGrid.ItemsSource is null) return;
+        var view = CollectionViewSource.GetDefaultView(OptimizedDeckGrid.ItemsSource);
+        var order = OwnedOptimizerPaneView.SuggestedDeckSortCombo.SelectedItem as string;
+        var (property, direction) = order switch
+        {
+            "Card number" => ("Card.Id", ListSortDirection.Ascending),
+            "ATK" => ("Card.Attack", ListSortDirection.Descending),
+            "DEF" => ("Card.Defense", ListSortDirection.Descending),
+            _ => ("Card.Name", ListSortDirection.Ascending)
+        };
+        using (view.DeferRefresh())
+        {
+            view.SortDescriptions.Clear();
+            view.SortDescriptions.Add(new(property, direction));
+            if (property != "Card.Name") view.SortDescriptions.Add(new("Card.Name", ListSortDirection.Ascending));
+            if (property != "Card.Id") view.SortDescriptions.Add(new("Card.Id", ListSortDirection.Ascending));
+        }
+        foreach (var column in OptimizedDeckGrid.Columns)
+            column.SortDirection = column is DataGridBoundColumn { Binding: Binding binding } && binding.Path?.Path == property
+                ? direction : null;
     }
 
     private void ResetOptimizerResults()
@@ -2164,6 +2271,15 @@ public partial class MainWindow : Window
 
     private void CompactMode_Click(object sender, RoutedEventArgs e) =>
         ApplyCompactMode(!_compactMode, resizeWindow: true);
+
+    private void CompactAdviceGrid_SizeChanged(object sender, SizeChangedEventArgs e)
+    {
+        if (CompactAdviceGrid.Columns.Count < 3 || e.NewSize.Width <= 0) return;
+        // Reserve the vertical scrollbar even before enough recommendations fill it.
+        var width = Math.Clamp(e.NewSize.Width - 49 - 77 - SystemParameters.VerticalScrollBarWidth - 4, 0, 115);
+        if (Math.Abs(CompactAdviceGrid.Columns[0].Width.Value - width) > .1)
+            CompactAdviceGrid.Columns[0].Width = new DataGridLength(width);
+    }
 
     private void ApplyCompactMode(bool compact, bool resizeWindow)
     {
@@ -2434,6 +2550,7 @@ public partial class MainWindow : Window
 
     private sealed record ProfileChoice(DeckStrategyProfile Profile, string Label, string Description);
 
+    private sealed record CpuWorkerChoice(int Count, string Label);
     private sealed record SearchModeChoice(DeckSearchMode Mode, string Label);
 
     private sealed record FieldChoice(int? CardId, string Label);

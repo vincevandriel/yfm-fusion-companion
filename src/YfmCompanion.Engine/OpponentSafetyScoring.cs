@@ -38,7 +38,11 @@ public static class OpponentSafetyScoring
             return 2_000;
         }
 
-        if (candidate.Id is 686 or 661)
+        if (candidate.Id == 336) // Recovery wipe also destroys the player's board.
+            return 1_000;
+        if (candidate.Id == 661) // Crush Card has a minimum ATK condition.
+            return target.Attack >= 1500 ? 1_500 : 0;
+        if (candidate.Id == 686)
         {
             return 1_500;
         }

@@ -29,8 +29,9 @@ internal static class Program
         Directory.CreateDirectory(outputDirectory);
         var application = new App();
         application.InitializeComponent();
+        SynchronizationContext.SetSynchronizationContext(new DispatcherSynchronizationContext(Dispatcher.CurrentDispatcher));
 
-        var window = new MainWindow();
+        var window = new MainWindow { Left = 0, Top = 0 };
         var initializeMethod = typeof(MainWindow).GetMethod("InitializeOfflineWorkspace", BindingFlags.Instance | BindingFlags.NonPublic)
             ?? throw new InvalidOperationException("Offline workspace initializer was not found.");
         initializeMethod.Invoke(window, null);
@@ -50,6 +51,7 @@ internal static class Program
             ?? throw new InvalidOperationException("Compact-mode method was not found.");
         compactMethod.Invoke(window, [false, false]);
         ValidateInitializedControls(window);
+        ValidateBundledArtwork(window, outputDirectory);
         var renders = new List<RenderAudit>
         {
             Render(window, 1420, 900, Path.Combine(outputDirectory, "normal.png")),
@@ -57,18 +59,132 @@ internal static class Program
             RenderWorkspaceTab(window, "LiveDuelTab", "live-duel.png", outputDirectory),
             RenderOpenInspector(window, outputDirectory),
             RenderWorkspaceTab(window, "OwnedOptimizerTab", "owned-card-optimizer.png", outputDirectory),
+            RenderArtworkGallery(window, outputDirectory),
             RenderCampaignPlan(window, outputDirectory)
         };
+        RenderDeckLibrary(window, outputDirectory, renders);
 
         compactMethod.Invoke(window, [true, false]);
         ValidateCompactWorkspace(window);
         SeedCompactRoutes(window);
         renders.Add(Render(window, 272, 1002, Path.Combine(outputDirectory, "compact.png")));
+        var compactGrid = (DataGrid)window.FindName("CompactAdviceGrid");
+        var examples = compactGrid.ItemsSource.Cast<object>().ToArray();
+        compactGrid.ItemsSource = Enumerable.Range(0, 30).SelectMany(_ => examples).ToArray();
+        renders.Add(Render(window, 272, 1002, Path.Combine(outputDirectory, "compact-scroll-stress.png")));
+        VerifyCompactColumnFit(compactGrid, outputDirectory);
+        var root = (Grid)window.FindName("RootLayout");
+        root.MaxWidth = 246;
+        renders.Add(Render(window, 272, 1002, Path.Combine(outputDirectory, "compact-narrow-client.png")));
+        VerifyCompactColumnFit(compactGrid, outputDirectory, "compact-narrow-column-fit.json");
+        root.MaxWidth = double.PositiveInfinity;
         File.WriteAllText(
             Path.Combine(outputDirectory, "ui-render-audit.json"),
             JsonSerializer.Serialize(renders, JsonOptions));
         window.Close();
         return 0;
+    }
+
+    private static RenderAudit RenderArtworkGallery(MainWindow window, string outputDirectory)
+    {
+        var tabs = (TabControl)window.FindName("WorkspaceTabs");
+        tabs.SelectedItem = window.FindName("OwnedOptimizerTab");
+        window.UpdateLayout();
+        var gallery = FindLogicalDescendants<ListBox>(window).Single(c => c.Name == "OwnedCardsGallery");
+        gallery.BringIntoView();
+        window.UpdateLayout();
+        return Render(window, 1420, 900, Path.Combine(outputDirectory, "automatic-card-artwork.png"));
+    }
+
+    private static void RenderDeckLibrary(MainWindow main, string outputDirectory, List<RenderAudit> renders)
+    {
+        var catalog = FusionCatalog.Load(Path.Combine(AppContext.BaseDirectory, "Data", "yfm.db"));
+        var builds = CampaignDeckLibrary.ForCatalog(catalog);
+        var rows = ((System.Collections.IEnumerable)typeof(MainWindow).GetField("_ownedCardRows", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(main)!).Cast<object>().ToArray();
+        var images = rows.ToDictionary(r => ((Card)r.GetType().GetProperty("Card")!.GetValue(r)!).Id,
+            r => (ImageSource?)r.GetType().GetProperty("Artwork")!.GetValue(r));
+        var inventory = builds[0].Entries.Select(e => new OwnedCardQuantity(e.CardId, e.Copies)).ToArray();
+        var available = true;
+        CampaignDeckBlueprint? chosen = null;
+        var window = new CampaignDeckLibraryWindow(catalog, () => inventory,
+            id => images[id],
+            () => "MANUAL COLLECTION • isolated rendering fixture", b => chosen = b, () => available);
+        renders.Add(Render(window, 1060, 900, Path.Combine(outputDirectory, "recommended-decks.png")));
+        var tiles = (ItemsControl)window.FindName("BuildTiles");
+        if (tiles.Items.Count != 6) throw new InvalidDataException("Missing deck tiles.");
+        if (!((TextBlock)window.FindName("OwnedSummary")).Text.StartsWith("40 / 40", StringComparison.Ordinal))
+            throw new InvalidDataException("Required-copy ownership count did not match fixture.");
+        var tileObjects = tiles.Items.Cast<object>().ToArray();
+        if (tileObjects.Any(t => t.GetType().GetProperty("Artwork")!.GetValue(t) is not BitmapSource))
+            throw new InvalidDataException("Deck icons did not decode offline.");
+        var select = typeof(CampaignDeckLibraryWindow).GetMethod("SelectBuild", BindingFlags.NonPublic | BindingFlags.Instance)!;
+        var check = (Button)window.FindName("AnalyzeReferenceButton");
+        var cancel = (Button)window.FindName("CancelReferenceButton");
+        check.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+        PumpUntil(() => !cancel.IsEnabled, TimeSpan.FromSeconds(20));
+        if (!((TextBlock)window.FindName("ReferenceMetrics")).Text.StartsWith("Exact 658", StringComparison.Ordinal))
+            throw new InvalidDataException("Reference check did not complete its exact hand analysis.");
+        renders.Add(Render(window, 1060, 900, Path.Combine(outputDirectory, "recommended-decks-exact-metrics.png")));
+        select.Invoke(window, [builds.Single(b => b.Id == "mercury-control")]);
+        check.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+        cancel.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+        PumpUntil(() => !cancel.IsEnabled, TimeSpan.FromSeconds(10));
+        if (!((TextBlock)window.FindName("ReferenceMetrics")).Text.StartsWith("Check cancelled", StringComparison.Ordinal))
+            throw new InvalidDataException("Reference check did not cancel cleanly.");
+        select.Invoke(window, [builds.Single(b => b.Id == "sand-mercury")]);
+        renders.Add(Render(window, 720, 800, Path.Combine(outputDirectory, "recommended-decks-narrow.png")));
+        inventory = [];
+        window.RefreshInventory();
+        if (!((TextBlock)window.FindName("OwnedSummary")).Text.StartsWith("0 / 40", StringComparison.Ordinal))
+            throw new InvalidDataException("Live ownership refresh did not clear counts.");
+        available = false;
+        window.RefreshInventory();
+        var use = (Button)window.FindName("UseBuildButton");
+        if (use.IsEnabled) throw new InvalidDataException("Active job allowed strategy replacement.");
+        available = true;
+        window.RefreshInventory();
+        var detail = (ScrollViewer)window.FindName("BuildDetailScroll");
+        detail.ScrollToEnd();
+        window.UpdateLayout();
+        if (detail.ScrollableWidth > .1 || detail.ScrollableHeight <= 0)
+            throw new InvalidDataException("Deck details did not fit/scroll vertically.");
+        var cards = (DataGrid)window.FindName("BuildCards");
+        if (cards.Columns[0].ActualWidth < 150 || cards.Columns[4].ActualWidth < 120)
+            throw new InvalidDataException("Card names or roles collapsed inside deck details.");
+        renders.Add(Render(window, 720, 800, Path.Combine(outputDirectory, "recommended-decks-missing-cards.png")));
+        typeof(CampaignDeckLibraryWindow).GetMethod("UseBuild_Click", BindingFlags.NonPublic | BindingFlags.Instance)!.Invoke(window, [use, new RoutedEventArgs()]);
+        if (chosen?.Id != "sand-mercury") throw new InvalidDataException("Adapt button did not select the displayed strategy.");
+        File.WriteAllText(Path.Combine(outputDirectory, "deck-library-ui-audit.json"), JsonSerializer.Serialize(new
+        { DeckTiles = tiles.Items.Count, UniqueHeroIcons = builds.Select(b => b.HeroCardId).Distinct().Count(), RequiredCopyCount = true,
+            LiveRefresh = true, MissingCardDetails = true, BusyStrategyProtected = true, ExactReferenceCheck = true,
+            ReferenceCancellation = true, VerticalScrolling = true, AdaptStrategySelected = chosen.Id }, JsonOptions));
+    }
+
+    private static void PumpUntil(Func<bool> condition, TimeSpan timeout)
+    {
+        var clock = System.Diagnostics.Stopwatch.StartNew();
+        while (!condition())
+        {
+            if (clock.Elapsed > timeout) throw new TimeoutException("Deck library UI operation did not finish.");
+            var frame = new DispatcherFrame();
+            Dispatcher.CurrentDispatcher.BeginInvoke(DispatcherPriority.Background, new Action(() => frame.Continue = false));
+            Dispatcher.PushFrame(frame);
+            Thread.Sleep(5);
+        }
+    }
+
+    private static void ValidateBundledArtwork(MainWindow window, string outputDirectory)
+    {
+        var rows = (System.Collections.IEnumerable)typeof(MainWindow).GetField("_ownedCardRows", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(window)!;
+        var count = 0;
+        foreach (var row in rows)
+        {
+            if (row.GetType().GetProperty("Artwork")!.GetValue(row) is not BitmapSource bitmap || bitmap.PixelWidth <= 0 || bitmap.PixelHeight <= 0)
+                throw new InvalidOperationException("A bundled card image did not decode through the production row/cache.");
+            count++;
+        }
+        if (count != 722) throw new InvalidOperationException($"Expected all 722 automatic images, got {count}.");
+        File.WriteAllText(Path.Combine(outputDirectory, "artwork-audit.json"), JsonSerializer.Serialize(new { AutomaticCardsDecoded = count, SettingsRequired = false }, JsonOptions));
     }
 
     private static RenderAudit RenderWorkspaceTab(
@@ -81,6 +197,21 @@ internal static class Program
             ?? throw new InvalidOperationException("Workspace tab control was not found.");
         tabs.SelectedItem = window.FindName(tabName) as TabItem
             ?? throw new InvalidOperationException($"Workspace tab {tabName} was not found.");
+        if (tabName == "OwnedOptimizerTab")
+        {
+            var workers = FindLogicalDescendants<ComboBox>(window).Single(c => c.Name == "CpuWorkersCombo");
+            if (workers.Items.Count != DeckBuildJob.MaximumWorkerCount + 1 || workers.SelectedValue is not int)
+                throw new InvalidOperationException("CPU worker selector did not initialize Auto and manual choices.");
+            var autoLabel = workers.Items[0].GetType().GetProperty("Label")!.GetValue(workers.Items[0])?.ToString();
+            if (autoLabel != $"Auto • {DeckBuildJob.AutoSearchWorkerCount} search / {DeckBuildJob.AutoAnalysisWorkerCount} analysis")
+                throw new InvalidOperationException("CPU worker selector does not show the split Auto counts.");
+            var rows = (System.Collections.IEnumerable)typeof(MainWindow).GetField("_ownedCardRows", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(window)!;
+            foreach (var row in rows.Cast<object>().Take(8)) row.GetType().GetProperty("Quantity")!.SetValue(row, 1);
+            var gallery = FindLogicalDescendants<ListBox>(window).Single(c => c.Name == "OwnedCardsGallery");
+            gallery.BringIntoView();
+            var advanced = FindLogicalDescendants<Expander>(window).Single(e => e.Header?.ToString() == "ADVANCED STRATEGY SETTINGS");
+            advanced.IsExpanded = true;
+        }
         return Render(window, 1420, 900, Path.Combine(outputDirectory, fileName));
     }
 
@@ -256,6 +387,34 @@ internal static class Program
         }
     }
 
+    private static void VerifyCompactColumnFit(DataGrid grid, string outputDirectory, string evidenceName = "compact-column-fit.json")
+    {
+        var viewer = VisualDescendants(grid).OfType<ScrollViewer>().First();
+        if (viewer.ScrollableWidth > .5 || viewer.ScrollableHeight <= 0)
+            throw new InvalidOperationException($"Compact columns must fit while vertical scrolling is active: horizontal={viewer.ScrollableWidth}.");
+        var names = VisualDescendants(grid).OfType<TextBlock>().Where(t => t.GetBindingExpression(TextBlock.TextProperty)?.ParentBinding.Path?.Path == "Result").ToArray();
+        if (names.Length == 0 || names.Any(t => t.ActualHeight > 30.5))
+            throw new InvalidOperationException("Compact card names exceed two lines or were not rendered.");
+        if (grid.Columns[0].ActualWidth < 80 || grid.Columns[0].ActualWidth > 115.5 || grid.Columns.Sum(c => c.ActualWidth) > viewer.ViewportWidth + .5)
+            throw new InvalidOperationException("Compact columns exceed the available viewport.");
+        File.WriteAllText(Path.Combine(outputDirectory, evidenceName), JsonSerializer.Serialize(new
+        {
+            HorizontalScrollWidth = viewer.ScrollableWidth, VerticalScrollHeight = viewer.ScrollableHeight,
+            ResultColumnWidth = grid.Columns[0].ActualWidth, ViewportWidth = viewer.ViewportWidth,
+            NameHeights = names.Select(t => t.ActualHeight).ToArray()
+        }, JsonOptions));
+    }
+
+    private static IEnumerable<DependencyObject> VisualDescendants(DependencyObject parent)
+    {
+        for (var index = 0; index < VisualTreeHelper.GetChildrenCount(parent); index++)
+        {
+            var child = VisualTreeHelper.GetChild(parent, index);
+            yield return child;
+            foreach (var descendant in VisualDescendants(child)) yield return descendant;
+        }
+    }
+
     private static void ValidateCompactWorkspace(MainWindow window)
     {
         if (window.MinWidth != 272 || window.MaxWidth != 272 || window.MinHeight != 1002 || window.MaxHeight != 1002)
@@ -386,6 +545,13 @@ internal static class Program
             ?? throw new InvalidOperationException("Campaign context field was not found.");
         activeContext.SetValue(window, plan.Context);
         showReport.Invoke(window, [plan.DeckPlan.ResultingDeck]);
+        var showBest = typeof(MainWindow).GetMethod("ShowBestSoFar", BindingFlags.Instance | BindingFlags.NonPublic)!;
+        showBest.Invoke(window, [new DeckBuildCandidate(plan.DeckPlan.ResultingDeck, 0), DeckBuildState.Completed, false]);
+        ValidateSuggestedDeckSorting(window, plan.DeckPlan.ResultingDeck, outputDirectory);
+        var supportStatus = (TextBlock)window.FindName("OptimizationStatus");
+        if (!supportStatus.Text.Contains("setup available") || !supportStatus.Text.Contains("board clear drawn") ||
+            !supportStatus.Text.Contains("separate turns"))
+            throw new InvalidOperationException("Installed results lost the guide support metrics or setup limitation.");
 
         var panel = window.FindName("CampaignPlanPanel") as Border
             ?? throw new InvalidOperationException("Campaign-result panel was not found.");
@@ -412,6 +578,44 @@ internal static class Program
             ?? throw new InvalidOperationException("Optimizer reset method was not found.");
         reset.Invoke(window, null);
         return result;
+    }
+
+    private static void ValidateSuggestedDeckSorting(MainWindow window, DeckOptimizationReport report, string outputDirectory)
+    {
+        var combo = FindLogicalDescendants<ComboBox>(window).Single(c => c.Name == "SuggestedDeckSortCombo");
+        var grid = (DataGrid)window.FindName("OptimizedDeckGrid");
+        var reportOrder = report.Deck.Select(e => e.Card.Id).ToArray();
+        if (!combo.Items.Cast<string>().SequenceEqual(["Alphabetical", "Card number", "ATK", "DEF"]))
+            throw new InvalidDataException("Suggested-deck order choices changed.");
+        if (combo.SelectedItem as string != "Alphabetical") throw new InvalidDataException("Suggested-deck default is not alphabetical.");
+        var showReport = typeof(MainWindow).GetMethod("ShowOptimizationReport", BindingFlags.NonPublic | BindingFlags.Instance)!;
+        foreach (var order in combo.Items.Cast<string>())
+        {
+            combo.SelectedItem = order;
+            var expected = order switch
+            {
+                "Card number" => report.Deck.Select(e => e.Card).OrderBy(c => c.Id).ToArray(),
+                "ATK" => report.Deck.Select(e => e.Card).OrderByDescending(c => c.Attack).ThenBy(c => c.Name).ThenBy(c => c.Id).ToArray(),
+                "DEF" => report.Deck.Select(e => e.Card).OrderByDescending(c => c.Defense).ThenBy(c => c.Name).ThenBy(c => c.Id).ToArray(),
+                _ => report.Deck.Select(e => e.Card).OrderBy(c => c.Name).ThenBy(c => c.Id).ToArray()
+            };
+            int[] VisibleIds() => grid.Items.Cast<object>().Select(row => ((Card)row.GetType().GetProperty("Card")!.GetValue(row)!).Id).ToArray();
+            if (!VisibleIds().SequenceEqual(expected.Select(c => c.Id))) throw new InvalidDataException($"Suggested-deck {order} sorting failed.");
+            showReport.Invoke(window, [report]);
+            if (!VisibleIds().SequenceEqual(expected.Select(c => c.Id))) throw new InvalidDataException($"A new result reset {order} sorting.");
+            if (!report.Deck.Select(e => e.Card.Id).SequenceEqual(reportOrder)) throw new InvalidDataException("Display sorting changed the optimizer report.");
+            var settingsType = typeof(MainWindow).Assembly.GetType("YfmCompanion.Desktop.DesktopSettingsStore")!;
+            var settings = settingsType.GetMethod("Load", BindingFlags.Public | BindingFlags.Static)!.Invoke(null, [null])!;
+            if ((string?)settings.GetType().GetProperty("SuggestedDeckSort")!.GetValue(settings) != order)
+                throw new InvalidDataException("Suggested-deck order was not saved.");
+            var resultTabs = FindLogicalDescendants<TabControl>(window).Single(c => c.Items.Cast<object>()
+                .OfType<TabItem>().Any(t => t.Header?.ToString() == "DECK"));
+            resultTabs.SelectedIndex = 0;
+            Render(window, 1420, 900, Path.Combine(outputDirectory, "suggested-order-" + order.Replace(' ', '-') + ".png"));
+        }
+        combo.SelectedItem = "Alphabetical";
+        File.WriteAllText(Path.Combine(outputDirectory, "suggested-deck-sorting.json"), JsonSerializer.Serialize(new
+        { Default = "Alphabetical", Orders = combo.Items.Cast<string>().ToArray(), NewResultRetainsOrder = true, PreferenceSaved = true, ReportUnchanged = true }, JsonOptions));
     }
 
     private static void SeedOwnedInventory(MainWindow window, IEnumerable<OwnedCardQuantity> owned)

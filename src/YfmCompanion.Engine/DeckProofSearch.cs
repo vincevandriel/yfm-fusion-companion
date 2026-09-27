@@ -21,7 +21,7 @@ public sealed record DeckProofResult(DeckBuildState State, bool ProvenOptimal, D
 /// <summary>Proof-engine primitive. Cancellation durably pauses; the next invocation resumes.</summary>
 public sealed class DeckProofSearch(FusionCatalog catalog)
 {
-    public const string RulesVersion = "concrete-fusion-terminal-equip-v1";
+    public const string RulesVersion = "fan-campaign-hand-support-v3";
     private const int Schema = 2;
     private static readonly JsonSerializerOptions Json = CreateJsonOptions();
     private readonly FusionCatalog _catalog = catalog;

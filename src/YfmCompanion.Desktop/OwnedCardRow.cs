@@ -13,6 +13,7 @@ internal sealed class OwnedCardRow(Card card, Action<OwnedCardRow> changed) : IN
     private int _quantity;
     private int _proposedCopies;
     private string? _artworkPath;
+    private string? _bundledArtworkPath;
     private ThumbnailCache? _artworkCache;
     private int _chestCopies;
     private int _deckCopies;
@@ -26,7 +27,7 @@ internal sealed class OwnedCardRow(Card card, Action<OwnedCardRow> changed) : IN
     public bool IsManual { get => _isManual; set { _isManual = value; Raise(nameof(QuantityLine)); } }
     public string QuantityLine => IsManual ? $"Owned {Quantity} • manual quantity" : $"Owned {Quantity} • chest {ChestCopies} / deck {DeckCopies}";
     public string ProposedLine => ProposedCopies > 0 ? $"Proposed deck: {ProposedCopies}×" : string.Empty;
-    public ImageSource? Artwork => _artworkCache?.Load(_artworkPath);
+    public ImageSource? Artwork => _artworkCache?.Load(_artworkPath) ?? _artworkCache?.Load(_bundledArtworkPath);
 
     public int Quantity
     {
@@ -56,6 +57,7 @@ internal sealed class OwnedCardRow(Card card, Action<OwnedCardRow> changed) : IN
 
     public void RefreshArtwork(string? folder, ThumbnailCache cache, string? overridePath = null)
     {
+        _bundledArtworkPath = FindArtwork(Path.Combine(AppContext.BaseDirectory, "Artwork"), Card.Id);
         _artworkPath = File.Exists(overridePath) ? overridePath : FindArtwork(folder, Card.Id);
         _artworkCache = cache;
         if (_artworkPath is not null) cache.Invalidate(_artworkPath);

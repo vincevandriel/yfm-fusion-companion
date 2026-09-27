@@ -3,7 +3,7 @@ using YfmCompanion.Data;
 
 namespace YfmCompanion.Engine;
 
-public sealed class OwnedDeckOptimizer(FusionCatalog catalog)
+public sealed class OwnedDeckOptimizer(FusionCatalog catalog, int analysisWorkerCount = 1, long cacheByteLimit = 256L * 1024 * 1024)
 {
     private const int FirstExodiaPieceId = 17;
     private const int LastExodiaPieceId = 21;
@@ -11,8 +11,8 @@ public sealed class OwnedDeckOptimizer(FusionCatalog catalog)
     private static readonly Lock HeuristicsLock = new();
     private readonly FusionCatalog _catalog = catalog;
     // One combined 256 MiB retained-search-cache budget, including prepared scores.
-    private readonly DeckAnalyzer _analyzer = new(catalog, 224L * 1024 * 1024);
-    private readonly BoundedAnalysisCache _assessmentCache = new(32L * 1024 * 1024);
+    private readonly DeckAnalyzer _analyzer = new(catalog, cacheByteLimit * 7 / 8, analysisWorkerCount);
+    private readonly BoundedAnalysisCache _assessmentCache = new(cacheByteLimit / 8);
     private PreparedHeuristics? _heuristics;
     private readonly ForbiddenMemoriesStrategyEvaluator _strategyEvaluator = new(catalog);
     private DeckOptimizationOptions? _assessmentOptions;
@@ -60,12 +60,15 @@ public sealed class OwnedDeckOptimizer(FusionCatalog catalog)
             p => Math.Min(p.Value, LegalCopyLimitForCard(p.Key, options.CopyLimit)));
         if (capacities.Values.Sum() < 40) throw new ArgumentException("At least 40 legal copies are required.", nameof(ownedCards));
         var clock = System.Diagnostics.Stopwatch.StartNew();
-        return BuildGreedyDeck(capacities, new(1, 1, .35, null), options, cancellationToken, () =>
+        var fallback = BuildGreedyDeck(capacities, new(1, 1, .35, null), options, cancellationToken, () =>
         {
             if (clock.ElapsedMilliseconds < 200) return;
             progress?.Report(new("Preparing first legal deck", 0, 1));
             clock.Restart();
         });
+        var selected = CampaignDeckLibrary.ForCatalog(_catalog).FirstOrDefault(b => b.Id == options.RecommendedBuildId);
+        return selected is null ? fallback : CampaignDeckLibrary.Adapt(selected,
+            capacities.Select(e => new OwnedCardQuantity(e.Key, e.Value)), fallback, options.CopyLimit, cancellationToken);
     }
 
     private void PrepareAssessments(DeckOptimizationOptions options, CancellationToken token)
@@ -201,7 +204,7 @@ public sealed class OwnedDeckOptimizer(FusionCatalog catalog)
             options.Profile,
             options.RandomSeed,
             winner.Safety,
-            winner.SecondarySafety);
+            winner.SecondarySafety) { SupportStructure = GuideSupportStructure.Evaluate(_catalog, Deck, Report) };
     }
 
     public DeckOptimizationReport EvaluateDeck(IEnumerable<int> cardIds, IEnumerable<OwnedCardQuantity> ownedCards,
@@ -231,12 +234,16 @@ public sealed class OwnedDeckOptimizer(FusionCatalog catalog)
         cancellationToken.ThrowIfCancellationRequested();
         var entries = deck.GroupBy(id => id).Select(g => new OptimizedDeckEntry(_catalog.GetCard(g.Key), g.Count(), "")).ToArray();
         return new(entries, report, [], [], [], null, options.Profile, options.RandomSeed,
-            BuildSafetyAssessment(deck, report, options.SafetyContext), BuildSafetyAssessment(deck, report, options.SecondarySafetyContext));
+            BuildSafetyAssessment(deck, report, options.SafetyContext), BuildSafetyAssessment(deck, report, options.SecondarySafetyContext))
+            { SupportStructure = GuideSupportStructure.Evaluate(_catalog, deck, report) };
     }
 
     internal DeckOptimizationReport DescribeCandidate(DeckOptimizationReport report,
-        IEnumerable<OwnedCardQuantity> ownedCards, DeckOptimizationOptions options) =>
-        DescribeCandidate(report, NormalizeOwnedCards(ownedCards), options);
+        IEnumerable<OwnedCardQuantity> ownedCards, DeckOptimizationOptions options, CancellationToken cancellationToken = default)
+    {
+        PrepareAssessments(options, cancellationToken);
+        return DescribeCandidate(report, NormalizeOwnedCards(ownedCards), options);
+    }
 
     private DeckOptimizationReport DescribeCandidate(DeckOptimizationReport report,
         Dictionary<int, int> owned, DeckOptimizationOptions options)
@@ -336,6 +343,15 @@ public sealed class OwnedDeckOptimizer(FusionCatalog catalog)
             completed++;
         }
 
+        var fallback = candidates.Values.First();
+        foreach (var blueprint in CampaignDeckLibrary.ForCatalog(_catalog)
+            .OrderByDescending(b => b.Id == options.RecommendedBuildId).ThenBy(b => b.Id, StringComparer.Ordinal))
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            var deck = CampaignDeckLibrary.Adapt(blueprint, capacities.Select(e => new OwnedCardQuantity(e.Key, e.Value)), fallback,
+                options.CopyLimit, cancellationToken);
+            candidates.TryAdd(DeckKey(deck), deck);
+        }
         return [.. candidates.Values];
     }
 
@@ -452,7 +468,8 @@ public sealed class OwnedDeckOptimizer(FusionCatalog catalog)
             ranked.Add(new SampledCandidate(
                 deck,
                 new DeckObjective(report, BuildSafetyAssessment(deck, report, options.SafetyContext),
-                    BuildSafetyAssessment(deck, report, options.SecondarySafetyContext), deck)));
+                    BuildSafetyAssessment(deck, report, options.SecondarySafetyContext), deck)
+                    { GuideStructurePoints = GuideSupportStructure.Evaluate(_catalog, deck, report).Points, UseGuideSupport = options.Profile is DeckStrategyProfile.Balanced or DeckStrategyProfile.ControlAndSafety or DeckStrategyProfile.FieldAndType }));
         }
 
         progress?.Report(new DeckOptimizationProgress("Sampled candidate analysis", candidates.Length, candidates.Length));
@@ -762,14 +779,16 @@ public sealed class OwnedDeckOptimizer(FusionCatalog catalog)
         return 1 - ((double)DeckAnalyzer.Choose(deckSize - answerCopies, 5) / DeckAnalyzer.Choose(deckSize, 5));
     }
 
-    private static bool IsBetterExactCandidate(
+    private bool IsBetterExactCandidate(
         ExactCandidate candidate,
         ExactCandidate incumbent,
         DeckOptimizationOptions options)
     {
         var comparer = new DeckObjectiveComparer(options.SafetyContext is not null, options.SecondarySafetyContext is not null);
-        return comparer.Compare(new(candidate.Report, candidate.Safety, candidate.SecondarySafety, candidate.Deck),
-            new(incumbent.Report, incumbent.Safety, incumbent.SecondarySafety, incumbent.Deck)) > 0;
+        return comparer.Compare(new(candidate.Report, candidate.Safety, candidate.SecondarySafety, candidate.Deck)
+            { GuideStructurePoints = GuideSupportStructure.Evaluate(_catalog, candidate.Deck, candidate.Report).Points, UseGuideSupport = options.Profile is DeckStrategyProfile.Balanced or DeckStrategyProfile.ControlAndSafety or DeckStrategyProfile.FieldAndType },
+            new(incumbent.Report, incumbent.Safety, incumbent.SecondarySafety, incumbent.Deck)
+            { GuideStructurePoints = GuideSupportStructure.Evaluate(_catalog, incumbent.Deck, incumbent.Report).Points, UseGuideSupport = options.Profile is DeckStrategyProfile.Balanced or DeckStrategyProfile.ControlAndSafety or DeckStrategyProfile.FieldAndType }) > 0;
     }
 
     private static string FormatRoute(DeckFusionRoute route)

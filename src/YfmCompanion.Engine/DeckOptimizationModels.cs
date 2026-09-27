@@ -36,7 +36,8 @@ public sealed record DeckOptimizationOptions(
     IReadOnlyList<string>? OpponentMonsterTypes = null,
     OpponentSafetyContext? SafetyContext = null,
     OpponentSafetyContext? SecondarySafetyContext = null,
-    IReadOnlySet<string>? AlreadyRedeemedCardNames = null);
+    IReadOnlySet<string>? AlreadyRedeemedCardNames = null,
+    string? RecommendedBuildId = null);
 
 public sealed record DeckSafetyTarget(
     int OpponentId,
@@ -117,5 +118,6 @@ public sealed record DeckOptimizationReport(
     DeckSafetyAssessment? SafetyAssessment,
     DeckSafetyAssessment? SecondarySafetyAssessment)
 {
+    public GuideSupportStructure? SupportStructure { get; init; }
     public int TotalCards => Deck.Sum(entry => entry.Copies);
 }
