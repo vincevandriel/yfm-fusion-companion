@@ -1,0 +1,26 @@
+{
+  "Passed": true,
+  "Scope": "Public archive integrity and matching successful GitHub packaged-executable audit",
+  "Release": "https://github.com/vincevandriel/yfm-fusion-companion/releases/tag/v2.0.1",
+  "Tag": "v2.0.1",
+  "SourceCommit": "d9b30ba",
+  "WorkflowRun": 36347120947,
+  "DownloadAuthenticated": false,
+  "ArchiveSHA256": "BE16C90E87BF65776807AB999FBC88C9867524DD428507DD76415852147E1CC1",
+  "FilesVerified": 776,
+  "PackageSelfCheckInGitHub": {
+    "Passed": true,
+    "Version": "2.0.1.0",
+    "ResourceLayout": "organized",
+    "Cards": 722,
+    "FusionPairs": 25146,
+    "ArtworkVerified": 722,
+    "ReferenceDecks": 6,
+    "ResearchOpponents": 39,
+    "EmulatorAccessed": false,
+    "PersonalSettingsAccessed": false
+  },
+  "GitHubNormalStartupPassed": true,
+  "LocalDownloadedExecutableLaunch": "Blocked by automatic approval review; no local execution claimed",
+  "VerifiedAt": "2026-09-27T22:19:39.4857321+02:00"
+}

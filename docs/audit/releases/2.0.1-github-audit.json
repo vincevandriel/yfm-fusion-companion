@@ -1,0 +1,41 @@
+{
+  "Version": "2.0.1",
+  "Passed": true,
+  "TestsPassed": 228,
+  "Steps": [
+    "restore",
+    "format",
+    "build",
+    "tests",
+    "dependencies",
+    "catalog-rebuild",
+    "research",
+    "acceptance",
+    "ui",
+    "desktop-lifecycle",
+    "artwork",
+    "documentation",
+    "publish",
+    "packaged-self-check",
+    "normal-startup"
+  ],
+  "PackageSelfCheck": {
+    "Passed": true,
+    "Version": "2.0.1.0",
+    "ResourceLayout": "organized",
+    "Cards": 722,
+    "FusionPairs": 25146,
+    "ArtworkVerified": 722,
+    "ReferenceDecks": 6,
+    "ResearchOpponents": 39,
+    "EmulatorAccessed": false,
+    "PersonalSettingsAccessed": false
+  },
+  "LiveGameplayRetested": false,
+  "NativeDpiSwitchingRetested": false,
+  "MissingResourceFailsClosed": true,
+  "Archive": "YFM-Fusion-Companion-2.0.1-Windows-x64.zip",
+  "ArchiveSHA256": "BE16C90E87BF65776807AB999FBC88C9867524DD428507DD76415852147E1CC1",
+  "FilesVerified": 776,
+  "SourceFilesUnchanged": 86
+}

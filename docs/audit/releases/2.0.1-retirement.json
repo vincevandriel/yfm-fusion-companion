@@ -1,0 +1,115 @@
+{
+  "CompletedReleaseRetirement": true,
+  "CurrentRelease": "v2.0.1",
+  "LocalTargetsRemoved": 144,
+  "LocalFilesRemoved": 35135.0,
+  "LocalBytesRemoved": 18238467702.0,
+  "HistoricalRecords": {
+    "OriginalRecords": 2746,
+    "UniqueRecords": 725,
+    "ArchiveBytes": 3122134,
+    "ArchiveSHA256": "87CFBECEB21A3D36862ECD7546AC431E91C2EEAD30B3CEE35E08922E7125502F"
+  },
+  "GitHub": {
+    "Passed": true,
+    "CurrentRelease": "v2.0.1",
+    "RemovedReleases": [
+      {
+        "Tag": "v2.0.0",
+        "Assets": 5,
+        "Bytes": 358831880.0,
+        "SourceTagRetained": true
+      },
+      {
+        "Tag": "v1.1.0",
+        "Assets": 3,
+        "Bytes": 57495194.0,
+        "SourceTagRetained": true
+      },
+      {
+        "Tag": "v1.0.0",
+        "Assets": 3,
+        "Bytes": 57278676.0,
+        "SourceTagRetained": true
+      }
+    ],
+    "RemovedBinaryArtifacts": [
+      {
+        "Id": 10941416643,
+        "Name": "windows-x64-release",
+        "Bytes": 179608901
+      },
+      {
+        "Id": 10940474240,
+        "Name": "windows-x64-release",
+        "Bytes": 179608973
+      },
+      {
+        "Id": 10925135032,
+        "Name": "yfm_companion_windows_x64",
+        "Bytes": 179738766
+      },
+      {
+        "Id": 10925090309,
+        "Name": "yfm_companion_windows_x64",
+        "Bytes": 179738747
+      },
+      {
+        "Id": 10924241926,
+        "Name": "yfm_companion_windows_x64",
+        "Bytes": 179738792
+      },
+      {
+        "Id": 10732807361,
+        "Name": "yfm_companion_windows_x64",
+        "Bytes": 57209864
+      },
+      {
+        "Id": 10732556854,
+        "Name": "yfm_companion_windows_x64",
+        "Bytes": 57209913
+      },
+      {
+        "Id": 10732298907,
+        "Name": "yfm_companion_windows_x64",
+        "Bytes": 57209868
+      },
+      {
+        "Id": 10732089115,
+        "Name": "yfm_companion_windows_x64",
+        "Bytes": 57209916
+      },
+      {
+        "Id": 10732004290,
+        "Name": "yfm_companion_windows_x64",
+        "Bytes": 57209913
+      },
+      {
+        "Id": 10296730180,
+        "Name": "yfm_companion_windows_x64",
+        "Bytes": 57006905
+      },
+      {
+        "Id": 10296690186,
+        "Name": "yfm_companion_windows_x64",
+        "Bytes": 57006895
+      },
+      {
+        "Id": 10295449818,
+        "Name": "yfm_companion_windows_x64",
+        "Bytes": 57006911
+      }
+    ],
+    "TotalRemoteBytesRemoved": 1829110114.0,
+    "SourceCommitsAndTagsRetained": true
+  },
+  "RemainingCleanup": "Automatic approval review blocked final runtime-cache and temporary-audit-copy deletion; no retry through another method.",
+  "Preserved": [
+    "Git commits and tags",
+    "Current source and canonical catalog",
+    "Game and save files",
+    "User settings and proof checkpoints",
+    "Codex recovery data",
+    "Historical logs and unique source records"
+  ]
+}

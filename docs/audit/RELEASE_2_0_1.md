@@ -1,6 +1,6 @@
 # Windows 2.0.1 release audit
 
-Offline release acceptance: **PASS** (2026-09-27). Public download and retirement receipts are recorded separately under [release records](releases/README.md); old binaries are retained until that final delivery check passes.
+Offline release acceptance: **PASS** (2026-09-27). Public download verification and release retirement are complete; see [release records](releases/README.md) for hashes, counts, retained records and the local execution/cache-cleanup limits.
 
 ## Scope and acceptance
 
@@ -45,3 +45,9 @@ The self-check startup branch and remaining legacy snapshot references in the vi
 The first GitHub run stopped at the database hash gate: the working dump had 2,374 CRLF pairs while Git's text checkout used LF. The source manifest intentionally records exact input bytes. `.gitattributes` now preserves the original dump bytes, matching the existing canonical database without altering card facts or weakening verification. The unpublished release tag was advanced to the repaired source before retrying publication; the failed run remains diagnostic history.
 
 New unpaused changing-board gameplay and native OS-DPI transitions were **not retested**. This packaging audit does not supersede those earlier evidence boundaries. No optimizer scoring or proof identity changed in 2.0.1.
+
+## Public delivery and retirement
+
+Both repaired GitHub workflows passed at source `d9b30ba`; the published tag audit is run [36347120947](https://github.com/vincevandriel/yfm-fusion-companion/actions/runs/36347120947). The sole public release is [v2.0.1](https://github.com/vincevandriel/yfm-fusion-companion/releases/tag/v2.0.1). Its 776 files were independently downloaded/extracted and verified against the manifest and CI archive hash. Three superseded releases, 13 binary Actions artifacts and 144 local generated/package locations were removed after that verification. The existing desktop shortcut points to the current release and its embedded icon.
+
+Automatic approval review rejected launching the downloaded executable locally and the final runtime-cache/audit-copy cleanup command, returning only “blocked by policy.” Those actions were not retried through alternate mechanisms. Local source-built acceptance and GitHub packaged-executable acceptance passed; local public-copy verification is limited to archive/file integrity. Small runtime caches and audit working copies therefore remain. No game or save content was deleted.

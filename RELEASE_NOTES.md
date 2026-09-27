@@ -15,4 +15,4 @@ Exact hand metrics are modeled setup probabilities, not win rates. Timed search 
 
 Windows 10/11 x64. Live mode supports validated NTSC-U RetroArch/SwanStation. Game memory, saves and emulator configuration remain read-only. Original code/icon are MIT licensed; card artwork has separate notices. No ROM, BIOS, emulator or personal save is distributed.
 
-[Historical release notes](docs/history/RELEASE_NOTES.md) remain available for tracing prior changes.
+[Historical release notes](https://github.com/vincevandriel/yfm-fusion-companion/blob/main/docs/history/RELEASE_NOTES.md) remain available for tracing prior changes.
