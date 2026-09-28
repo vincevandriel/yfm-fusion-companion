@@ -20,7 +20,8 @@ Manual tools work without an emulator. Live mode supports the validated NTSC-U g
 - **Live Duel:** validated game state and a compact 272 × 1002 logical-pixel companion, two-line names, and 20px guardian symbols.
 - **Deck Analyzer:** all **658,008** physical opening hands of a 40-card deck, with cancellation and bounded parallel analysis.
 - **Owned-Card Optimizer:** fusion consistency, compatible power-ups, removal, campaign context, and recoverable proof searches. Auto uses up to **4 search / 8 analysis workers**, bounded for the CPU.
-- **Recommended Decks:** six researched reference builds with owned copies out of 40, missing cards, progression advice, and exact setup checks.
+- **Recommended Decks:** six researched reference builds with owned copies out of 40, missing cards, exact setup checks, and the best rank-specific farming source for every card you still need.
+- **Free Duel Database:** all 39 opponents with portraits and complete S/A POW, S/A TEC, and B/C/D reward tables. Three-letter search opens either a duelist or a full card profile with drops and password-shop data.
 - **Built-in collection:** all 722 card images work offline. Suggested cards default to Alphabetical; card number, ATK, and DEF are also available.
 
 Exact hand metrics describe the selected deck under modeled rules. They are not duel win rates. Timed search is best-found; optimality requires an exhausted proof within its frozen search space. See [limitations](docs/LIMITATIONS.md) and [research](docs/research/FAN_DECK_RESEARCH.md).
@@ -34,7 +35,7 @@ The [32-section design guide](docs/DESIGN.md) explains architecture, data format
 | `src/` | Data, Engine, RetroArch, and Desktop projects |
 | `tests/` | Correctness and regression tests |
 | `tools/` | Reproducible data, audits, documentation, benchmarks, and one release publisher |
-| `assets/` | Original application icon and separately attributed card artwork |
+| `assets/` | Original application icon plus separately attributed card artwork and Free Duel portraits |
 | `docs/` | User/design guides, research, benchmarks, audit records, and historical checkpoints |
 | `database-source/`, `artifacts/yfm.db` | Source facts and reproducible offline SQLite catalog |
 

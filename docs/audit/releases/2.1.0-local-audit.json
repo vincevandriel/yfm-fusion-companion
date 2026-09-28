@@ -1,0 +1,27 @@
+{
+  "Passed": true,
+  "Version": "2.1.0",
+  "VerifiedAt": "2026-09-28T12:21:41.4439000+02:00",
+  "TestsPassed": 231,
+  "FilesVerified": 818,
+  "SourceFilesUnchanged": 87,
+  "Archive": "YFM-Fusion-Companion-2.1.0-Windows-x64.zip",
+  "ArchiveSHA256": "B99F1320245FEF539689B77393CB5285F2D242B101D7943BBFF80DB2E2610BE6",
+  "PackageSelfCheck": {
+    "Passed": true,
+    "Cards": 722,
+    "FusionPairs": 25146,
+    "ArtworkVerified": 722,
+    "ReferenceDecks": 6,
+    "ResearchOpponents": 39,
+    "FreeDuelOpponents": 39,
+    "RewardTables": 117,
+    "DuelistPortraitsVerified": 39,
+    "EmulatorAccessed": false,
+    "PersonalSettingsAccessed": false
+  },
+  "NormalStartupPassed": true,
+  "MissingResourceFailsClosed": true,
+  "LiveGameplayRetested": false,
+  "NativeDpiSwitchingRetested": false
+}

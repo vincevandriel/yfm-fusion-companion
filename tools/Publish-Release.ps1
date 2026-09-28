@@ -60,7 +60,7 @@ try {
     Copy-Item -Path (Join-Path $publish '*') -Destination $package -Recurse
     $resources = Join-Path $package 'Resources'
     [IO.Directory]::CreateDirectory($resources) | Out-Null
-    foreach ($component in @('Data','Artwork','ResearchData')) {
+    foreach ($component in @('Data','Artwork','DuelistPortraits','ResearchData')) {
         $source = [IO.Path]::GetFullPath((Join-Path $package $component))
         if (-not $source.StartsWith($package + [IO.Path]::DirectorySeparatorChar, [StringComparison]::OrdinalIgnoreCase)) { throw 'Invalid resource move path.' }
         Move-Item -LiteralPath $source -Destination $resources
@@ -74,7 +74,7 @@ try {
     Copy-Item docs/SETUP.md,docs/LIMITATIONS.md,docs/DESIGN.md,docs/USER_GUIDE.md -Destination $documentation
     Copy-Item LICENSE,THIRD_PARTY_NOTICES.md -Destination $licenses
     Copy-Item licenses/dependencies -Destination (Join-Path $licenses 'Dependencies') -Recurse
-    $notice = (Get-Content (Join-Path $licenses 'THIRD_PARTY_NOTICES.md') -Raw).Replace('](licenses/dependencies/README.md)', '](Dependencies/README.md)').Replace('](assets/card-artwork/ATTRIBUTION.md)', '](../Resources/Artwork/ATTRIBUTION.md)')
+    $notice = (Get-Content (Join-Path $licenses 'THIRD_PARTY_NOTICES.md') -Raw).Replace('](licenses/dependencies/README.md)', '](Dependencies/README.md)').Replace('](assets/card-artwork/ATTRIBUTION.md)', '](../Resources/Artwork/ATTRIBUTION.md)').Replace('](assets/duelist-portraits/ATTRIBUTION.md)', '](../Resources/DuelistPortraits/ATTRIBUTION.md)')
     $notice | Set-Content (Join-Path $licenses 'THIRD_PARTY_NOTICES.md') -Encoding utf8
     @'
 YFM FUSION COMPANION
@@ -101,7 +101,7 @@ https://github.com/vincevandriel/yfm-fusion-companion
     if (-not $process.WaitForExit(60000)) { Stop-Process -Id $process.Id -Force; throw 'Packaged self-check timed out.' }
     if ($process.ExitCode -ne 0 -or -not (Test-Path -LiteralPath $selfCheck)) { throw 'Packaged executable self-check failed.' }
     $selfReport = Get-Content -LiteralPath $selfCheck -Raw | ConvertFrom-Json
-    if (-not $selfReport.Passed -or $selfReport.ResourceLayout -ne 'organized' -or $selfReport.ArtworkVerified -ne 722) { throw 'Invalid package self-check evidence.' }
+    if (-not $selfReport.Passed -or $selfReport.ResourceLayout -ne 'organized' -or $selfReport.ArtworkVerified -ne 722 -or $selfReport.DuelistPortraitsVerified -ne 39 -or $selfReport.RewardTables -ne 117) { throw 'Invalid package self-check evidence.' }
     $steps.Add('packaged-self-check')
     $process = Start-Process -FilePath $executable -WorkingDirectory $package -WindowStyle Hidden -PassThru
     try {

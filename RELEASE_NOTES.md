@@ -1,18 +1,18 @@
-# YFM Fusion Companion v2.0.1
+# YFM Fusion Companion v2.1.0
 
-The audited 2.0 update provides one organized portable Windows package and an original Forbidden Memories-inspired application icon.
+Version 2.1 adds an offline farming and reference database directly to Recommended Decks.
 
-- Resources groups the catalog, all 722 card images, and research data; Documentation contains offline guides and Licenses contains legal notices.
-- A detailed 32-section design manual and generated source index explain the code, algorithms, UI, data, testing and modification points.
-- The executable and window now use an original gold pyramid/cards icon with nine Windows sizes.
-- Release checks now build all 12 solution projects, select the actual four visible tabs, and verify the packaged executable's catalog, research, deck library and every artwork hash/decode.
-- Local and GitHub releases use one publisher with locked dependencies, formatting, correctness, acceptance, WPF, lifecycle, artwork, documentation, startup and extracted-file integrity gates.
-- Existing 2.0 behavior remains: four search/eight analysis workers on Auto where supported, six researched deck builds, guardian symbols, compact names without horizontal scroll, integrated save controls and configurable suggested-card order.
+- Every missing recommended-deck card names its best Free Duel opponent, required rank group, and exact conditional drop percentage.
+- The new Free Duel Database shows all 39 opponents with in-game portraits and complete S/A POW, S/A TEC, and B/C/D reward tables.
+- A shared search box begins suggesting cards and duelists after three letters. Selecting a result opens an in-window detail popup.
+- Duelist popups show enlarged portraits and all three full reward tables. Card popups show artwork, catalog details, guardian stars, description, ATK/DEF, password-shop data, and every drop source ordered by percentage.
+- The bundled data validates 117 independent 2,048-weight reward tables containing 8,666 entries. Portrait and data provenance, hashes, and separate artwork rights accompany the package.
+- Release verification now checks all reward-table invariants, all 39 portrait hashes/decodes, cross-linked popup content, three-letter search, and the organized portable package.
 
-Download **YFM-Fusion-Companion-2.0.1-Windows-x64.zip**, compare its checksum, extract the entire folder and run **YFM Fusion Companion.exe**. No separate .NET installation is needed. Keep Resources, Documentation and Licenses beside the executable. Settings and proof files remain in your Windows profile.
+Download **YFM-Fusion-Companion-2.1.0-Windows-x64.zip**, compare its checksum, extract the entire folder, and run **YFM Fusion Companion.exe**. No separate .NET installation is needed. Keep Resources, Documentation, and Licenses beside the executable.
 
-Exact hand metrics are modeled setup probabilities, not win rates. Timed search is best-found. This release audit uses synthetic gameplay and scaled WPF checks; unpaused real gameplay and native OS-DPI switching are not retested. See the included Release-audit.json and the repository audit record for measured checks and limits.
+Drop percentages are exact within the named result-rank table; they do not include the chance of achieving that rank. Exact hand metrics remain modeled setup probabilities rather than win rates, and timed optimization remains best-found unless proof exhausts its frozen space.
 
-Windows 10/11 x64. Live mode supports validated NTSC-U RetroArch/SwanStation. Game memory, saves and emulator configuration remain read-only. Original code/icon are MIT licensed; card artwork has separate notices. No ROM, BIOS, emulator or personal save is distributed.
+Windows 10/11 x64. Live mode supports validated NTSC-U RetroArch/SwanStation. Game memory, saves, and emulator configuration remain read-only. Original code/icon are MIT licensed; card and duelist artwork have separate notices. No ROM, BIOS, emulator, or personal save is distributed.
 
 [Historical release notes](https://github.com/vincevandriel/yfm-fusion-companion/blob/main/docs/history/RELEASE_NOTES.md) remain available for tracing prior changes.

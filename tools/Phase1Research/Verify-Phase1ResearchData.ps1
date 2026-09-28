@@ -21,6 +21,7 @@ $opponents = Read-RequiredJson 'opponent_reference.json'
 $guardianStars = Read-RequiredJson 'guardian_star_rules.json'
 $policy = Read-RequiredJson 'optimizer_policy.json'
 $summary = Read-RequiredJson 'generation_summary.json'
+$freeDuel = Read-RequiredJson 'free_duel_reference.json'
 
 if ([int]$manifest.schema_version -ne 1 -or [int]$opponents.schema_version -ne 1) {
     throw 'Unsupported Phase 1 research schema version.'
@@ -87,4 +88,26 @@ if ([int]$summary.card_count -ne 722 -or [int]$summary.opponent_count -ne 39 -or
     throw 'Generation summary counts are invalid.'
 }
 
-Write-Output "Phase 1 research data: PASS (39 opponents, $($summary.deck_pool_entry_count) Deck-pool entries, $($manifest.sources.Count) provenance records)."
+if ([int]$freeDuel.schema_version -ne 1 -or @($freeDuel.duelists).Count -ne 39) {
+    throw 'Free Duel reference must contain exactly 39 duelists.'
+}
+$rewardTableCount = 0
+$rewardEntryCount = 0
+foreach ($duelist in $freeDuel.duelists) {
+    if ([int]$duelist.duelist_id -lt 1 -or [int]$duelist.duelist_id -gt 39 -or @($duelist.reward_tables).Count -ne 3) {
+        throw "Free Duel entry $($duelist.duelist_id) is incomplete."
+    }
+    foreach ($table in $duelist.reward_tables) {
+        $total = @($table.entries | Measure-Object weight -Sum).Sum
+        if ([int]$table.denominator -ne 2048 -or [int]$total -ne 2048 -or @($table.entries).Count -eq 0) {
+            throw "Duelist $($duelist.duelist_id) table $($table.id) is not an exact 2048-weight table."
+        }
+        $rewardTableCount++
+        $rewardEntryCount += @($table.entries).Count
+    }
+}
+if ($rewardTableCount -ne 117 -or $rewardEntryCount -ne 8666) {
+    throw "Unexpected Free Duel totals: $rewardTableCount tables and $rewardEntryCount entries."
+}
+
+Write-Output "Phase 1 research data: PASS (39 opponents, 117 reward tables, 8,666 reward entries, $($summary.deck_pool_entry_count) Deck-pool entries, $($manifest.sources.Count) provenance records)."

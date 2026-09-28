@@ -1,0 +1,204 @@
+{
+  "schema_version": 1,
+  "source_url": "https://www.spriters-resource.com/playstation/ygofm/asset/51205/",
+  "numbered_crop_source": "https://yugioh-fm-db.pages.dev/duelists",
+  "attribution": "Original in-game mugshots by Konami; sheet archived by The Spriters Resource user Phongpon; numbered crops cross-checked against the YFM Database.",
+  "source_sheet_sha256": "daabafecad56e29b1268d4f435b97749735c43825804dd332fbae8835ff66932",
+  "portraits": [
+    {
+      "duelist_id": 1,
+      "path": "01.png",
+      "sha256": "3ff2fcd663d703e2a83ba48a6abd261e4a8d95bc2cb0fbc8db0c5e1194eb13d4"
+    },
+    {
+      "duelist_id": 2,
+      "path": "02.png",
+      "sha256": "cd18762eb7a961f0161f9d12b7b56c1cdaa4f33a2618cf4d7f6bb17faa6e0233"
+    },
+    {
+      "duelist_id": 3,
+      "path": "03.png",
+      "sha256": "6674bee38b571c3580bd4701848fa364fcc0fd9e5054039f2a1fe94888e87156"
+    },
+    {
+      "duelist_id": 4,
+      "path": "04.png",
+      "sha256": "2b4486d8dadc07b780269b98857245c77dd0db71d6b6c8ceedeffeba7d6f2616"
+    },
+    {
+      "duelist_id": 5,
+      "path": "05.png",
+      "sha256": "2c27e6dea06b0b8e7167caa5f77829e0098abf3c04d18e8f36f2b8dd0bd0b7c8"
+    },
+    {
+      "duelist_id": 6,
+      "path": "06.png",
+      "sha256": "c7e7ebdad6e8488692b17213d22cde0856ca678e872782afe936cd9009d1294c"
+    },
+    {
+      "duelist_id": 7,
+      "path": "07.png",
+      "sha256": "aa443574fb28bfcae41a6e8d4f910e1765a2538222d45ae7869db016ee191327"
+    },
+    {
+      "duelist_id": 8,
+      "path": "08.png",
+      "sha256": "582839781deebd627aad67528bb19bbf826c2faad6c988b5fa0f403ac944d660"
+    },
+    {
+      "duelist_id": 9,
+      "path": "09.png",
+      "sha256": "a24d4b4cf247f077fd9b1c4b4ef418f703992f8d39b597ad07b4893f7a778500"
+    },
+    {
+      "duelist_id": 10,
+      "path": "10.png",
+      "sha256": "fde4512dcb70a32b15f52f7fbdd55cc865a6627814b43d1438e579c7e09c9784"
+    },
+    {
+      "duelist_id": 11,
+      "path": "11.png",
+      "sha256": "a361f894a6d7c44923ddb31b2ffd4b7ccfc8d2e78c079123f133fd059a7e9a2f"
+    },
+    {
+      "duelist_id": 12,
+      "path": "12.png",
+      "sha256": "95c6165c8658af6b6fc055bf5cd54fcd198b36584696bf4e0ce3ce8b88e25260"
+    },
+    {
+      "duelist_id": 13,
+      "path": "13.png",
+      "sha256": "b67b64d8411396edf672a181c70471253a4c9646f25469aac3be17521044ee63"
+    },
+    {
+      "duelist_id": 14,
+      "path": "14.png",
+      "sha256": "0bbe8e3fa0b62d0a38d3ab152408d8a2002968783450e7b5b85522c932e8a084"
+    },
+    {
+      "duelist_id": 15,
+      "path": "15.png",
+      "sha256": "ba50d40043d78ebaf3cf2f4ecfd53d12effa6b6cc962d94def46d687669a91a1"
+    },
+    {
+      "duelist_id": 16,
+      "path": "16.png",
+      "sha256": "8663837da756a8382758b508c88ec322f1c4508527a416045f0725b4aaa47fe5"
+    },
+    {
+      "duelist_id": 17,
+      "path": "17.png",
+      "sha256": "070dc4feaf4520f60198130a04924a371e5fcc05c99961a75206c070c32b5e52"
+    },
+    {
+      "duelist_id": 18,
+      "path": "18.png",
+      "sha256": "6e9013a7918718b1b81768cfb92ea974ece70cc56c660f21b8e3a68c5adf0825"
+    },
+    {
+      "duelist_id": 19,
+      "path": "19.png",
+      "sha256": "bf6b732bb4cd5fefcf0bf46ff44d4556773059949b352e972d0c21a92a9a6df6"
+    },
+    {
+      "duelist_id": 20,
+      "path": "20.png",
+      "sha256": "cd122961402bac5df0d24f981c4c9176979a7a073c931208cbb5e44ba0ad689c"
+    },
+    {
+      "duelist_id": 21,
+      "path": "21.png",
+      "sha256": "46838bbb89b7dc26ce71ac0aedbf28b1512e1894c388c04cbe28089ed6fab1ae"
+    },
+    {
+      "duelist_id": 22,
+      "path": "22.png",
+      "sha256": "bcc175fc0389792ce089ad50e23b13522372a953a54555e8a9ec37907691fdc9"
+    },
+    {
+      "duelist_id": 23,
+      "path": "23.png",
+      "sha256": "d916edd4eba4ab4520c96e431866364c52e708ee9fcb7095394c3fc6f3d990fd"
+    },
+    {
+      "duelist_id": 24,
+      "path": "24.png",
+      "sha256": "e2fca8ce229fde942e59e95754345a2ac3f5169d83bc5c25647410d664b24772"
+    },
+    {
+      "duelist_id": 25,
+      "path": "25.png",
+      "sha256": "3fb50357ff011dd375d1e7af23673237c7f67579869009d1714b4c42670b48b3"
+    },
+    {
+      "duelist_id": 26,
+      "path": "26.png",
+      "sha256": "9a5213a1a061ba62d5a16273eccc1adbd2e4a519d50f31dca75eee99245d5145"
+    },
+    {
+      "duelist_id": 27,
+      "path": "27.png",
+      "sha256": "7953c03d9d92d6b2286c198b6ab86484875bd5fb0ab4aad97482b3653661ab0e"
+    },
+    {
+      "duelist_id": 28,
+      "path": "28.png",
+      "sha256": "cc615ef17a2c4841651f8c0763f8ab7853f4b215b6d5f81768b30b040cfb6d94"
+    },
+    {
+      "duelist_id": 29,
+      "path": "29.png",
+      "sha256": "c298ebda3843e68e04aa1a61fce35349a8ef3d6ab794ff3c90bf1f0cffd9c47c"
+    },
+    {
+      "duelist_id": 30,
+      "path": "30.png",
+      "sha256": "081a2927819fb6845caf5f2526bcc8df7c8c840046757ab55b4143a9e3679828"
+    },
+    {
+      "duelist_id": 31,
+      "path": "31.png",
+      "sha256": "f4e01fc1cb4210ed7059a7bfb40c697d343d087af99dc0c9abe8120cd43ce546"
+    },
+    {
+      "duelist_id": 32,
+      "path": "32.png",
+      "sha256": "0fc98449510a61ec94c449de31a3bbfd78f9075a7d5c1dbe2daa2368a16ab17c"
+    },
+    {
+      "duelist_id": 33,
+      "path": "33.png",
+      "sha256": "49c0e4c4c0cdee682f88f02f7774d1d17d7539dd1b4de7eec36e983adf074254"
+    },
+    {
+      "duelist_id": 34,
+      "path": "34.png",
+      "sha256": "4bb4e6897837c4f31643b27d02e62c67a5827bc28243ed3504241dafef9f927d"
+    },
+    {
+      "duelist_id": 35,
+      "path": "35.png",
+      "sha256": "cb8c8527a22dc390b2519133940b611a6b1012568bbf9eea09ee91ba7d0e4a29"
+    },
+    {
+      "duelist_id": 36,
+      "path": "36.png",
+      "sha256": "a35fe8dccd8bedaa96f215ea6b264164cf2ce59b7dfc2b8c65af92d1f071bc83"
+    },
+    {
+      "duelist_id": 37,
+      "path": "37.png",
+      "sha256": "f648f336f286e698a55069071fecd386c49e058ad74f4d6712bf27f024d3a12a"
+    },
+    {
+      "duelist_id": 38,
+      "path": "38.png",
+      "sha256": "e9bb852f561965c83ee47c9c478a730de165b8f4f78870d816d46bb153d6e8f4"
+    },
+    {
+      "duelist_id": 39,
+      "path": "39.png",
+      "sha256": "4bbc999a6d1165704282427577bc361cf351921ed400f5fc6ef034b9dc57cb51"
+    }
+  ]
+}

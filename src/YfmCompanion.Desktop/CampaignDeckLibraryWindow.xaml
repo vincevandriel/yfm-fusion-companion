@@ -1,78 +1,186 @@
 <Window x:Class="YfmCompanion.Desktop.CampaignDeckLibraryWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Recommended Decks • YFM Fusion Companion 2.0" Width="1060" Height="900"
-        MinWidth="700" MinHeight="600" WindowStartupLocation="CenterOwner">
-    <Border Background="{StaticResource WindowBrush}"><Grid Margin="18">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/><RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/><RowDefinition Height="*"/><RowDefinition Height="Auto"/>
-        </Grid.RowDefinitions>
-        <TextBlock Text="DECKS FOR THE JOURNEY" FontSize="25" FontWeight="SemiBold" Foreground="{StaticResource GoldBrush}"/>
-        <StackPanel Grid.Row="1" Margin="0,6,0,10">
-            <TextBlock Text="Six community-informed strategies for the original game. Choose an icon to explore the full 40-card build." TextWrapping="Wrap"/>
-            <TextBlock x:Name="CollectionSourceText" Foreground="{StaticResource MutedBrush}" TextWrapping="Wrap" FontSize="12" Margin="0,5,0,0"/>
-        </StackPanel>
-        <ItemsControl x:Name="BuildTiles" Grid.Row="2" Margin="0,0,0,12">
-            <ItemsControl.ItemsPanel><ItemsPanelTemplate><UniformGrid Columns="3"/></ItemsPanelTemplate></ItemsControl.ItemsPanel>
-            <ItemsControl.ItemTemplate>
-                <DataTemplate>
-                    <StackPanel Margin="0,0,8,10">
-                        <Button Click="SelectBuild_Click" Tag="{Binding Build}" HorizontalContentAlignment="Stretch" Padding="8" Margin="0" Background="{StaticResource PanelBrush}" BorderBrush="{Binding Accent}" BorderThickness="2" ToolTip="{Binding Build.Description}">
-                            <Grid>
-                                <Grid.ColumnDefinitions><ColumnDefinition Width="78"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
-                                <Border Height="90" Width="68" CornerRadius="5" Background="{Binding Accent}" Padding="3" HorizontalAlignment="Left">
-                                    <Image Source="{Binding Artwork}" Stretch="Uniform" RenderOptions.BitmapScalingMode="HighQuality"/>
+        Title="Recommended Decks &amp; Free Duel Database • YFM Fusion Companion 2.1" Width="1120" Height="920"
+        MinWidth="760" MinHeight="640" WindowStartupLocation="CenterOwner">
+    <Border Background="{StaticResource WindowBrush}">
+        <Grid Margin="18">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/><RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/><RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <TextBlock Text="DECKS &amp; FREE DUEL DATABASE" FontSize="25" FontWeight="SemiBold" Foreground="{StaticResource GoldBrush}"/>
+            <Grid Grid.Row="1" Margin="0,8,0,10">
+                <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="390"/></Grid.ColumnDefinitions>
+                <TextBlock Text="Plan a 40-card build, find each missing card, or inspect every opponent reward table." TextWrapping="Wrap" VerticalAlignment="Center"/>
+                <Grid Grid.Column="1">
+                    <TextBox x:Name="ReferenceSearchBox" Height="34" Padding="9,5" TextChanged="ReferenceSearchBox_TextChanged" ToolTip="Type at least 3 letters to search cards and duelists"/>
+                    <TextBlock x:Name="SearchWatermark" Text="Search cards or duelists (3+ letters)" IsHitTestVisible="False" Foreground="{StaticResource MutedBrush}" Margin="11,0" VerticalAlignment="Center"/>
+                    <Popup x:Name="SearchPopup" PlacementTarget="{Binding ElementName=ReferenceSearchBox}" Placement="Bottom" StaysOpen="False" AllowsTransparency="True" PopupAnimation="Fade">
+                        <Border Width="390" MaxHeight="360" Background="{StaticResource PanelBrush}" BorderBrush="{StaticResource AccentBrush}" BorderThickness="1" Padding="4">
+                            <ScrollViewer VerticalScrollBarVisibility="Auto"><ItemsControl x:Name="SearchResults">
+                                <ItemsControl.ItemTemplate><DataTemplate>
+                                    <Button Click="SearchSuggestion_Click" Tag="{Binding}" HorizontalContentAlignment="Stretch" Padding="8,6" Margin="1">
+                                        <Grid><Grid.ColumnDefinitions><ColumnDefinition Width="56"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                                            <Image Source="{Binding Image}" Width="48" Height="48" Stretch="Uniform" RenderOptions.BitmapScalingMode="HighQuality"/>
+                                            <StackPanel Grid.Column="1" Margin="8,0,0,0" VerticalAlignment="Center">
+                                                <TextBlock Text="{Binding Name}" FontWeight="SemiBold" TextWrapping="Wrap"/>
+                                                <TextBlock Text="{Binding KindLabel}" Foreground="{StaticResource MutedBrush}" FontSize="11"/>
+                                            </StackPanel>
+                                        </Grid>
+                                    </Button>
+                                </DataTemplate></ItemsControl.ItemTemplate>
+                            </ItemsControl></ScrollViewer>
+                        </Border>
+                    </Popup>
+                </Grid>
+            </Grid>
+            <TabControl x:Name="LibraryTabs" Grid.Row="2" SelectionChanged="LibraryTabs_SelectionChanged">
+                <TabItem x:Name="RecommendedDecksTab" Header="RECOMMENDED DECKS">
+                    <Grid Margin="0,10,0,0">
+                        <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="*"/></Grid.RowDefinitions>
+                        <StackPanel>
+                            <TextBlock Text="Six community-informed strategies for the original game. Choose an icon to explore the full 40-card build." TextWrapping="Wrap"/>
+                            <TextBlock x:Name="CollectionSourceText" Foreground="{StaticResource MutedBrush}" TextWrapping="Wrap" FontSize="12" Margin="0,5,0,0"/>
+                        </StackPanel>
+                        <ItemsControl x:Name="BuildTiles" Grid.Row="1" Margin="0,10,0,8">
+                            <ItemsControl.ItemsPanel><ItemsPanelTemplate><UniformGrid Columns="3"/></ItemsPanelTemplate></ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate><DataTemplate>
+                                <StackPanel Margin="0,0,8,8">
+                                    <Button Click="SelectBuild_Click" Tag="{Binding Build}" HorizontalContentAlignment="Stretch" Padding="7" Background="{StaticResource PanelBrush}" BorderBrush="{Binding Accent}" BorderThickness="2" ToolTip="{Binding Build.Description}">
+                                        <Grid><Grid.ColumnDefinitions><ColumnDefinition Width="68"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                                            <Border Height="78" Width="58" CornerRadius="5" Background="{Binding Accent}" Padding="3" HorizontalAlignment="Left">
+                                                <Image Source="{Binding Artwork}" Stretch="Uniform" RenderOptions.BitmapScalingMode="HighQuality"/>
+                                            </Border>
+                                            <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                                <TextBlock Text="{Binding Build.Name}" FontSize="15" FontWeight="SemiBold" TextWrapping="Wrap"/>
+                                                <TextBlock Text="{Binding Build.Stage}" Foreground="{StaticResource MutedBrush}" FontSize="11" TextWrapping="Wrap" Margin="0,4,0,0"/>
+                                            </StackPanel>
+                                        </Grid>
+                                    </Button>
+                                    <TextBlock Text="{Binding OwnedLine}" HorizontalAlignment="Center" Foreground="{StaticResource SuccessBrush}" FontWeight="SemiBold" Margin="0,4,0,0" FontSize="12"/>
+                                </StackPanel>
+                            </DataTemplate></ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                        <Border Grid.Row="2" Background="{StaticResource PanelBrush}" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" Padding="12">
+                            <ScrollViewer x:Name="BuildDetailScroll" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                                <StackPanel>
+                                    <Grid><Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                                        <TextBlock x:Name="BuildTitle" FontSize="21" FontWeight="SemiBold" Foreground="{StaticResource AccentBrush}" TextWrapping="Wrap"/>
+                                        <Button Grid.Column="1" Content="OPEN FREE DUEL DATABASE" Click="OpenFreeDuel_Click" Margin="10,0,0,0"/>
+                                    </Grid>
+                                    <TextBlock x:Name="BuildDescription" TextWrapping="Wrap" Margin="0,6,0,0"/>
+                                    <TextBlock x:Name="OwnedSummary" Foreground="{StaticResource SuccessBrush}" FontWeight="SemiBold" TextWrapping="Wrap" Margin="0,8,0,0"/>
+                                    <TextBlock Text="HOW TO PLAY AND UPGRADE" Foreground="{StaticResource GoldBrush}" FontSize="12" Margin="0,14,0,4"/>
+                                    <TextBlock x:Name="BuildPlan" TextWrapping="Wrap"/>
+                                    <TextBlock x:Name="BuildRecipes" Foreground="{StaticResource AccentBrush}" TextWrapping="Wrap" Margin="0,8,0,0"/>
+                                    <TextBlock x:Name="BuildCautions" TextWrapping="Wrap" Foreground="{StaticResource MutedBrush}" Margin="0,8,0,0"/>
+                                    <WrapPanel Margin="0,12,0,0">
+                                        <Button x:Name="AnalyzeReferenceButton" Content="CHECK ALL OPENING HANDS" Click="AnalyzeReference_Click"/>
+                                        <Button x:Name="CancelReferenceButton" Content="CANCEL CHECK" Click="CancelReference_Click" IsEnabled="False"/>
+                                    </WrapPanel>
+                                    <TextBlock x:Name="ReferenceMetrics" Text="Check the reference deck to see its opening-hand setup availability." TextWrapping="Wrap" Margin="0,6,0,0"/>
+                                    <TextBlock Text="These metrics describe the complete reference list, including cards you may be missing. Setups may require several turns. Opponent fields, guardian stars, equips and responses can change the outcome." Foreground="{StaticResource MutedBrush}" FontSize="12" TextWrapping="Wrap" Margin="0,5,0,10"/>
+                                    <TextBlock Text="MISSING COPIES INCLUDE THEIR BEST FARM" Foreground="{StaticResource GoldBrush}" FontSize="12" Margin="0,4,0,5"/>
+                                    <DataGrid x:Name="BuildCards" AutoGenerateColumns="False" IsReadOnly="True" CanUserAddRows="False" CanUserResizeColumns="False" HeadersVisibility="Column" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Disabled" RowHeaderWidth="0" MinRowHeight="31" SizeChanged="BuildCards_SizeChanged" MouseDoubleClick="BuildCards_MouseDoubleClick">
+                                        <DataGrid.Columns>
+                                            <DataGridTextColumn Header="CARD" Binding="{Binding Name}" Width="200" ElementStyle="{StaticResource ResultCellText}"/>
+                                            <DataGridTextColumn Header="NEED" Binding="{Binding Required}" Width="50"/>
+                                            <DataGridTextColumn Header="OWN" Binding="{Binding Owned}" Width="50"/>
+                                            <DataGridTextColumn Header="MISS" Binding="{Binding Missing}" Width="50"/>
+                                            <DataGridTextColumn Header="BEST FARM" Binding="{Binding BestFarm}" Width="240" ElementStyle="{StaticResource ResultCellText}"/>
+                                            <DataGridTextColumn Header="ROLE" Binding="{Binding Role}" Width="160" ElementStyle="{StaticResource ResultCellText}"/>
+                                        </DataGrid.Columns>
+                                    </DataGrid>
+                                    <TextBlock Text="Double-click any card to open its full details, every drop source, password and Star Chip price." Foreground="{StaticResource MutedBrush}" FontSize="11" TextWrapping="Wrap" Margin="0,4,0,0"/>
+                                    <TextBlock Text="COMMUNITY SOURCES • reference lists are authored for this app" Foreground="{StaticResource GoldBrush}" TextWrapping="Wrap" FontSize="12" Margin="0,14,0,5"/>
+                                    <ItemsControl x:Name="BuildSources"><ItemsControl.ItemTemplate><DataTemplate>
+                                        <TextBlock TextWrapping="Wrap" Margin="0,0,0,5"><Hyperlink NavigateUri="{Binding}" RequestNavigate="Source_RequestNavigate"><Run Text="{Binding Mode=OneWay}"/></Hyperlink></TextBlock>
+                                    </DataTemplate></ItemsControl.ItemTemplate></ItemsControl>
+                                </StackPanel>
+                            </ScrollViewer>
+                        </Border>
+                    </Grid>
+                </TabItem>
+                <TabItem x:Name="FreeDuelTab" Header="FREE DUEL DATABASE">
+                    <Grid Margin="0,10,0,0">
+                        <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/></Grid.RowDefinitions>
+                        <TextBlock x:Name="FreeDuelIntro" TextWrapping="Wrap" Foreground="{StaticResource MutedBrush}" Margin="0,0,0,9"/>
+                        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                            <ItemsControl x:Name="DuelistGallery">
+                                <ItemsControl.ItemsPanel><ItemsPanelTemplate><UniformGrid Columns="6"/></ItemsPanelTemplate></ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate><DataTemplate>
+                                    <Button Click="DuelistTile_Click" Tag="{Binding Reference}" Margin="5" Padding="8" Background="{StaticResource PanelBrush}" HorizontalContentAlignment="Stretch">
+                                        <StackPanel>
+                                            <Border BorderBrush="{StaticResource GoldBrush}" BorderThickness="1" Padding="4" HorizontalAlignment="Center">
+                                                <Image Source="{Binding Portrait}" Width="96" Height="96" Stretch="Uniform" RenderOptions.BitmapScalingMode="NearestNeighbor"/>
+                                            </Border>
+                                            <TextBlock Text="{Binding Reference.Name}" TextAlignment="Center" FontWeight="SemiBold" TextWrapping="Wrap" Margin="0,6,0,0" MinHeight="36"/>
+                                        </StackPanel>
+                                    </Button>
+                                </DataTemplate></ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </ScrollViewer>
+                    </Grid>
+                </TabItem>
+            </TabControl>
+            <Grid Grid.Row="3" Margin="0,10,0,0">
+                <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                <StackPanel>
+                    <WrapPanel><Button x:Name="UseBuildButton" Content="ADAPT THIS STRATEGY TO MY COLLECTION" Click="UseBuild_Click"/><Button Content="CLOSE" Click="Close_Click"/></WrapPanel>
+                    <TextBlock x:Name="AdaptHint" TextWrapping="Wrap" FontSize="12" Foreground="{StaticResource MutedBrush}"/>
+                </StackPanel>
+                <TextBlock Grid.Column="1" Text="OFFLINE • READ ONLY" Foreground="{StaticResource SuccessBrush}" FontWeight="SemiBold" VerticalAlignment="Center"/>
+            </Grid>
+            <Grid x:Name="DetailOverlay" Grid.RowSpan="4" Background="#E6081118" Visibility="Collapsed" Panel.ZIndex="20">
+                <Border Background="{StaticResource PanelBrush}" BorderBrush="{StaticResource GoldBrush}" BorderThickness="2" Padding="16" Margin="55" MaxWidth="930" MaxHeight="780" HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <Grid><Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/></Grid.RowDefinitions>
+                        <Button Content="CLOSE" Click="CloseOverlay_Click" HorizontalAlignment="Right"/>
+                        <Grid x:Name="DuelistDetail" Grid.Row="1" Visibility="Collapsed" Margin="0,8,0,0">
+                            <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/></Grid.RowDefinitions>
+                            <Grid><Grid.ColumnDefinitions><ColumnDefinition Width="150"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                                <Border BorderBrush="{StaticResource GoldBrush}" BorderThickness="2" Padding="6" HorizontalAlignment="Left">
+                                    <Image x:Name="DuelistDetailPortrait" Width="128" Height="128" Stretch="Uniform" RenderOptions.BitmapScalingMode="NearestNeighbor"/>
                                 </Border>
-                                <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="2,0,0,0">
-                                    <TextBlock Text="{Binding Build.Name}" FontSize="16" FontWeight="SemiBold" TextWrapping="Wrap"/>
-                                    <TextBlock Text="{Binding Build.Stage}" Foreground="{StaticResource MutedBrush}" FontSize="11" TextWrapping="Wrap" Margin="0,6,0,0"/>
+                                <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="16,0,0,0">
+                                    <TextBlock x:Name="DuelistDetailName" FontSize="28" FontWeight="SemiBold" Foreground="{StaticResource GoldBrush}" TextWrapping="Wrap"/>
+                                    <TextBlock Text="Choose a result rank to inspect its complete reward table. Percentages are exact within that rank group." Foreground="{StaticResource MutedBrush}" TextWrapping="Wrap" Margin="0,6,0,0"/>
                                 </StackPanel>
                             </Grid>
-                        </Button>
-                        <TextBlock Text="{Binding OwnedLine}" HorizontalAlignment="Center" Foreground="{StaticResource SuccessBrush}" FontWeight="SemiBold" Margin="0,5,0,0" FontSize="13"/>
-                    </StackPanel>
-                </DataTemplate>
-            </ItemsControl.ItemTemplate>
-        </ItemsControl>
-        <Border Grid.Row="3" Background="{StaticResource PanelBrush}" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" Padding="12">
-            <ScrollViewer x:Name="BuildDetailScroll" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
-                <StackPanel>
-                    <TextBlock x:Name="BuildTitle" FontSize="21" FontWeight="SemiBold" Foreground="{StaticResource AccentBrush}" TextWrapping="Wrap"/>
-                    <TextBlock x:Name="BuildDescription" TextWrapping="Wrap" Margin="0,6,0,0"/>
-                    <TextBlock x:Name="OwnedSummary" Foreground="{StaticResource SuccessBrush}" FontWeight="SemiBold" TextWrapping="Wrap" Margin="0,8,0,0"/>
-                    <TextBlock Text="HOW TO PLAY AND UPGRADE" Foreground="{StaticResource GoldBrush}" FontSize="12" Margin="0,14,0,4"/>
-                    <TextBlock x:Name="BuildPlan" TextWrapping="Wrap"/>
-                    <TextBlock x:Name="BuildRecipes" Foreground="{StaticResource AccentBrush}" TextWrapping="Wrap" Margin="0,8,0,0"/>
-                    <TextBlock x:Name="BuildCautions" TextWrapping="Wrap" Foreground="{StaticResource MutedBrush}" Margin="0,8,0,0"/>
-                    <WrapPanel Margin="0,12,0,0">
-                        <Button x:Name="AnalyzeReferenceButton" Content="CHECK ALL OPENING HANDS" Click="AnalyzeReference_Click"/>
-                        <Button x:Name="CancelReferenceButton" Content="CANCEL CHECK" Click="CancelReference_Click" IsEnabled="False"/>
-                    </WrapPanel>
-                    <TextBlock x:Name="ReferenceMetrics" Text="Check the reference deck to see its opening-hand setup availability." TextWrapping="Wrap" Margin="0,6,0,0"/>
-                    <TextBlock Text="These metrics describe the complete reference list, including cards you may be missing. Setups may require several turns. Opponent fields, guardian stars, equips and responses can change the outcome." Foreground="{StaticResource MutedBrush}" FontSize="12" TextWrapping="Wrap" Margin="0,5,0,10"/>
-                    <DataGrid x:Name="BuildCards" AutoGenerateColumns="False" IsReadOnly="True" CanUserAddRows="False" CanUserResizeColumns="False" HeadersVisibility="Column" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Disabled" RowHeaderWidth="0" MinRowHeight="29" SizeChanged="BuildCards_SizeChanged">
-                        <DataGrid.Columns>
-                            <DataGridTextColumn Header="CARD" Binding="{Binding Name}" Width="240" ElementStyle="{StaticResource ResultCellText}"/>
-                            <DataGridTextColumn Header="NEED" Binding="{Binding Required}" Width="55"/>
-                            <DataGridTextColumn Header="OWN" Binding="{Binding Owned}" Width="55"/>
-                            <DataGridTextColumn Header="MISSING" Binding="{Binding Missing}" Width="72"/>
-                            <DataGridTextColumn Header="ROLE" Binding="{Binding Role}" Width="180" ElementStyle="{StaticResource ResultCellText}"/>
-                        </DataGrid.Columns>
-                    </DataGrid>
-                    <TextBlock Text="COMMUNITY SOURCES • reference lists are authored for this app" Foreground="{StaticResource GoldBrush}" TextWrapping="Wrap" FontSize="12" Margin="0,14,0,5"/>
-                    <ItemsControl x:Name="BuildSources"><ItemsControl.ItemTemplate><DataTemplate>
-                        <TextBlock TextWrapping="Wrap" Margin="0,0,0,5"><Hyperlink NavigateUri="{Binding}" RequestNavigate="Source_RequestNavigate"><Run Text="{Binding Mode=OneWay}"/></Hyperlink></TextBlock>
-                    </DataTemplate></ItemsControl.ItemTemplate></ItemsControl>
-                </StackPanel>
-            </ScrollViewer>
-        </Border>
-        <StackPanel Grid.Row="4" Margin="0,10,0,0">
-            <WrapPanel>
-                <Button x:Name="UseBuildButton" Content="ADAPT THIS STRATEGY TO MY COLLECTION" Click="UseBuild_Click"/>
-                <Button Content="CLOSE" Click="Close_Click"/>
-            </WrapPanel>
-            <TextBlock x:Name="AdaptHint" Text="Uses owned cards as a starting deck; missing cards are replaced. Other strategies are still compared, so the best result can differ." TextWrapping="Wrap" FontSize="12" Foreground="{StaticResource MutedBrush}"/>
-        </StackPanel>
-    </Grid></Border>
+                            <TabControl x:Name="DuelistRewardTabs" Grid.Row="1" Margin="0,12,0,0" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch"/>
+                        </Grid>
+                        <Grid x:Name="CardDetail" Grid.Row="1" Visibility="Collapsed" Margin="0,8,0,0">
+                            <Grid.ColumnDefinitions><ColumnDefinition Width="230"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                            <StackPanel>
+                                <Image x:Name="CardDetailArtwork" Width="205" Height="286" Stretch="Uniform" RenderOptions.BitmapScalingMode="HighQuality"/>
+                                <Button x:Name="BackToDuelistButton" Content="BACK TO DUELIST" Click="BackToDuelist_Click" Visibility="Collapsed" Margin="0,10,0,0"/>
+                            </StackPanel>
+                            <ScrollViewer x:Name="CardDetailScroll" Grid.Column="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" HorizontalContentAlignment="Stretch">
+                                <StackPanel Margin="10,0,0,0">
+                                    <TextBlock x:Name="CardDetailName" FontSize="25" FontWeight="SemiBold" Foreground="{StaticResource AccentBrush}" TextWrapping="Wrap"/>
+                                    <TextBlock x:Name="CardDetailStats" FontSize="15" FontWeight="SemiBold" TextWrapping="Wrap" Margin="0,7,0,0"/>
+                                    <TextBlock x:Name="CardDetailStars" Foreground="{StaticResource GoldBrush}" FontSize="16" TextWrapping="Wrap" Margin="0,6,0,0"/>
+                                    <TextBlock x:Name="CardDetailDescription" TextWrapping="Wrap" Margin="0,10,0,0"/>
+                                    <Border Background="{StaticResource WindowBrush}" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" Padding="9" Margin="0,12,0,0">
+                                        <TextBlock x:Name="CardDetailShop" TextWrapping="Wrap"/>
+                                    </Border>
+                                    <TextBlock Text="ALL FREE DUEL DROPS • HIGHEST CHANCE FIRST" Foreground="{StaticResource GoldBrush}" FontSize="12" Margin="0,14,0,5"/>
+                                    <DataGrid x:Name="CardDropSources" AutoGenerateColumns="False" IsReadOnly="True" CanUserAddRows="False" HeadersVisibility="Column" RowHeaderWidth="0" VerticalScrollBarVisibility="Auto" MaxHeight="330">
+                                        <DataGrid.Columns>
+                                            <DataGridTemplateColumn Header="DUELIST" Width="330"><DataGridTemplateColumn.CellTemplate><DataTemplate>
+                                                <Button Content="{Binding DuelistName}" Tag="{Binding Duelist}" Click="DropDuelist_Click" HorizontalContentAlignment="Left" Padding="4"/>
+                                            </DataTemplate></DataGridTemplateColumn.CellTemplate></DataGridTemplateColumn>
+                                            <DataGridTextColumn Header="RANK" Binding="{Binding Rank}" Width="95"/>
+                                            <DataGridTextColumn Header="DROP" Binding="{Binding Probability}" Width="85"/>
+                                        </DataGrid.Columns>
+                                    </DataGrid>
+                                    <TextBlock x:Name="NoDropSources" Foreground="{StaticResource MutedBrush}" TextWrapping="Wrap" Margin="0,6,0,0"/>
+                                </StackPanel>
+                            </ScrollViewer>
+                        </Grid>
+                    </Grid>
+                </Border>
+            </Grid>
+        </Grid>
+    </Border>
 </Window>

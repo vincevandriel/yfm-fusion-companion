@@ -1,6 +1,9 @@
 # Release verification and retention
 
-Version **2.0.1** is the sole current GitHub release.
+Version **2.1.0** is the current audited candidate. Its tagged GitHub build and public download records are added here after publication.
+
+- [2.1.0 audit scope and findings](../RELEASE_2_1_0.md)
+- [2.1.0 locally audited candidate](2.1.0-local-audit.json)
 
 - [Audit scope and findings](../RELEASE_2_0_1.md)
 - [Locally audited candidate](2.0.1-local-audit.json)
@@ -9,7 +12,7 @@ Version **2.0.1** is the sole current GitHub release.
 - [Synthetic visual matrix](2.0.1-visual-summary.json)
 - [Retirement and retention receipt](2.0.1-retirement.json)
 
-The authoritative public ZIP SHA-256 is `BE16C90E87BF65776807AB999FBC88C9867524DD428507DD76415852147E1CC1`. It contains 776 verified files. The public archive was downloaded without authentication and matched its checksum, GitHub digest and successful CI audit receipt. The CI executable passed its content self-check, normal startup and missing-resource rejection. Automatic approval review blocked launching the downloaded copy locally; no local launch is claimed.
+The 2.0.1 records remain as historical audit evidence until the verified 2.1.0 public release is published and superseded binary assets are retired. The authoritative 2.0.1 public ZIP SHA-256 is `BE16C90E87BF65776807AB999FBC88C9867524DD428507DD76415852147E1CC1`.
 
 The local candidate and GitHub build have separate archive hashes because build outputs and documentation differ. Each was independently checked; the public receipt identifies the installed distribution.
 

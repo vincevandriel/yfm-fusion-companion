@@ -1,6 +1,6 @@
 # YFM Fusion Companion: design and implementation guide
 
-This is the contributor's map of the 2.0 application. It explains the actual implementation, its boundaries, the reasons behind important choices, and where to make changes. The generated [source index](reference/SOURCE_INDEX.md) lists every production C#/XAML file with a navigational index of declarations and named controls with direct source links. Use this document to understand a subsystem, then use that index to reach its code.
+This is the contributor's map of the 2.1 application. It explains the actual implementation, its boundaries, the reasons behind important choices, and where to make changes. The generated [source index](reference/SOURCE_INDEX.md) lists every production C#/XAML file with a navigational index of declarations and named controls with direct source links. Use this document to understand a subsystem, then use that index to reach its code.
 
 The portable release includes a searchable, offline HTML edition. The source repository is authoritative; historical decisions and test evidence live under [history](history/README.md), [audit](audit/RELEASE_2_0_1.md), [research](research/FAN_DECK_RESEARCH.md) and [benchmarks](benchmarks/CAMPAIGN_DECK_RESULTS.md).
 
@@ -86,14 +86,15 @@ The repository separates `src/`, `tests/`, `tools/`, `assets/`, `database-source
 The player package is intentionally different from the source tree:
 
 ```text
-YFM-Fusion-Companion-2.0.1/
+YFM-Fusion-Companion-2.1.0/
   YFM Fusion Companion.exe
   START-HERE.txt
   CHECKSUMS.sha256
   Resources/
     Data/yfm.db
     Artwork/                 # 722 images and their attribution/manifests
-    ResearchData/            # campaign policy, opponents, stars, provenance
+    DuelistPortraits/        # 39 images and their attribution/manifest
+    ResearchData/            # campaign policy, opponents, rewards, stars, provenance
   Documentation/             # user guide, design guide, source index, audit
   Licenses/
 ```
@@ -106,7 +107,7 @@ The executable is self-contained, Windows x64, single-file and includes the .NET
 
 [`App`](../src/YfmCompanion.Desktop/App.xaml.cs) normally starts `MainWindow`. `MainWindow` initializes XAML, connects view aliases, restores preferences, and calls `InitializeOfflineWorkspace`. That method loads the catalog, creates the tactical planner and analyzer, builds card pickers and owned-card rows, and initializes campaign controls. Optional save/live services are separate from offline database initialization so a missing emulator does not disable manual tools.
 
-`--verify-package <report.json>` is an explicit release self-check. It bypasses the ordinary window, personal preferences, save discovery and emulator connection. `PackageVerifier` opens the packaged database, validates research, loads six reference builds and hashes/decodes all 722 artwork images. It writes a JSON result and exits with a success/failure code. This checks the actual published executable, not a development DLL that happens to remain alive.
+`--verify-package <report.json>` is an explicit release self-check. It bypasses the ordinary window, personal preferences, save discovery and emulator connection. `PackageVerifier` opens the packaged database, validates research, loads six reference builds, hashes/decodes all 722 card images, and hashes/decodes all 39 duelist portraits. It writes a JSON result and exits with a success/failure code. This checks the actual published executable, not a development DLL that happens to remain alive.
 
 The window owns a cancellation source and `WindowActivityTracker`. On close it disables interaction, stops timers/watchers, cancels preparation/analysis, requests a safe optimizer pause, saves preferences, and waits for tracked activities and checkpoint writes. It then schedules the final close on the dispatcher to avoid reentrant closing events. The closed handler disposes watchers, transport and cancellation resources.
 
@@ -244,6 +245,8 @@ Never fix a mismatched checkpoint by editing its version/hash fields. Preserve t
 
 [`CampaignResearchData`](../src/YfmCompanion.Engine/CampaignResearchData.cs) loads and validates guardian cycles, opponent pools, scope policy and source manifests. Validation covers expected pool totals, card references, opponent scopes and guardian relationships. `CampaignOptimizationContextBuilder` turns the selected general campaign, single opponent or gauntlet into a frozen scoring context.
 
+[`FreeDuelReferenceData`](../src/YfmCompanion.Engine/FreeDuelReferenceData.cs) independently loads `free_duel_reference.json`. It requires duelists 1 through 39 and exactly three unique reward tables per duelist. Every S/A POW, S/A TEC and B/C/D table must total 2,048 weight, contain valid catalog IDs and avoid duplicate cards. Its reverse card index sorts sources by `weight / 2048`, then stable opponent/rank ties. `BestFarmForCard` is therefore a rank-qualified source recommendation, not a simulated chance of earning that rank.
+
 General campaign and final gauntlet are explicit sets, not inferred from UI order. Research provenance includes upstream revision/input hashes. Static reference facts and heuristic model choices are separate: a sourced opponent pool does not make every modeled fusion opportunity an observed probability.
 
 `OpponentThreatEvaluator` enumerates direct and material-limited chained threats from the opponent pool. `OpponentSafetyScoring` combines reachable answers, terrain, possible stars, removal and importance weights into a model assessment. Unknown CPU guardian choices are alternatives to consider, not a guessed live star.
@@ -256,7 +259,9 @@ The app-authored blueprints live in [`campaign-decks.json`](../src/YfmCompanion.
 
 `CampaignDeckLibrary.Load` validates unique IDs/entries, forty total cards and copy counts. `ForCatalog` excludes a blueprint when its required cards or icon are absent from a supplied catalog. `OwnedCopies` sums `min(required, owned)` by card ID, counting physical copies rather than names or hypothetical fusion products. Owning extra unrelated cards cannot inflate the displayed `x / 40`.
 
-`CampaignDeckLibraryWindow` displays six artwork buttons and updates ownership/missing counts. Its exact check analyzes the complete reference list, including cards the player lacks, and is cancellable. Adapting a build selects an owned-card search start. Active or paused jobs protect their frozen starting strategy; collection refresh is queued safely.
+`CampaignDeckLibraryWindow` displays six artwork buttons and updates ownership/missing counts. Its exact check analyzes the complete reference list, including cards the player lacks, and is cancellable. Missing rows query `BestFarmForCard` and show opponent, rank and conditional percentage. Adapting a build selects an owned-card search start. Active or paused jobs protect their frozen starting strategy; collection refresh is queued safely.
+
+The same window owns the Free Duel tab and detail overlay. `DuelistGallery` binds 39 immutable references and locally decoded portraits. `ShowDuelist` constructs three read-only grids from validated tables; `ShowCard` combines immutable catalog fields with the reverse drop index and password-shop fields. The overlay stays in the same WPF window, so navigation does not create browser pages or additional top-level windows. Search begins only after three trimmed characters, merges case-insensitive card/duelist matches, prioritizes prefixes, and limits the suggestion list to twelve. Selecting a suggestion opens the corresponding overlay immediately.
 
 The six themes, research methodology, acquisition limits and example metrics are documented in [fan deck research](research/FAN_DECK_RESEARCH.md). The library is a practical set of strategies, not an exhaustive collection of every fan deck or a guarantee of campaign completion.
 
@@ -308,7 +313,7 @@ Warm and red presentation states distinguish selectable fusion stars and known o
 
 ## 25. Artwork, icon and memory use
 
-All 722 card images are pinned to an attributed upstream revision. The artwork import tool converts source WebP to PNG without changing decoded pixels, validates card-number/name mapping and writes manifests. Artwork rights are separate from code licensing; retain the notices and metadata license.
+All 722 card images are pinned to an attributed upstream revision. The artwork import tool converts source WebP to PNG without changing decoded pixels, validates card-number/name mapping and writes manifests. All 39 Free Duel portraits are mapped by opponent ID and carry a separate manifest with source-sheet and per-file hashes. Both artwork sets have rights separate from code licensing; retain their notices and manifests.
 
 `OwnedCardRow.RefreshArtwork` resolves explicit custom file, custom folder and bundled fallback. Missing/unreadable overrides recover to bundled artwork. `ThumbnailCache` decodes a small frozen bitmap, uses an LRU with a byte budget and invalidates entries on file length/modified-time changes. Stream loading avoids WPF's independent URI cache retaining replaced images.
 

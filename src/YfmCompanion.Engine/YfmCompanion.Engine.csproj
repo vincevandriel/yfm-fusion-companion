@@ -8,5 +8,6 @@
     <Content Include="..\..\docs\research\data\opponent_reference.json" Link="ResearchData\opponent_reference.json" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
     <Content Include="..\..\docs\research\data\guardian_star_rules.json" Link="ResearchData\guardian_star_rules.json" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
     <Content Include="..\..\docs\research\data\optimizer_policy.json" Link="ResearchData\optimizer_policy.json" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+    <Content Include="..\..\docs\research\data\free_duel_reference.json" Link="ResearchData\free_duel_reference.json" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" ExcludeFromSingleFile="true" />
   </ItemGroup>
 </Project>

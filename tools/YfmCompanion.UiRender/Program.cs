@@ -149,9 +149,42 @@ internal static class Program
         if (detail.ScrollableWidth > .1 || detail.ScrollableHeight <= 0)
             throw new InvalidDataException("Deck details did not fit/scroll vertically.");
         var cards = (DataGrid)window.FindName("BuildCards");
-        if (cards.Columns[0].ActualWidth < 150 || cards.Columns[4].ActualWidth < 120)
-            throw new InvalidDataException("Card names or roles collapsed inside deck details.");
+        if (cards.Columns[0].ActualWidth < 145 || cards.Columns[4].ActualWidth < 190 || cards.Columns[5].ActualWidth < 125)
+            throw new InvalidDataException("Card names, farming guidance, or roles collapsed inside deck details.");
+        var missingRows = cards.Items.Cast<object>().ToArray();
+        if (missingRows.Any(row => string.IsNullOrWhiteSpace(row.GetType().GetProperty("BestFarm")!.GetValue(row)?.ToString())))
+            throw new InvalidDataException("A recommended-deck card omitted its farming guidance.");
         renders.Add(Render(window, 720, 800, Path.Combine(outputDirectory, "recommended-decks-missing-cards.png")));
+        var libraryTabs = (TabControl)window.FindName("LibraryTabs");
+        libraryTabs.SelectedItem = window.FindName("FreeDuelTab");
+        window.UpdateLayout();
+        var gallery = (ItemsControl)window.FindName("DuelistGallery");
+        if (gallery.Items.Count != 39) throw new InvalidDataException("Free Duel gallery did not contain all 39 opponents.");
+        renders.Add(Render(window, 1060, 900, Path.Combine(outputDirectory, "free-duel-gallery.png")));
+        var freeDuel = FreeDuelReferenceData.LoadBundled(AppContext.BaseDirectory, catalog);
+        typeof(CampaignDeckLibraryWindow).GetMethod("ShowDuelist", BindingFlags.NonPublic | BindingFlags.Instance)!
+            .Invoke(window, [freeDuel.Duelists.Single(d => d.Id == 29)]);
+        var rewardTabs = (TabControl)window.FindName("DuelistRewardTabs");
+        if (rewardTabs.Items.Count != 3 || rewardTabs.Items.Cast<TabItem>().Any(tab => ((DataGrid)tab.Content).Items.Count == 0))
+            throw new InvalidDataException("Duelist popup did not contain all three complete reward tables.");
+        renders.Add(Render(window, 1060, 900, Path.Combine(outputDirectory, "free-duel-duelist-popup.png")));
+        typeof(CampaignDeckLibraryWindow).GetMethod("ShowCard", BindingFlags.NonPublic | BindingFlags.Instance)!
+            .Invoke(window, [catalog.GetCard(713), null]);
+        var dropSources = (DataGrid)window.FindName("CardDropSources");
+        if (dropSources.Items.Count == 0 || string.IsNullOrWhiteSpace(((TextBlock)window.FindName("CardDetailShop")).Text))
+            throw new InvalidDataException("Card popup omitted drop sources or password-shop status.");
+        renders.Add(Render(window, 1060, 900, Path.Combine(outputDirectory, "free-duel-card-popup.png")));
+        typeof(CampaignDeckLibraryWindow).GetMethod("CloseOverlay", BindingFlags.NonPublic | BindingFlags.Instance)!.Invoke(window, null);
+        var search = (TextBox)window.FindName("ReferenceSearchBox");
+        search.Text = "met";
+        window.UpdateLayout();
+        var searchResults = (ItemsControl)window.FindName("SearchResults");
+        if (searchResults.Items.Count == 0)
+            throw new InvalidDataException("Three-letter search did not produce card or duelist predictions.");
+        search.Text = "me";
+        if (searchResults.Items.Count != 0)
+            throw new InvalidDataException("Search predictions appeared before the third letter.");
+        libraryTabs.SelectedItem = window.FindName("RecommendedDecksTab");
         typeof(CampaignDeckLibraryWindow).GetMethod("UseBuild_Click", BindingFlags.NonPublic | BindingFlags.Instance)!.Invoke(window, [use, new RoutedEventArgs()]);
         if (chosen?.Id != "sand-mercury") throw new InvalidDataException("Adapt button did not select the displayed strategy.");
         File.WriteAllText(Path.Combine(outputDirectory, "deck-library-ui-audit.json"), JsonSerializer.Serialize(new
@@ -165,6 +198,10 @@ internal static class Program
             ExactReferenceCheck = true,
             ReferenceCancellation = true,
             VerticalScrolling = true,
+            FreeDuelOpponents = gallery.Items.Count,
+            RewardTablesPerDuelist = rewardTabs.Items.Count,
+            CardDropCrossLinks = dropSources.Items.Count,
+            ThreeLetterSearch = true,
             AdaptStrategySelected = chosen.Id
         }, JsonOptions));
     }

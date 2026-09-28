@@ -275,7 +275,7 @@ def turn_adviser_page(pdf: canvas.Canvas) -> None:
 
 
 def safety_page(pdf: canvas.Canvas) -> None:
-    page_base(pdf, "Compatibility, privacy, and troubleshooting", 11)
+    page_base(pdf, "Compatibility, privacy, and troubleshooting", 14)
     draw_panel(pdf, 38, 290, 370, 230)
     pdf.setFillColor(GOLD)
     pdf.setFont("Helvetica-Bold", 14)
@@ -341,15 +341,27 @@ def build() -> None:
     ], [(0.20, 0.47), (0.86, 0.27), (0.86, 0.45), (0.86, 0.69)])
     screenshot_page(pdf, 8, "Recommended campaign decks", "Six researched reference builds; opening-hand availability is not a duel win rate", "recommended-decks.png", [
         "Distinct icons select each reference build.", "Required copies already owned appear out of 40 beneath each icon.",
-        "Missing cards and progression advice explain the strategy.", "Check all opening hands; cancel whenever needed.",
+        "Every missing card names its best Free Duel opponent, required rank group, and conditional drop chance.", "Check all opening hands; cancel whenever needed.",
         "Adapt a strategy to your collection; the optimizer compares other starts too.", "Reference metrics can include missing cards; read sources and limits.",
     ], [(0.11, 0.16), (0.17, 0.257), (0.48, 0.59), (0.125, 0.735), (0.166, 0.938), (0.425, 0.79)])
-    screenshot_page(pdf, 9, "Suggested deck and ordering", "Save import is integrated into Deck Analyzer and Owned-Card Optimizer", "suggested-order-Alphabetical.png", [
+    screenshot_page(pdf, 9, "Free Duel database", "Browse every Free Duel opponent and search cards or duelists after three characters", "free-duel-gallery.png", [
+        "Search suggestions combine matching cards and duelists.", "All 39 Free Duel opponents appear with their portraits and names.",
+        "Select a portrait without leaving the deck library.", "Recommended Decks and Free Duel Database share one searchable screen.",
+    ], [(0.45, 0.05), (0.50, 0.46), (0.83, 0.31), (0.50, 0.18)])
+    screenshot_page(pdf, 10, "Duelist reward tables", "Opponent details open over the same window and preserve your place", "free-duel-duelist-popup.png", [
+        "The enlarged portrait and duelist name identify the selected opponent.", "S/A POW, S/A TEC, and B/C/D tables remain separate.",
+        "Every row shows card number, name, weight, denominator, and exact conditional chance.", "Select a card row to open its complete card and farming details.",
+    ], [(0.18, 0.16), (0.49, 0.29), (0.50, 0.61), (0.53, 0.83)])
+    screenshot_page(pdf, 11, "Card and farming details", "Card art, game data, password-shop data, and all drop sources appear together", "free-duel-card-popup.png", [
+        "The enlarged offline card image accompanies its in-game description.", "Type, attribute, level, ATK, DEF, and both guardian stars are shown.",
+        "Password and starchip cost appear when the card is available in the shop.", "Drop sources are ordered from highest to lowest conditional chance and link back to the duelist.",
+    ], [(0.23, 0.25), (0.55, 0.23), (0.25, 0.49), (0.69, 0.65)])
+    screenshot_page(pdf, 12, "Suggested deck and ordering", "Save import is integrated into Deck Analyzer and Owned-Card Optimizer", "suggested-order-Alphabetical.png", [
         "Enter or load owned quantities; card artwork works offline.", "Alphabetical is the default card order.",
         "Choose card number, ATK or DEF; the choice is remembered.", "ATK and DEF sort highest first; card numbers lowest first.",
         "Campaign summary keeps uncertainty visible.", "Fields, equips and removal are scored as coherent support; setups may need separate turns.",
     ], [(0.11, 0.61), (0.41, 0.42), (0.52, 0.42), (0.73, 0.47), (0.48, 0.24), (0.82, 0.60)])
-    screenshot_page(pdf, 10, "Compact Live", "A narrow right-side companion that leaves the central duel area visible", "compact.png", [
+    screenshot_page(pdf, 13, "Compact Live", "A narrow right-side companion that leaves the central duel area visible", "compact.png", [
         "Result name and effective ATK.", "Hand routes use plain slot numbers.",
         "F(1)-F(5) are monster positions; F(6)-F(10) are spell/trap positions.", "20px stars sit beneath Result; warm/red glows clarify choices and known enemy relations.",
         "PIN stays above the game; FULL restores the normal window.",

@@ -6,10 +6,10 @@
     <ApplicationIcon>..\..\assets\branding\app-icon.ico</ApplicationIcon>
     <AssemblyName>YFM Fusion Companion</AssemblyName>
     <RootNamespace>YfmCompanion.Desktop</RootNamespace>
-    <Version>2.0.1</Version>
-    <AssemblyVersion>2.0.1.0</AssemblyVersion>
-    <FileVersion>2.0.1.0</FileVersion>
-    <InformationalVersion>2.0.1</InformationalVersion>
+    <Version>2.1.0</Version>
+    <AssemblyVersion>2.1.0.0</AssemblyVersion>
+    <FileVersion>2.1.0.0</FileVersion>
+    <InformationalVersion>2.1.0</InformationalVersion>
     <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
     <!-- This is a personal English-only application. Do not publish the
          framework and package satellite assemblies for unrelated cultures. -->
@@ -39,6 +39,13 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="..\..\assets\card-artwork\**\*" Link="Artwork\%(RecursiveDir)%(Filename)%(Extension)">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="..\..\assets\duelist-portraits\**\*" Link="DuelistPortraits\%(RecursiveDir)%(Filename)%(Extension)">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <ExcludeFromSingleFile>true</ExcludeFromSingleFile>

@@ -35,7 +35,7 @@ Save controls are integrated into Deck Analyzer and Owned-Card Optimizer. The co
 
 ## Recommended decks and card order
 
-Open Owned-Card Optimizer → Recommended Decks to browse six researched builds. Each icon shows required owned copies out of 40 below it. Inspect missing cards and advice, check all reference opening hands, or adapt the selected strategy to the current collection. Reference metrics may include missing cards and are not a measured win rate.
+Open Owned-Card Optimizer → Recommended Decks to browse six researched builds. Each icon shows required owned copies out of 40 below it. Missing entries name the best opponent and result rank to farm. Open the linked Free Duel Database for all 39 portrait tiles and complete reward tables, or type at least three letters in its search box to open a card or duelist directly. Reference metrics may include missing cards and are not a measured win rate.
 
 Above the suggested DECK result, Card Order defaults to Alphabetical. Card number sorts lowest first; ATK and DEF sort highest first. This remembered preference changes only the displayed order. Auto CPU settings use up to four search workers and eight analysis workers, reduced on smaller CPUs; manual choices are available.
 

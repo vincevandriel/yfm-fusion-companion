@@ -2,7 +2,7 @@
 
 YFM Fusion Companion is an independent, fan-made utility. Yu-Gi-Oh!, Yu-Gi-Oh! Forbidden Memories, card names, game rules, and related properties belong to their respective owners and are not relicensed under this repository's MIT License. PlayStation is a trademark of Sony Interactive Entertainment Inc. RetroArch, Libretro, and SwanStation are separate projects with their own licenses.
 
-No PlayStation BIOS, game ROM/disc image, emulator, or memory-card save is distributed. Bundled card artwork has separate attribution and rights as described below. This project is not affiliated with or endorsed by Konami, Sony, RetroArch, Libretro, or the SwanStation authors.
+No PlayStation BIOS, game ROM/disc image, emulator, or memory-card save is distributed. Bundled card artwork and Free Duel portraits have separate attribution and rights as described below. This project is not affiliated with or endorsed by Konami, Sony, RetroArch, Libretro, or the SwanStation authors.
 
 ## Included runtime and libraries
 
@@ -10,8 +10,12 @@ The self-contained application includes .NET Runtime and Windows Desktop 9.0.18 
 
 ## YGOFM-gamedata derived research facts
 
-The generated opponent-reference research data derives duelist names, opening hand sizes, Deck-pool weights, and a deck-generation reference from [sg4e/YGOFM-gamedata](https://github.com/sg4e/YGOFM-gamedata), revision `bd91b5b0568059ec38555a3994c30a5068dc3dda`. The upstream project is Copyright 2020 sg4e and licensed under the MIT License. This repository does not copy its source code, ROM data, or game image; it retains source revision and input hashes in `docs/research/data/source_manifest.json`.
+The generated opponent-reference research data derives duelist names, opening hand sizes, Deck-pool weights, exact 2,048-weight S/A POW, S/A TEC and B/C/D reward tables, and a deck-generation reference from [sg4e/YGOFM-gamedata](https://github.com/sg4e/YGOFM-gamedata), revision `bd91b5b0568059ec38555a3994c30a5068dc3dda`. The upstream project is Copyright 2020 sg4e and licensed under the MIT License. This repository does not copy its source code, ROM data, or game image; it retains source revision and input hashes in `docs/research/data/source_manifest.json`.
 
 ## Bundled card artwork
 
 The `Resources/Artwork` directory (source: `assets/card-artwork`) contains 722 card images from [hzrqftr/yugioh-forbiddenmemories](https://github.com/hzrqftr/yugioh-forbiddenmemories), pinned to c50e070636fed6a0b2a0d6a9f2f88f79f07d58c2 and converted from WebP to PNG without changing pixels. Artwork remains copyright Konami and its licensors and is not MIT-licensed. Per-card source records, conversion hashes, [attribution](assets/card-artwork/ATTRIBUTION.md), and the original notice accompany the assets. The image manifest metadata is CC BY-SA 4.0, attributed to Yugipedia contributors.
+
+## Bundled Free Duel portraits
+
+The `Resources/DuelistPortraits` directory (source: `assets/duelist-portraits`) contains 39 original 48 x 48 in-game mugshots. The source sheet is archived by [The Spriters Resource](https://www.spriters-resource.com/playstation/ygofm/asset/51205/) and credited there to user Phongpon; opponent-ID mapping was cross-checked against the [YFM Database](https://yugioh-fm-db.pages.dev/duelists). Portraits remain copyright Konami and its licensors and are not MIT-licensed. The source-sheet hash, per-file hashes, and [attribution](assets/duelist-portraits/ATTRIBUTION.md) accompany the assets.

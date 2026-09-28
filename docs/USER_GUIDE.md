@@ -2,7 +2,7 @@
 
 A native, English-only Windows companion for Yu-Gi-Oh! Forbidden Memories. It works beside RetroArch/SwanStation and does not use a browser. Manual fusion, deck analysis, and optimization work without an emulator; automatic live/save features have the compatibility limits described below.
 
-The **Owned-Card Optimizer → Recommended Decks** screen offers six community-informed 40-card builds, each with a distinct artwork icon and the number of required copies already owned beneath it. Inspect missing cards, progression plans, fan sources and exact opening-hand setup metrics, or select a strategy to adapt to your collection. The optimizer compares these starts and now accounts for natural strong monsters, setups exceeding 4,500 ATK, and support-only hands. See [advanced deck research](research/FAN_DECK_RESEARCH.md) for the evidence, scoring choices and limitations; setup availability is not a win rate.
+The **Owned-Card Optimizer → Recommended Decks** screen offers six community-informed 40-card builds, each with a distinct artwork icon and the number of required copies already owned beneath it. Every missing entry names its best Free Duel opponent, required rank group and exact conditional drop percentage. The linked Free Duel Database contains all 39 opponents, their portraits and complete reward tables. See [advanced deck research](research/FAN_DECK_RESEARCH.md) for deck evidence, scoring choices and limitations; setup availability is not a win rate.
 
 Suggested deck cards default to **Alphabetical** order. Use **Card Order** above the result list to choose **Card number**, **ATK**, or **DEF**. Numbers sort lowest first; ATK and DEF sort highest first. Your selection is remembered and only changes the displayed order.
 
@@ -13,6 +13,7 @@ Suggested deck cards default to **Alphabetical** order. Use **Card Order** above
 - [Run the desktop application](#run-the-desktop-application)
 - [Interface instruction manual](#interface-instruction-manual)
   - [Card entry and autocomplete](#card-entry-and-autocomplete)
+  - [Recommended Decks and Free Duel Database](#recommended-decks-and-free-duel-database)
   - [TURN ADVISER tab](#turn-adviser-tab)
   - [DECK ANALYZER tab](#deck-analyzer-tab)
   - [LIVE DUEL tab](#live-duel-tab)
@@ -86,6 +87,14 @@ The Windows WPF interface includes:
 ### Card entry and autocomplete
 
 Card boxes accept a card name or card number. Suggestions narrow with every character. Click a suggestion to accept it, or press **Tab** to accept the top suggestion; if only one match remains, Tab fills it and moves to the next box. Empty boxes are valid, and duplicate physical cards use separate slots.
+
+### Recommended Decks and Free Duel Database
+
+Open **Owned-Card Optimizer → Recommended Decks**. The first tab keeps the six researched 40-card builds, ownership counts, strategy notes and exact opening-hand check. Each card row now includes **BEST FARM** when copies are missing: opponent, required result rank and the exact table probability. A percentage is conditional on earning that named rank group; it is not an unconditional per-duel chance. Double-click a row to inspect the full card.
+
+Choose **OPEN FREE DUEL DATABASE** or its tab to browse all 39 opponents. Each portrait tile opens an in-window popup with a larger portrait and separate complete tables for **S/A POW**, **S/A TEC**, and **B/C/D**. Every table totals 2,048 weight. Double-click a reward-table card to open its card profile.
+
+The search box is shared by both tabs. After the third typed letter it predicts matching card and duelist names. Selecting a duelist opens their reward popup. Selecting a card opens its full artwork, number, type, attribute, level, ATK/DEF, guardian stars, description, password-shop availability, password and Star Chip cost when available, plus every duelist/rank source ordered from highest to lowest conditional drop percentage. Duelist buttons inside that list return directly to the opponent popup. All data and images are bundled for offline, read-only use.
 
 ### TURN ADVISER tab
 
