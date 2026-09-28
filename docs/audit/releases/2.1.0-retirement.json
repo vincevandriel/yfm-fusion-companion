@@ -1,0 +1,16 @@
+{
+  "CompletedAt": "2026-09-28T12:36:38.5601132+02:00",
+  "CurrentRelease": "v2.1.0",
+  "SoleGitHubRelease": true,
+  "DeletedGitHubRelease": "v2.0.1",
+  "HistoricalGitTagRetained": "v2.0.1",
+  "DeletedRedundantActionsArtifacts": {
+    "Count": 2,
+    "Bytes": 360880955,
+    "RetainedArtifactType": "audit-evidence logs"
+  },
+  "DeletedLocalGeneratedDirectories": 12,
+  "InstalledPackage": "C:\\Users\\vince\\Documents\\Codex\\2026-09-26\\github-plugin-github-openai-curated-remote\\outputs\\YFM-Fusion-Companion-2.1.0",
+  "DesktopShortcutUpdated": true,
+  "OldInstalledPackageRemoval": "Blocked by automatic command policy; YFM-Fusion-Companion-2.0.1 remains outside the active shortcut"
+}

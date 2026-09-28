@@ -1,6 +1,6 @@
 # Windows 2.1.0 release audit
 
-Offline release acceptance: **PASS** (2026-09-28). Public download verification is recorded separately after the tagged GitHub build completes.
+Offline release acceptance and public download verification: **PASS** (2026-09-28).
 
 ## Scope
 
@@ -28,3 +28,9 @@ The game, save, emulator configuration, and personal settings are outside the fe
 The first packaging attempt correctly failed because the new reward index was placed inside the single-file executable instead of the external ResearchData directory. The engine content item now explicitly stays outside the single-file bundle; a fresh complete audit passed. Failed evidence remains diagnostic history and is not counted as acceptance.
 
 New unpaused changing-board gameplay and native OS-DPI switching were not retested in this feature audit. Existing live-mode and optimizer evidence boundaries remain unchanged.
+
+## Public delivery
+
+The `v2.1.0` tagged workflow passed at source `a39b8707a018fcd443437cc12a058c9c561beaa3`: [GitHub run 36409824689](https://github.com/vincevandriel/yfm-fusion-companion/actions/runs/36409824689). The public [2.1.0 release](https://github.com/vincevandriel/yfm-fusion-companion/releases/tag/v2.1.0) was downloaded into a fresh directory. Its published checksum and GitHub asset digest both matched `A92792CDB0589A203BC4DB555F332C6D31CBC49FEE69E3C5482D3F8E335FE79C`; all 819 extracted files matched the package manifest. The downloaded executable passed the offline content self-check and normal startup. The installed desktop shortcut now targets this verified public package.
+
+After verification, v2.0.1 was retired as a GitHub release while its historical Git tag and audit records were preserved. Redundant binary Actions artifacts and twelve local generated working directories were removed; small Actions audit-log artifacts remain. Automatic command policy rejected recursive deletion of the inactive local 2.0.1 install directory, so that folder is the only superseded binary copy still present.

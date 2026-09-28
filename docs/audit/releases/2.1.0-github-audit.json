@@ -1,0 +1,25 @@
+{
+  "Passed": true,
+  "Tag": "v2.1.0",
+  "SourceCommit": "a39b8707a018fcd443437cc12a058c9c561beaa3",
+  "WorkflowRun": 36409824689,
+  "WorkflowUrl": "https://github.com/vincevandriel/yfm-fusion-companion/actions/runs/36409824689",
+  "TestsPassed": 231,
+  "ArchiveSHA256": "A92792CDB0589A203BC4DB555F332C6D31CBC49FEE69E3C5482D3F8E335FE79C",
+  "FilesVerified": 819,
+  "PackageSelfCheck": {
+    "Passed": true,
+    "Cards": 722,
+    "FusionPairs": 25146,
+    "ArtworkVerified": 722,
+    "ReferenceDecks": 6,
+    "ResearchOpponents": 39,
+    "FreeDuelOpponents": 39,
+    "RewardTables": 117,
+    "DuelistPortraitsVerified": 39,
+    "EmulatorAccessed": false,
+    "PersonalSettingsAccessed": false
+  },
+  "NormalStartupPassed": true,
+  "MissingResourceFailsClosed": true
+}

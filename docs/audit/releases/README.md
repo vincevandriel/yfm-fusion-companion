@@ -1,9 +1,12 @@
 # Release verification and retention
 
-Version **2.1.0** is the current audited candidate. Its tagged GitHub build and public download records are added here after publication.
+Version **2.1.0** is the sole current GitHub release.
 
 - [2.1.0 audit scope and findings](../RELEASE_2_1_0.md)
 - [2.1.0 locally audited candidate](2.1.0-local-audit.json)
+- [2.1.0 GitHub tagged-build acceptance](2.1.0-github-audit.json)
+- [2.1.0 independent public download verification](2.1.0-public-verification.json)
+- [2.1.0 publication and cleanup receipt](2.1.0-retirement.json)
 
 - [Audit scope and findings](../RELEASE_2_0_1.md)
 - [Locally audited candidate](2.0.1-local-audit.json)
@@ -12,7 +15,9 @@ Version **2.1.0** is the current audited candidate. Its tagged GitHub build and 
 - [Synthetic visual matrix](2.0.1-visual-summary.json)
 - [Retirement and retention receipt](2.0.1-retirement.json)
 
-The 2.0.1 records remain as historical audit evidence until the verified 2.1.0 public release is published and superseded binary assets are retired. The authoritative 2.0.1 public ZIP SHA-256 is `BE16C90E87BF65776807AB999FBC88C9867524DD428507DD76415852147E1CC1`.
+The authoritative 2.1.0 public ZIP SHA-256 is `A92792CDB0589A203BC4DB555F332C6D31CBC49FEE69E3C5482D3F8E335FE79C`. Its 819 files were verified against the internal manifest after a fresh download. The downloaded executable passed its offline content self-check and normal startup locally; the same package passed normal startup and missing-resource rejection in GitHub Actions.
+
+The v2.0.1 GitHub release and two redundant binary Actions artifacts were removed after 2.1.0 verification; historical Git source and compact audit records remain. Twelve local generated audit, probe, screenshot, candidate-package and public-download directories were removed. The desktop shortcut targets the verified 2.1.0 package. Automatic command policy rejected recursive deletion of the older installed 2.0.1 directory, so that inactive folder remains and is recorded in the cleanup receipt.
 
 The local candidate and GitHub build have separate archive hashes because build outputs and documentation differ. Each was independently checked; the public receipt identifies the installed distribution.
 
